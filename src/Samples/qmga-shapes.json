@@ -1,0 +1,272 @@
+{
+    "model": {
+        "sets": [
+            {
+                "name": "Set A",
+                "orientationType": "v",
+                "positions": [
+                    [
+                        3,
+                        3,
+                        0
+                    ]
+                ],
+                "orientations": [
+                    [
+                        0,
+                        1,
+                        0
+                    ]
+                ]
+            },
+            {
+                "name": "Set B",
+                "orientationType": "v",
+                "positions": [
+                    [
+                        -3,
+                        3,
+                        0
+                    ]
+                ],
+                "orientations": [
+                    [
+                        0,
+                        0,
+                        1
+                    ]
+                ]
+            },
+            {
+                "name": "Set C",
+                "orientationType": "v",
+                "positions": [
+                    [
+                        -3,
+                        -3,
+                        0
+                    ]
+                ],
+                "orientations": [
+                    [
+                        0,
+                        1,
+                        0
+                    ]
+                ]
+            },
+            {
+                "name": "Set D",
+                "orientationType": "v",
+                "positions": [
+                    [
+                        3,
+                        -3,
+                        0
+                    ]
+                ],
+                "orientations": [
+                    [
+                        0,
+                        0,
+                        1
+                    ]
+                ]
+            }
+        ]
+    },
+    "state": {
+        "reference": {
+            "boundingShapeEnabled": false,
+            "activeShape": "box",
+            "showAxes": false,
+            "showGrid": false,
+            "multicolour": true,
+            "gridColour": {
+                "r": 255,
+                "g": 255,
+                "b": 255
+            },
+            "size": 42
+        },
+        "ambientLight": {
+            "ambientLightColour": {
+                "r": 255,
+                "g": 255,
+                "b": 255,
+                "i": 40
+            },
+            "backgroundColour": {
+                "r": 255,
+                "g": 255,
+                "b": 255
+            }
+        },
+        "pointLight": {
+            "reset": 0,
+            "active": "point",
+            "enabled": true,
+            "helper": false,
+            "colour": {
+                "r": 255,
+                "g": 255,
+                "b": 255,
+                "i": 60
+            },
+            "position": {
+                "x": 21,
+                "y": 11,
+                "z": 5
+            }
+        },
+        "directionalLight": {
+            "reset": 0,
+            "active": "directional",
+            "enabled": true,
+            "helper": false,
+            "colour": {
+                "r": 255,
+                "g": 255,
+                "b": 255,
+                "i": 50
+            },
+            "position": {
+                "x": -6,
+                "y": 0,
+                "z": -5
+            }
+        },
+        "camera": {
+            "type": "orthographic",
+            "lookAt": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "position": {
+                "x": 3.18,
+                "y": 3.8,
+                "z": -11
+            },
+            "zoom": 31.512470486230455
+        },
+        "slicing": {
+            "clipIntersection": false,
+            "helpers": [
+                false,
+                false,
+                false
+            ],
+            "x": [
+                -50,
+                50
+            ],
+            "y": [
+                -50,
+                50
+            ],
+            "z": [
+                -50,
+                50
+            ]
+        },
+        "model": {
+            "active": 1,
+            "reset": 0,
+            "sets": [
+                "Set A",
+                "Set B",
+                "Set C",
+                "Set D"
+            ],
+            "configurations": [
+                {
+                    "title": "Set A",
+                    "shape": "Ellipsoid",
+                    "parameters": {
+                        "names": [
+                            "X",
+                            "Y",
+                            "Z"
+                        ],
+                        "vals": [
+                            2.5,
+                            2,
+                            5
+                        ]
+                    },
+                    "colour": {
+                        "r": 255,
+                        "g": 0,
+                        "b": 0
+                    },
+                    "colourFromDirector": false,
+                    "displayAsWireframe": false
+                },
+                {
+                    "title": "Set B",
+                    "shape": "Cut Sphere",
+                    "parameters": {
+                        "names": [
+                            "Radius",
+                            "zCut"
+                        ],
+                        "vals": [
+                            3.5,
+                            1.3
+                        ]
+                    },
+                    "colour": {
+                        "r": 0,
+                        "g": 255,
+                        "b": 255
+                    },
+                    "colourFromDirector": false,
+                    "displayAsWireframe": false
+                },
+                {
+                    "title": "Set C",
+                    "shape": "Spherocylinder",
+                    "parameters": {
+                        "names": [
+                            "Radius",
+                            "Length"
+                        ],
+                        "vals": [
+                            2,
+                            5
+                        ]
+                    },
+                    "colour": {
+                        "r": 255,
+                        "g": 0,
+                        "b": 255
+                    },
+                    "colourFromDirector": false,
+                    "displayAsWireframe": false
+                },
+                {
+                    "title": "Set D",
+                    "shape": "Spheroplatelet",
+                    "parameters": {
+                        "names": [
+                            "RadSphere",
+                            "RadCircle"
+                        ],
+                        "vals": [
+                            2.5,
+                            1.5
+                        ]
+                    },
+                    "colour": {
+                        "r": 255,
+                        "g": 255,
+                        "b": 0
+                    },
+                    "colourFromDirector": false,
+                    "displayAsWireframe": false
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,182 @@
+                _       __     __    __  ____________ 
+               | |     / /__  / /_  /  |/  / ____/   |
+               | | /| / / _ \/ __ \/ /|_/ / / __/ /| |
+               | |/ |/ /  __/ /_/ / /  / / /_/ / ___ |
+               |__/|__/\___/_.___/_/  /_/\____/_/  |_|
+                                       
+                        by Eduardo Battistini               
+                                       
+====================================================================
+                           USER MANUAL
+====================================================================
+
+Welcome to WebMGA. 
+
+Please see the 'About' section of the program to learn more about 
+the purpose of WebMGA and the configurations included in the
+library.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                             LICENSE
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Copyright 2021. Carlos Eduardo Battistini Parra.
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation files
+(the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS 
+BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                          CITING WEBMGA
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you use pictures produced with WebMGA in a scientific
+publication, please cite with a text like:
+
+“The pictures were produced with WebMGA [1], an evolution of QMGA
+based on WebGL [2].”
+
+[1] Eduardo Battistini, “WebMGA, a WebGL Molecular Graphics
+Application for the Interactive Rendering of Coarse-Grained Liquid
+Crystal Models”, BSc Thesis in Computer Science, UCL, 2021,
+https://astromarx.github.io/WebMGA.
+
+[2] Adrian T. Gabriel, Timm Meyer, Guido Germano, "Molecular
+graphics of convex-body fluids", Journal of Chemical Theory and
+Computation 4, 468-476, 2008, DOI 10.1021/ct700192z,
+http://qmga.sourceforce.net.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                     CONFIGURATION FILE FORMAT
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To upload a custom configuration, you must generate a JSON file 
+containing positions, orientations, and sets of molecules in the 
+following format and upload it.
+
+{  
+    "model": { 
+        "sets": [ 
+            { 
+                "name": "Set A", 
+                "orientationType": "v", 
+                "positions": [ 
+                    [0,0,0] 
+                ], 
+                "orientations": [ 
+                    [0,1,0] 
+                ]
+            }
+        ]
+    } 
+}
+
+
+For information on the JSON format, please see:
+https://www.json.org/
+
+If your configuration has more than one molecule type, restrict each
+set of molecules to a different object in the "sets" list. 
+
+You may name sets as you please.
+
+You must identify which format you are specifying the molecule
+orientations with for the "orientationType" with one of the following
+identifiers:
+
+	v - Unit vector 
+	q - Quaternion
+	a - Axis angles
+	e - Euler angles
+
+Each molecule should have a corresponding position and orientation
+list the lists "positions" and "orientations".
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    ORIENTATION SPECIFICATION
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Unit Vector: [x,y,z]
+Quaternion : [w,x,y,z]
+Euler angles: [x,y,z]
+Axis angles: [axis_x, axis_y, axis_z, angle]
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                         .WEBMGA FILES
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you save a configuration, the provided model data will be saved
+in JSON format along with a "view" object, which contains all the 
+viewing parameters at the time the configuration was saved. You may
+change the parameters manually in the saved file or re-upload this
+type of file to recreate a model with specified viewing settings.
+
+To see a sample, please select a configuration from the Library and
+click 'Save'.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        SUB-MENU OVERVIEW
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The menu in the header contains information about WebMGA, Loading,
+Saving, Exporting, and Uploading, as well as the Library of preset 
+configurations and Level of Detail setting.
+
+By increasing the level of detail, more detailed images will be 
+produced at the cost of poorer performance.
+
+In the Sidebar, you will find the following sub-menus:
+
+Model:
+
+For picking a shape for each of the sets in the configurations and
+their corresponding parameters. Also includes options of colouring
+manually or by the director and displaying shapes as wireframes.
+
+Ambient:
+
+For specifying ambient light and background colours.
+
+Lighting:
+
+For specifying positions and colours of 'point' and 'directional'
+lights. Toggling 'helpers' will display figures that will make 
+positioning lights easier.
+
+Slicing:
+
+For clipping the system in X, Y, or Z dimensions. Also includes
+'helpers'.
+
+Reference:
+
+For including a grid, axes (which may be multi-coloured), and a
+bounding shape. The size and colour of the grid and axes may be 
+specified.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                             CONTACT
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For help, queries, suggestions or anything else, please contact
+zceeceb@ucl.ac.uk
+
+====================================================================
+                    THANK YOU FOR USING WEBMGA!
+====================================================================
