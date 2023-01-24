@@ -760,7 +760,7 @@ export class ReferenceOptions extends React.Component {
         });
         this.model.togglePeriodicBounding();
         this.model.update();
-        View.state.reference.periodicBoundingEnabled =!View.state.reference.showPeriodic;
+        View.state.reference.showPeriodic =!View.state.reference.showPeriodic;
         
     }
     selectShape(val) {
@@ -845,7 +845,7 @@ export class ReferenceOptions extends React.Component {
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={showPeriodic} onClick={this.togglePeriodicBounding}>  Show </Checkbox>
+                            <Checkbox style={{ marginLeft: 12 }} checked={showPeriodic} onClick={this.togglePeriodicBounding} disabled ={!enabled}> Show </Checkbox>
                         </Col>
                     </Row>
                     <Row className="show-grid">

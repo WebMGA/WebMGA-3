@@ -443,20 +443,7 @@ export class Model {
     }
 
     togglePeriodicBounding(){
-        //testing to see it works
-        // this.axesEnabled = !this.axesEnabled;
-
-        // if (this.axesEnabled) {
-        //     for (let a of this.tools.axes) {
-        //         this.scene.add(a);
-        //     }
-        // } else {
-        //     for (let a of this.tools.axes) {
-        //         this.scene.remove(a);
-       // this.scene.add(this.tools.genPeriodicBouding())
-        //     }
-        // }
-        this.periodicBoundingEnabled = ! this.periodicBoundingEnabled;
+        this.periodicBoundingEnabled = !this.periodicBoundingEnabled;
         if(this.periodicBoundingEnabled){
             for (let a of this.tools.genPeriodicBouding())
             this.scene.add(a);
