@@ -65,9 +65,10 @@ export class ReferenceTools {
 
         switch (type) {
             case 'box':
-                let box = new Box3();
-                this.setsGeometry.computeBoundingBox()
-                box.copy(this.setsGeometry.boundingBox);
+                let box = new Box3().setFromObject(this);
+                //box.setFromCenterAndSize(new Vector3(0,0,0),new Vector3(10,10,10));
+                //this.setsGeometry.computeBoundingBox()
+                //box.copy(this.setsGeometry.boundingBox);
                 this.boundingShape = new Box3Helper(box, this.colour);
                 break;
             case 'sphere':
