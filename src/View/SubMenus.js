@@ -827,6 +827,19 @@ export class ReferenceOptions extends React.Component {
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
+                            <p><b> Periodic Bounding </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked={enabled} onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
                             <p><b> Axes </b></p>
                         </Col>
                     </Row>

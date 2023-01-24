@@ -18,6 +18,7 @@ export class ReferenceTools {
     subGrid;
     axes = [];
     boundingShape;
+    boudningSize;
     boundingShapeType;
     setsGeometry;
     size;
@@ -44,6 +45,7 @@ export class ReferenceTools {
 
         this.boundingShapeType = 'box';
         this.setsGeometry = null;
+        this.boudningSize = null;
     }
 
     genBoundingShape(type, sets) {
@@ -80,6 +82,10 @@ export class ReferenceTools {
                 this.setsGeometry.computeBoundingBox()
                 box.copy(this.setsGeometry.boundingBox);
                 this.boundingShape = new Box3Helper(box, this.colour);
+                let box_size = new Vector3(0,0,0);
+                box.getSize(box_size);
+                this.boudningSize = box_size;
+                
                 break;
             case 'sphere':
                 this.setsGeometry.computeBoundingSphere();
