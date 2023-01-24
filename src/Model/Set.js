@@ -4,7 +4,8 @@ import {
     Vector3,
     Quaternion,
     Euler,
-    Color
+    Color,
+    Material
 
 } from 'three';
 import {eigs} from 'mathjs';
@@ -115,10 +116,24 @@ export class Set {
             mat = new MeshPhongMaterial({
                 color: c,
                 clippingPlanes: this.clippingPlanes,
-                clipIntersection: this.clipIntersection,
-                shininess: 40
+                clipIntersection: false,
+                side : 2,
+                shininess: 40,
+                clipShadows: true
             });
             mat.wireframe = this.wireframe;
+            // mat.onBeforeCompile = function( shader ) {
+
+            //     shader.fragmentShader = shader.fragmentShader.replace(
+            
+            //         '#include <output_fragment>',
+            
+            //         `
+            //         vec3 backfaceColor = vec3( 0.4, 0.4, 0.4 );
+            //         gl_FragColor = ( gl_FrontFacing ) ? vec4( outgoingLight, diffuseColor.a ) : vec4( backfaceColor, opacity );
+            //         `
+            //     )
+            // };
 
             for (let g of elem.geometries) {
                 m = new Mesh(g, mat);

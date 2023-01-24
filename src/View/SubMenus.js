@@ -413,14 +413,14 @@ export class SlicingOptions extends React.Component {
         return (
             <div>
                 <br />
-                {/* <Grid fluid>
+                 {/* <Grid fluid>
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={20}>
-                            <Checkbox disabled={true} checked={state.clipIntersection} onClick={this.toggleIntersection}> Slice Intersection</Checkbox>
+                            <Checkbox disabled={false} checked={state.clipIntersection} onClick={this.toggleIntersection}> Slice Intersection</Checkbox>
                         </Col>
                     </Row>
-                </Grid> */}
+                </Grid>  */}
                 {/* TO DO */}
                 <SliceSlider title="X : " f={this.updateSlicer} index={0} vals={state.x} />
                 <br />
