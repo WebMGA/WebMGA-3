@@ -4,6 +4,7 @@ import React from "react";
 import { SliceSlider, ParameterInput, ParameterSet, CustomSlider } from './Tools'
 import View from './View'
 
+
 const TITLE_LEFT_MARGIN = 30;
 const dividerStyle = {
     color: '#A4A9A3'
@@ -710,6 +711,7 @@ export class ReferenceOptions extends React.Component {
 
         this.model = props.model;
         this.toggleBoundingShapeEnabled = this.toggleBoundingShapeEnabled.bind(this);
+        this.togglePeriodicBounding = this.togglePeriodicBounding.bind(this);
         this.selectShape = this.selectShape.bind(this);
         this.toggleAxes = this.toggleAxes.bind(this);
         this.toggleGrid = this.toggleGrid.bind(this);
@@ -752,6 +754,15 @@ export class ReferenceOptions extends React.Component {
         this.model.updateBoundingShape(this.state.activeShape, toggle);
         this.model.update();
     }
+    togglePeriodicBounding(){
+        this.setState({
+            periodicBoundingEnabled : !View.state.reference.showPeriodic
+        });
+        this.model.togglePeriodicBounding();
+        this.model.update();
+        View.state.reference.periodicBoundingEnabled =!View.state.reference.showPeriodic;
+        
+    }
     selectShape(val) {
         this.setState({
             activeShape: val
@@ -787,6 +798,7 @@ export class ReferenceOptions extends React.Component {
 
     render() {
         const enabled = this.state.boundingShapeEnabled;
+        const showPeriodic = this.state.showPeriodic;
         const activeShape = this.state.activeShape;
         const showAxes = this.state.showAxes;
         const showGrid = this.state.showGrid;
@@ -833,7 +845,7 @@ export class ReferenceOptions extends React.Component {
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={enabled} onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
+                            <Checkbox style={{ marginLeft: 12 }} checked={showPeriodic} onClick={this.togglePeriodicBounding}>  Show </Checkbox>
                         </Col>
                     </Row>
                     <Row className="show-grid">

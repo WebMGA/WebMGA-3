@@ -19,7 +19,9 @@ export class ReferenceTools {
     axes = [];
     boundingShape;
     boudningSize;
+    boundingCenter;
     boundingShapeType;
+    periodicBounding=[];
     setsGeometry;
     size;
     colour;
@@ -45,7 +47,9 @@ export class ReferenceTools {
 
         this.boundingShapeType = 'box';
         this.setsGeometry = null;
-        this.boudningSize = null;
+        this.boundingSize = null;
+        this.boundingCenter = null;
+        this.periodicBounding = null;
     }
 
     genBoundingShape(type, sets) {
@@ -72,9 +76,6 @@ export class ReferenceTools {
         }
         this.setsGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries);
         
-
-
-
         switch (type) {
             case 'box':
                 let box = new Box3();
@@ -82,10 +83,12 @@ export class ReferenceTools {
                 this.setsGeometry.computeBoundingBox()
                 box.copy(this.setsGeometry.boundingBox);
                 this.boundingShape = new Box3Helper(box, this.colour);
-                let box_size = new Vector3(0,0,0);
-                box.getSize(box_size);
-                this.boudningSize = box_size;
-                
+                let box_size = new Vector3(5,5,5);
+                box_size =box.getSize();
+                let box_center = new Vector3(0,0,0);
+                box_center =box.getCenter()
+                this.boundingSize = box_size;
+                this.boundingCenter = box_center;
                 break;
             case 'sphere':
                 this.setsGeometry.computeBoundingSphere();
@@ -103,13 +106,31 @@ export class ReferenceTools {
             Alert.error('Error: Unknown bounding shape identifier');
         }
 
-
-
         return this.boundingShape;
 
     }
 
-
+    genPeriodicBouding(){
+        this.periodicBounding =[];
+        let box_size = this.boundingSize;
+        let box_center = this.boundingCenter;
+        let new_center = box_center.clone();
+        // new_center.x= box_center.x-box_size.x;
+        // let box = new Box3();
+        // box.setFromCenterAndSize(new_center,box_size);
+        // this.periodicBounding.push(new Box3Helper(box, this.colour))
+        let center = box_center.clone();
+        for (let i =-1;i<2;i++){
+            center.x = new_center.x+box_size.x*i;
+            for(let j =-1;j<2;j++){
+                center.y = new_center.y+box_size.y*j;
+                let box = new Box3();
+                box.setFromCenterAndSize(center,box_size);
+                this.periodicBounding.push(new Box3Helper(box, this.colour))
+            }
+        }
+        return this.periodicBounding;
+    }
     updateColour(colour) {
         this.colour = colour;
         this.material = new LineBasicMaterial({
@@ -174,6 +195,7 @@ export class ReferenceTools {
             this.genAxes();
         }
     }
+   
 
 }
 

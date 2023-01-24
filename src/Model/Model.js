@@ -38,6 +38,7 @@ export class Model {
     gridEnabled = false;
     axesEnabled = false;
     boundingShapeEnabled = false;
+    periodicBoundingEnabled = false;
     sidebarExpanded = false;
 
     cameraType = 'perspective';
@@ -343,6 +344,7 @@ export class Model {
 
     /* REFERENCE TOOLS FUNCTIONS */
 
+
     toggleGrid() {
         this.gridEnabled = !this.gridEnabled;
 
@@ -437,6 +439,32 @@ export class Model {
         this.scene.remove(this.tools.boundingShape);
         if (enabled) {
             this.scene.add(this.tools.genBoundingShape(type, this.sets));
+        }
+    }
+
+    togglePeriodicBounding(){
+        //testing to see it works
+        // this.axesEnabled = !this.axesEnabled;
+
+        // if (this.axesEnabled) {
+        //     for (let a of this.tools.axes) {
+        //         this.scene.add(a);
+        //     }
+        // } else {
+        //     for (let a of this.tools.axes) {
+        //         this.scene.remove(a);
+       // this.scene.add(this.tools.genPeriodicBouding())
+        //     }
+        // }
+        this.periodicBoundingEnabled = ! this.periodicBoundingEnabled;
+        if(this.periodicBoundingEnabled){
+            for (let a of this.tools.genPeriodicBouding())
+            this.scene.add(a);
+        }
+        else{
+            for(let a of this.tools.periodicBounding){
+                this.scene.remove(a);
+            }
         }
     }
 
