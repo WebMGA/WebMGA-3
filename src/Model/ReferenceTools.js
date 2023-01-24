@@ -50,25 +50,35 @@ export class ReferenceTools {
         this.boundingShapeType = type;
 
         this.boundingShape = null;
-
-        if (this.setsGeometry == null) {
-            let geometries = [];
-            for (let set of sets) {
-                for (let elem of set.elements) {
-                    geometries.push(BufferGeometryUtils.mergeBufferGeometries(elem.geometries));
+        
+        // if (this.setsGeometry == null) {
+        //     let geometries = [];
+        //     for (let set of sets) {
+        //         for (let elem of set.elements) {
+        //             geometries.push(BufferGeometryUtils.mergeBufferGeometries(elem.geometries));
+        //         }
+        //     }
+        //     this.setsGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries);
+        // }
+        
+        
+        let geometries = [];
+        for (let set of sets) {
+            for (let elem of set.elements) {
+                geometries.push(BufferGeometryUtils.mergeBufferGeometries(elem.geometries));
                 }
-            }
-            this.setsGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries);
         }
+        this.setsGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries);
+        
 
 
 
         switch (type) {
             case 'box':
-                let box = new Box3().setFromObject(this);
+                let box = new Box3();
                 //box.setFromCenterAndSize(new Vector3(0,0,0),new Vector3(10,10,10));
-                //this.setsGeometry.computeBoundingBox()
-                //box.copy(this.setsGeometry.boundingBox);
+                this.setsGeometry.computeBoundingBox()
+                box.copy(this.setsGeometry.boundingBox);
                 this.boundingShape = new Box3Helper(box, this.colour);
                 break;
             case 'sphere':
