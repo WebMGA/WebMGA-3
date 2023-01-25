@@ -62,10 +62,10 @@ export class Model {
 
     setDefault() {
         
-        this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance" });
+        this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance" ,stencil: true});
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.localClippingEnabled = true;
-
+        //this.renderer.enable(this.renderer.STENCIL_TEST);
         this.rotating = false;
         this.cameraPostion = null;
         this.lightHelperWarningGiven = false;

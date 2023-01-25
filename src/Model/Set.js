@@ -122,18 +122,9 @@ export class Set {
                 clipShadows: true
             });
             mat.wireframe = this.wireframe;
-            // mat.onBeforeCompile = function( shader ) {
-
-            //     shader.fragmentShader = shader.fragmentShader.replace(
-            
-            //         '#include <output_fragment>',
-            
-            //         `
-            //         vec3 backfaceColor = vec3( 0.4, 0.4, 0.4 );
-            //         gl_FragColor = ( gl_FrontFacing ) ? vec4( outgoingLight, diffuseColor.a ) : vec4( backfaceColor, opacity );
-            //         `
-            //     )
-            // };
+            //stencil buffer
+            //view-source:https://threejs.org/examples/webgl_clipping_stencil.html
+            //https://stackoverflow.com/questions/36557486/three-js-object-clipping/37593904#37593904
 
             for (let g of elem.geometries) {
                 m = new Mesh(g, mat);
