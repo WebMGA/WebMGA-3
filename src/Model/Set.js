@@ -8,6 +8,7 @@ import {
     Material
 
 } from 'three';
+import * as THREE from 'three';
 import {eigs} from 'mathjs';
 import * as SHAPE from './Shapes.js';
 import Model from './Model';
@@ -31,7 +32,7 @@ export class Set {
 
     positions = [];
     orientations = [];
-    elements = []
+    elements = [];
     meshes = [];
 
     constructor(data, cp, ci) {
@@ -92,7 +93,12 @@ export class Set {
         this.clippingPlanes[2 * i + 1].constant = vals[1];
         this.clippingPlanes[2 * i].constant = -vals[0];
     }
-
+    // updateSlicedset(){
+    //     clippingPlanes = this.clippingPlanes;
+    //     for(let mesh of this.meshes){
+    //         mesh.material.geometries
+    //     }
+    // }
     toggleClipIntersection(toggle) {
         this.clipIntersection = toggle;
         for (let mesh of this.meshes) {
@@ -104,6 +110,8 @@ export class Set {
         let m;
         let c;
         let mat;
+        let gutsMaterial;
+        let v;
 
         for (let elem of this.elements) {
             if (this.colourByDirector) {
@@ -117,18 +125,21 @@ export class Set {
                 color: c,
                 clippingPlanes: this.clippingPlanes,
                 clipIntersection: false,
-                side : 2,
+                side : THREE.FrontSide,
                 shininess: 40,
                 clipShadows: true
             });
             mat.wireframe = this.wireframe;
+            gutsMaterial = new THREE.MeshBasicMaterial( {color: c, side: THREE.BackSide, clippingPlanes: this.clippingPlanes, clipShadows: true} );
+					
             //stencil buffer
             //view-source:https://threejs.org/examples/webgl_clipping_stencil.html
             //https://stackoverflow.com/questions/36557486/three-js-object-clipping/37593904#37593904
 
             for (let g of elem.geometries) {
                 m = new Mesh(g, mat);
-                this.meshes.push(m);
+                v = new Mesh(g,gutsMaterial)
+                this.meshes.push(m,v);
             }
         }
     }
