@@ -4,7 +4,8 @@ import {
     Vector3,
     Quaternion,
     Euler,
-    Color
+    Color,
+    Material
 
 } from 'three';
 import {eigs} from 'mathjs';
@@ -115,10 +116,15 @@ export class Set {
             mat = new MeshPhongMaterial({
                 color: c,
                 clippingPlanes: this.clippingPlanes,
-                clipIntersection: this.clipIntersection,
-                shininess: 40
+                clipIntersection: false,
+                side : 2,
+                shininess: 40,
+                clipShadows: true
             });
             mat.wireframe = this.wireframe;
+            //stencil buffer
+            //view-source:https://threejs.org/examples/webgl_clipping_stencil.html
+            //https://stackoverflow.com/questions/36557486/three-js-object-clipping/37593904#37593904
 
             for (let g of elem.geometries) {
                 m = new Mesh(g, mat);

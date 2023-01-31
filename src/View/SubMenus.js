@@ -4,6 +4,7 @@ import React from "react";
 import { SliceSlider, ParameterInput, ParameterSet, CustomSlider } from './Tools'
 import View from './View'
 
+
 const TITLE_LEFT_MARGIN = 30;
 const dividerStyle = {
     color: '#A4A9A3'
@@ -412,14 +413,14 @@ export class SlicingOptions extends React.Component {
         return (
             <div>
                 <br />
-                {/* <Grid fluid>
+                 {/* <Grid fluid>
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={20}>
-                            <Checkbox disabled={true} checked={state.clipIntersection} onClick={this.toggleIntersection}> Slice Intersection</Checkbox>
+                            <Checkbox disabled={false} checked={state.clipIntersection} onClick={this.toggleIntersection}> Slice Intersection</Checkbox>
                         </Col>
                     </Row>
-                </Grid> */}
+                </Grid>  */}
                 {/* TO DO */}
                 <SliceSlider title="X : " f={this.updateSlicer} index={0} vals={state.x} />
                 <br />
@@ -710,6 +711,7 @@ export class ReferenceOptions extends React.Component {
 
         this.model = props.model;
         this.toggleBoundingShapeEnabled = this.toggleBoundingShapeEnabled.bind(this);
+        this.togglePeriodicBounding = this.togglePeriodicBounding.bind(this);
         this.selectShape = this.selectShape.bind(this);
         this.toggleAxes = this.toggleAxes.bind(this);
         this.toggleGrid = this.toggleGrid.bind(this);
@@ -752,6 +754,15 @@ export class ReferenceOptions extends React.Component {
         this.model.updateBoundingShape(this.state.activeShape, toggle);
         this.model.update();
     }
+    togglePeriodicBounding(){
+        this.setState({
+            periodicBoundingEnabled : !View.state.reference.showPeriodic
+        });
+        this.model.togglePeriodicBounding();
+        this.model.update();
+        View.state.reference.showPeriodic =!View.state.reference.showPeriodic;
+        
+    }
     selectShape(val) {
         this.setState({
             activeShape: val
@@ -787,6 +798,7 @@ export class ReferenceOptions extends React.Component {
 
     render() {
         const enabled = this.state.boundingShapeEnabled;
+        const showPeriodic = this.state.showPeriodic;
         const activeShape = this.state.activeShape;
         const showAxes = this.state.showAxes;
         const showGrid = this.state.showGrid;
@@ -821,6 +833,19 @@ export class ReferenceOptions extends React.Component {
 
                                 </RadioGroup>
                             </FormGroup>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Periodic Bounding </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked={showPeriodic} onClick={this.togglePeriodicBounding} disabled ={!enabled}> Show </Checkbox>
                         </Col>
                     </Row>
                     <Row className="show-grid">

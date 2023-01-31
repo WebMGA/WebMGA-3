@@ -38,6 +38,7 @@ export class Model {
     gridEnabled = false;
     axesEnabled = false;
     boundingShapeEnabled = false;
+    periodicBoundingEnabled = false;
     sidebarExpanded = false;
 
     cameraType = 'perspective';
@@ -61,10 +62,10 @@ export class Model {
 
     setDefault() {
         
-        this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance" });
+        this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance" ,stencil: true});
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.localClippingEnabled = true;
-
+        //this.renderer.enable(this.renderer.STENCIL_TEST);
         this.rotating = false;
         this.cameraPostion = null;
         this.lightHelperWarningGiven = false;
@@ -343,6 +344,7 @@ export class Model {
 
     /* REFERENCE TOOLS FUNCTIONS */
 
+
     toggleGrid() {
         this.gridEnabled = !this.gridEnabled;
 
@@ -437,6 +439,19 @@ export class Model {
         this.scene.remove(this.tools.boundingShape);
         if (enabled) {
             this.scene.add(this.tools.genBoundingShape(type, this.sets));
+        }
+    }
+
+    togglePeriodicBounding(){
+        this.periodicBoundingEnabled = !this.periodicBoundingEnabled;
+        if(this.periodicBoundingEnabled){
+            for (let a of this.tools.genPeriodicBouding())
+            this.scene.add(a);
+        }
+        else{
+            for(let a of this.tools.periodicBounding){
+                this.scene.remove(a);
+            }
         }
     }
 
