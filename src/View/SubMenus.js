@@ -840,7 +840,6 @@ export class ReferenceOptions extends React.Component {
 
     render() {
         const enabled = this.state.boundingShapeEnabled;
-        const showPeriodic = this.state.showPeriodic;
         const activeShape = this.state.activeShape;
         const showAxes = this.state.showAxes;
         const showGrid = this.state.showGrid;
@@ -849,7 +848,34 @@ export class ReferenceOptions extends React.Component {
         const multicolour = this.state.multicolour;
         return (
             <div>
+
                 <Grid fluid>
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Bounding Shape </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked={enabled} onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={3} />
+                        <Col xs={12}>
+                            <FormGroup controlId="radioList">
+                                <RadioGroup name="radioList" value={activeShape} onChange={this.selectShape}>
+                                    <Radio disabled={!enabled} value="box"  >Box </Radio>
+                                    {/* <Radio disabled={true} value="sphere" >Sphere </Radio>
+                                    <Radio disabled={true} value="cylinder" >Cylinder </Radio> */}
+
+                                </RadioGroup>
+                            </FormGroup>
+                        </Col>
+                    </Row>
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>

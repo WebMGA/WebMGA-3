@@ -58,6 +58,7 @@ export class Model {
         this.chronometer = chronometer;
         this.setDefault();
         this.notify = notify;
+        this.loadDeprecated(data);
     }
 
     /* GENERAL FUNCTIONS */
@@ -112,6 +113,7 @@ export class Model {
             temp.orientationType = set.orientationType;
             temp.positions = set.positions;
             temp.orientations = set.orientations;
+            temp.unitBox = set.unitBox;
             model.sets.push(temp);
             temp = {};
         }
@@ -439,7 +441,7 @@ export class Model {
 
     updateBoundingShape(type, enabled) {
         this.boundingShapeEnabled = enabled;
-        
+        this.scene.remove(this.tools.boundingShape);
         if (enabled) {
             this.scene.add(this.tools.genBoundingShape(type, this.sets));
         }

@@ -42,7 +42,7 @@ export class Set {
         this.orientationType = data.orientationType;
         this.positions = data.positions;
         this.orientations = data.orientations;
-        this.unitBoxGeo = data.unitBox;
+        this.unitBox = data.unitBox;
         this.clippingPlanes = cp;
         this.clipIntersection = ci;
 
@@ -57,9 +57,7 @@ export class Set {
         if (this.name == null) {
             this.name = this.shapeType;
         }
-        if (this.unitBox ==null){
-            
-        }
+    
         this.validateData();
         this.genGeometries();
         this.genElements();
@@ -111,10 +109,8 @@ export class Set {
         }
     }
     genUnitBox(){
-        let geo;
-        geo = this.unitBoxGeo;
-        const box = new THREE.Box3().setFromCenterAndSize(new Vector3(0,0,0),geo)
-        this.unitBox = box;
+    
+        return this.unitBox;
 
     }
 
