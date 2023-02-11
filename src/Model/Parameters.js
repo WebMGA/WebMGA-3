@@ -1,4 +1,3 @@
-
 export var Parameters = {
     Ellipsoid: {
         names: ['X', 'Y', 'Z'],

@@ -47,7 +47,6 @@ class Controller {
 
     ExternalToggle = class ExternalToggle {
         // these functions are defined within their respective React components
-
         closeSidemenu = () => { }
         autorotate = () => { }
         updateCamera = () => { }
