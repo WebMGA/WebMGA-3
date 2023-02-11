@@ -107,6 +107,7 @@ export class View {
         View.state.model = this.ModelDefaultState;
         View.state.model.configurations = [];
         View.state.model.sets = [];
+        // View.state.periodic = this.PeriodicDefaultState;
 
 
         for (let i in this.model.sets) {

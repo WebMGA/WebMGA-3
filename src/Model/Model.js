@@ -38,8 +38,8 @@ export class Model {
 
     gridEnabled = false;
     axesEnabled = false;
-    boundingShapeEnabled = false;
-    periodicBoundingEnabled = false;
+    // boundingShapeEnabled = false;
+    
     sidebarExpanded = false;
 
     cameraType = 'perspective';
@@ -51,6 +51,7 @@ export class Model {
     clippingPlanes;
     clippingHelpers;
     clipIntersections;
+    
 
     constructor(chronometer, notify) {
         this.scene = new Scene();
@@ -438,7 +439,7 @@ export class Model {
 
     updateBoundingShape(type, enabled) {
         this.boundingShapeEnabled = enabled;
-        this.scene.remove(this.tools.boundingShape);
+        
         if (enabled) {
             this.scene.add(this.tools.genBoundingShape(type, this.sets));
         }
@@ -447,12 +448,11 @@ export class Model {
     togglePeriodicBounding(){
         this.periodicBoundingEnabled = !this.periodicBoundingEnabled;
         if(this.periodicBoundingEnabled){
-            for (let a of this.tools.genPeriodicBouding())
-            this.scene.add(a);
+            
         }
         else{
             for(let a of this.tools.periodicBounding){
-                this.scene.remove(a);
+               
             }
         }
     }

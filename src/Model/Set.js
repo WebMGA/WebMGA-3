@@ -9,7 +9,7 @@ import {
 
 } from 'three';
 import * as THREE from 'three';
-import {eigs} from 'mathjs';
+import {eigs, ParenthesisNodeDependencies, planckMassDependencies} from 'mathjs';
 import * as SHAPE from './Shapes.js';
 import Model from './Model';
 import Parameters from './Parameters';
@@ -29,17 +29,20 @@ export class Set {
     clippingPlanes;
     clipIntersection;
     colourMap;
+    unitBox;
 
     positions = [];
     orientations = [];
     elements = [];
     meshes = [];
+    
 
     constructor(data, cp, ci) {
         this.name = data.name;
         this.orientationType = data.orientationType;
         this.positions = data.positions;
         this.orientations = data.orientations;
+        this.unitBoxGeo = data.unitBox;
         this.clippingPlanes = cp;
         this.clipIntersection = ci;
 
@@ -54,7 +57,9 @@ export class Set {
         if (this.name == null) {
             this.name = this.shapeType;
         }
-
+        if (this.unitBox ==null){
+            
+        }
         this.validateData();
         this.genGeometries();
         this.genElements();
@@ -104,6 +109,13 @@ export class Set {
         for (let mesh of this.meshes) {
             mesh.material.clipIntersection = toggle;
         }
+    }
+    genUnitBox(){
+        let geo;
+        geo = this.unitBoxGeo;
+        const box = new THREE.Box3().setFromCenterAndSize(new Vector3(0,0,0),geo)
+        this.unitBox = box;
+
     }
 
     genMeshes() {

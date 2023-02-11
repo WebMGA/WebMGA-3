@@ -457,6 +457,48 @@ export class SlicingOptions extends React.Component {
     }
 
 }
+export class PeriodicBoundingOption extends React.Component{
+    constructor(props){
+        super();
+        this.model = props.model;
+
+    }
+    render() {
+        return (
+            <div >
+                 <Grid fluid>
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Fold </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} >  Show </Checkbox>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Unfold </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }}> Show </Checkbox>
+                        </Col>
+                    </Row>
+                </Grid>
+               
+            </div>
+        );
+    }
+}
 
 export const AdditionalLightsNav = ({ active, onSelect }) => {
     return (
@@ -807,47 +849,7 @@ export class ReferenceOptions extends React.Component {
         const multicolour = this.state.multicolour;
         return (
             <div>
-
                 <Grid fluid>
-                    <Row className="show-grid">
-                        <Col xs={2} />
-                        <Col xs={12}>
-                            <br />
-                            <p><b> Bounding Shape </b></p>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={enabled} onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={3} />
-                        <Col xs={12}>
-                            <FormGroup controlId="radioList">
-                                <RadioGroup name="radioList" value={activeShape} onChange={this.selectShape}>
-                                    <Radio disabled={!enabled} value="box"  >Box </Radio>
-                                    {/* <Radio disabled={true} value="sphere" >Sphere </Radio>
-                                    <Radio disabled={true} value="cylinder" >Cylinder </Radio> */}
-
-                                </RadioGroup>
-                            </FormGroup>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={2} />
-                        <Col xs={12}>
-                            <br />
-                            <p><b> Periodic Bounding </b></p>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={showPeriodic} onClick={this.togglePeriodicBounding} disabled ={!enabled}> Show </Checkbox>
-                        </Col>
-                    </Row>
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>

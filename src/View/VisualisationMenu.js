@@ -1,7 +1,7 @@
 
 import { Sidebar, Nav, Icon, Navbar, Container, Content, IconButton, Alert } from 'rsuite';
 import React, { Component } from "react";
-import { CameraOptions, AdditionalLightOptions, AmbientLightOptions, ReferenceOptions, SlicingOptions, ModelsOptions } from './SubMenus'
+import { CameraOptions, AdditionalLightOptions, AmbientLightOptions, ReferenceOptions, SlicingOptions, ModelsOptions,PeriodicBoundingOption } from './SubMenus'
 
 
 const NavToggle = ({ expand, onChange }) => {
@@ -31,6 +31,12 @@ const CustomNav = ({ active, onSelect, ...props }) => {
             <Nav {...props} activeKey={active} onSelect={onSelect} style={{ backgroundColor: '#101010', height: sidebarHeight }}>
                 <Nav.Item title="Models"  eventKey="Models" icon={<Icon style={navItemStyle} size="lg" icon="shapes" />}>
                 </Nav.Item>
+                {/* <Whisper placement="right" trigger="hover" speaker={(<Tooltip>Slicing</Tooltip>)}> */}
+                <Nav.Item title="Slicing"  eventKey="Slicing" icon={<Icon style={navItemStyle} size="lg" icon="cut" />} />
+                {/* </Whisper> */}
+                {/* <Whisper placement="right" trigger="hover" speaker={(<Tooltip>Slicing</Tooltip>)}> */}
+                <Nav.Item title="Periodic Bounding"  eventKey="Periodic Bounding" icon={<Icon style={navItemStyle} size="lg" icon="growth" />} />
+                {/* </Whisper> */}
                 {/* <Whisper placement="right" trigger="hover" speaker={(<Tooltip>View</Tooltip>)}> */}
                 <Nav.Item title="Camera"  eventKey="Camera" icon={<Icon style={navItemStyle} size="lg" icon="eye" />} />
                 {/* </Whisper> */}
@@ -39,9 +45,6 @@ const CustomNav = ({ active, onSelect, ...props }) => {
                 {/* </Whisper> */}
                 {/* <Whisper placement="right" trigger="hover" speaker={(<Tooltip>Other Lighting</Tooltip>)}> */}
                 <Nav.Item title="Lighting"  eventKey="Lighting" icon={<Icon style={navItemStyle} size="lg" icon="creative" />} />
-                {/* </Whisper> */}
-                {/* <Whisper placement="right" trigger="hover" speaker={(<Tooltip>Slicing</Tooltip>)}> */}
-                <Nav.Item title="Slicing"  eventKey="Slicing" icon={<Icon style={navItemStyle} size="lg" icon="cut" />} />
                 {/* </Whisper> */}
                 {/* <Whisper placement="right" trigger="hover" speaker={(<Tooltip>Reference Frame Frame</Tooltip>)}> */}
                 <Nav.Item title="Reference"  eventKey="Reference" icon={<Icon style={navItemStyle} size="lg" icon="cube" />} />
@@ -95,6 +98,9 @@ const MenuContent = ({ active, expand, onChange, model, toggler }) => {
                 break;
             case "Reference":
                 menuContent.push(<ReferenceOptions key={active} model={model} />);
+                break;
+            case "Periodic Bounding":
+                menuContent.push(<PeriodicBoundingOption  key={active} model={model} />);
                 break;
             default:
                 Alert.error('Error: Unknown Submenu Identifier');
