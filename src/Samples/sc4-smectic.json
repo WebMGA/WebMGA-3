@@ -4,6 +4,11 @@
             {
                 "name": "Set A",
                 "orientationType": "v",
+                "unitBox":[
+                    17.29855,
+                    17.29855,
+                    15.50620
+                ],
                 "positions": [
                     [
                         8.52312,

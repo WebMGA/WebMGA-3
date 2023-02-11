@@ -4,6 +4,12 @@
             {
                 "name": "model1",
                 "orientationType": "q",
+                "unitBox":[
+                    10,
+                    10,
+                    10
+            
+                ],
                 "positions": [
                     [
                         -4,

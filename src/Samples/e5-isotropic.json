@@ -4,6 +4,11 @@
             {
                 "name": "model1",
                 "orientationType": "v",
+                "unitBox":[
+                    18.07464,
+                    18.07464,
+                    18.07464
+                ],
                 "positions": [
                     [
                         -0.80283,
