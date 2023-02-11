@@ -53,7 +53,11 @@ export class ReferenceTools {
         this.boundingShape = null;
         
         for (let set of sets) {
+            if (b != null){
+                break
+            }
             b =set.genUnitBox()
+            
         }
     
         switch (type) {

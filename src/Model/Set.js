@@ -59,10 +59,13 @@ export class Set {
         }
     
         this.validateData();
+        this.genUnfoldPosition();
         this.genGeometries();
         this.genElements();
         this.setElements();
+        
         this.genMeshes();
+        
     }
 
 
@@ -112,6 +115,21 @@ export class Set {
     
         return this.unitBox;
 
+    }
+
+    genUnfoldPosition(){
+        let pos =[];
+        let x = this.unitBox[0];
+        let y = this.unitBox[1];
+        let z = this.unitBox[2];
+
+        for (let i = 0; i < this.positions.length; i++){
+            let rnd1 = (Math.random() * (3) -1)
+            let rnd2 = (Math.random() * (3) -1)
+            let rnd3 =(Math.random() * (3) -1)
+            pos.push([this.positions[i][0]+rnd1*x ,this.positions[i][1]+rnd2*y,this.positions[i][2]+rnd3*z])
+        }
+        this.positions = pos;
     }
 
     genMeshes() {
@@ -175,6 +193,10 @@ export class Set {
     }
 
     genElements() {
+        if(this.positions.length ==0){
+            Alert.error('a');
+            return
+        }
         for (let i = 0; i < this.positions.length; i++) {
             this.elements.push(new this.Element(this.positions[i], this.getRotations(this.orientationType, this.orientations[i])));
         }

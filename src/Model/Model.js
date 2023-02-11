@@ -38,7 +38,8 @@ export class Model {
 
     gridEnabled = false;
     axesEnabled = false;
-    // boundingShapeEnabled = false;
+    
+    folded = true;
     
     sidebarExpanded = false;
 

@@ -28,6 +28,7 @@ export class View {
         View.state = state;
         this.loadLightingAndCamera(state);
         this.loadReferenceAndSlicing(state);
+        this.loadPeriodic(state);
         this.loadModel(state);
     }
 
@@ -45,8 +46,14 @@ export class View {
     loadState(state){
         this.loadReferenceAndSlicing(state);
         this.loadLightingAndCamera(state);
+        this.loadPeriodic(state);
     }
+    loadPeriodic(state){
+        if (this.xor(this.model.folded, state.reference.folded)) {
+            this.model.update();
+        }
 
+    }
     loadReferenceAndSlicing(state) {
 
         if (this.xor(this.model.gridEnabled, state.reference.showGrid)) {
@@ -99,6 +106,7 @@ export class View {
     setDefaultState(init) {
         View.state = {};
         View.state.reference = this.ReferenceDefaultState;
+        View.state.periodic = this.PeriodicDefaultState;
         View.state.ambientLight = this.AmbientLightDefaultState;
         View.state.pointLight = this.PointLightDefaultState;
         View.state.directionalLight = this.DirectionalLightDefaultState;
@@ -107,7 +115,7 @@ export class View {
         View.state.model = this.ModelDefaultState;
         View.state.model.configurations = [];
         View.state.model.sets = [];
-        // View.state.periodic = this.PeriodicDefaultState;
+        
 
 
         for (let i in this.model.sets) {
@@ -210,7 +218,10 @@ export class View {
         }
 
     }
-
+    PeriodicDefaultState={
+        folded : true,
+        unfolded : true
+    }
     ReferenceDefaultState = {
         boundingShapeEnabled: false,
         activeShape: 'box',

@@ -460,37 +460,51 @@ export class SlicingOptions extends React.Component {
 export class PeriodicBoundingOption extends React.Component{
     constructor(props){
         super();
+        this.state = View.state.periodic;
         this.model = props.model;
+        this.toggleFoldEnabled = this.toggleFoldEnabled.bind(this);
+        this.toggleUnFoldEnabled = this.toggleUnFoldEnabled.bind(this);
 
     }
+    toggleFoldEnabled(){
+        
+        
+    }
+    toggleUnFoldEnabled(){
+        this.model.update();
+    }
+
     render() {
+        const fold = this.state;
+        const unfold = this.state;
+
         return (
             <div >
                  <Grid fluid>
                     <Row className="show-grid">
-                        <Col xs={2} />
+                        <Col xs={1} />
                         <Col xs={12}>
                             <br />
                             <p><b> Fold </b></p>
                         </Col>
                     </Row>
                     <Row className="show-grid">
-                        <Col xs={1} />
+                        <Col xs={2} />
                         <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} >  Show </Checkbox>
+                            <Checkbox style={{ marginLeft: 12 }} checked={fold} onclick={this.toggleFoldEnabled}>  Show </Checkbox>
                         </Col>
                     </Row>
                     <Row className="show-grid">
-                        <Col xs={2} />
+                        <Col xs={1} />
                         <Col xs={12}>
                             <br />
                             <p><b> Unfold </b></p>
                         </Col>
                     </Row>
                     <Row className="show-grid">
-                        <Col xs={1} />
+                        <Col xs={2} />
                         <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }}> Show </Checkbox>
+                            <Checkbox style={{ marginLeft: 12 }} checked ={unfold} onclick ={this.toggleUnFoldEnabled}> Show </Checkbox>
                         </Col>
                     </Row>
                 </Grid>
@@ -753,7 +767,6 @@ export class ReferenceOptions extends React.Component {
 
         this.model = props.model;
         this.toggleBoundingShapeEnabled = this.toggleBoundingShapeEnabled.bind(this);
-        this.togglePeriodicBounding = this.togglePeriodicBounding.bind(this);
         this.selectShape = this.selectShape.bind(this);
         this.toggleAxes = this.toggleAxes.bind(this);
         this.toggleGrid = this.toggleGrid.bind(this);
@@ -796,15 +809,7 @@ export class ReferenceOptions extends React.Component {
         this.model.updateBoundingShape(this.state.activeShape, toggle);
         this.model.update();
     }
-    togglePeriodicBounding(){
-        this.setState({
-            periodicBoundingEnabled : !View.state.reference.showPeriodic
-        });
-        this.model.togglePeriodicBounding();
-        this.model.update();
-        View.state.reference.showPeriodic =!View.state.reference.showPeriodic;
-        
-    }
+    
     selectShape(val) {
         this.setState({
             activeShape: val
@@ -909,9 +914,6 @@ export class ReferenceOptions extends React.Component {
                             </Whisper>
                         </Col>
                     </Row>
-
-
-
 
                     <Row className="show-grid">
                         <Col xs={2} />
