@@ -4,6 +4,11 @@
          {
             "name": "figure 1",
             "orientationType": "v",
+            "unitBox":[
+               11.95041370,
+               11.95041370,
+               23.90082741
+            ],
             "positions": [
                [
                   -4.633162,

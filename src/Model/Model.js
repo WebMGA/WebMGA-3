@@ -11,6 +11,7 @@ import {
     MeshStandardMaterial,
     Mesh
 } from 'three';
+import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Set from './Set.js'
 import Light from './Light.js'
@@ -62,10 +63,10 @@ export class Model {
 
     setDefault() {
         
-        this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance" ,stencil: true});
+        this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance"});
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.localClippingEnabled = true;
-        //this.renderer.enable(this.renderer.STENCIL_TEST);
+        this.renderer.setFaceCulling( THREE.CullFaceBack)
         this.rotating = false;
         this.cameraPostion = null;
         this.lightHelperWarningGiven = false;
@@ -94,6 +95,7 @@ export class Model {
     }
 
     update() {
+        
         this.renderer.render(this.scene, this.camera);
         if (!this.rotating) {
             this.chronometer.click();
