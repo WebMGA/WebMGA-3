@@ -51,17 +51,24 @@ export class ReferenceTools {
         this.boundingShapeType = type;
         let b;
         this.boundingShape = null;
-        b =sets.genUnitBox()
+        
+        for (let set of sets) {
+            b =set.genUnitBox()
+        }
+    
         switch (type) {
             case 'box':
                     let box = new Box3();
-                    box.setFromCenterAndSize(new Vector3(0,0,0),new Vector3(10,10,10));
+                    box.setFromCenterAndSize(new Vector3(0,0,0),new Vector3(b[0],b[1],b[2]));
                     this.boundingShape = new Box3Helper(box, this.colour);
                     
                 break;
             default:
             Alert.error('Error: Unknown bounding shape identifier');
+            
+
         }
+        
 
         return this.boundingShape;
 

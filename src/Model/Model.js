@@ -58,7 +58,7 @@ export class Model {
         this.chronometer = chronometer;
         this.setDefault();
         this.notify = notify;
-        this.loadDeprecated(data);
+       
     }
 
     /* GENERAL FUNCTIONS */
@@ -79,6 +79,7 @@ export class Model {
 
         this.updateDimensions();
         this.setCamera(this.cameraType);
+
 
         this.lighting = [
             new Light('ambient'),
@@ -113,7 +114,7 @@ export class Model {
             temp.orientationType = set.orientationType;
             temp.positions = set.positions;
             temp.orientations = set.orientations;
-            temp.unitBox = set.unitBox;
+            // temp.unitBox = set.unitBox;
             model.sets.push(temp);
             temp = {};
         }
