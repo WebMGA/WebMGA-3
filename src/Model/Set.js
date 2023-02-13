@@ -30,11 +30,14 @@ export class Set {
     clipIntersection;
     colourMap;
     unitBox;
-
+    isFolded;
+    periodicCondition;
+    
     positions = [];
     orientations = [];
     elements = [];
     meshes = [];
+
     
 
     constructor(data, cp, ci) {
@@ -44,7 +47,7 @@ export class Set {
         this.orientations = data.orientations;
         this.unitBox = data.unitBox;
         this.clippingPlanes = cp;
-        this.clipIntersection = ci;
+        this.clipIntersection = ci; 
 
         this.setDefaults();
 
@@ -58,16 +61,39 @@ export class Set {
             this.name = this.shapeType;
         }
     
-        this.validateData();
-        this.genUnfoldPosition();
-        this.genGeometries();
-        this.genElements();
-        this.setElements();
-        
-        this.genMeshes();
+        this.genSet();
         
     }
 
+    isFoldedTest(){
+        let x = this.unitBox[0];
+        let y = this.unitBox[1];
+        let z = this.unitBox[2];
+        let SetisFolded =false;
+        for (let i = 0; i < this.positions.length; i++){
+            let a = this.positions[i][0];
+            let b = this.positions[i][1];
+            let c = this.positions[i][2];
+            if(-x<=a<=x&&-y<=b<=y&&-z<=c<=z){
+                SetisFolded = true;
+            }
+            else{
+                SetisFolded = false;
+            }   
+        }
+        return SetisFolded;
+        
+    }
+
+    genSet(){
+        this.validateData();
+        this.genGeometries();
+        this.genElements();
+        this.setElements();
+        this.genMeshes();
+    }
+
+    
 
     validateData() {
         if (this.positions.length !== this.orientations.length) {
@@ -90,6 +116,8 @@ export class Set {
         this.userColour = new Color("#FFFFFF");
         this.colourByDirector = true;
         this.wireframe = true;
+        this.periodicCondition = 0;
+        this.isFolded = this.isFoldedTest(); 
         this.lod = 2;
         this.shapeType = 'Ellipsoid';
         this.parameters = Parameters.Ellipsoid.vals;
@@ -124,14 +152,48 @@ export class Set {
         let z = this.unitBox[2];
 
         for (let i = 0; i < this.positions.length; i++){
-            let rnd1 = (Math.random() * (3) -1)
-            let rnd2 = (Math.random() * (3) -1)
-            let rnd3 =(Math.random() * (3) -1)
+            let rnd1 = (Math.random() * (2) -1) 
+            let rnd2 = (Math.random() * (2) -1)
+            let rnd3 =(Math.random() * (2) -1)
             pos.push([this.positions[i][0]+rnd1*x ,this.positions[i][1]+rnd2*y,this.positions[i][2]+rnd3*z])
         }
         this.positions = pos;
+        
     }
 
+    genFoldedPositionFromUnfold(){
+        let pos =[];
+        let x = this.unitBox[0]/2;
+        let y = this.unitBox[1]/2;
+        let z = this.unitBox[2]/2;
+
+        for (let i = 0; i < this.positions.length; i++){
+            let a = this.positions[i][0];
+            let b = this.positions[i][1];
+            let c = this.positions[i][2];
+            if(a=>x || a<=-x){
+                a = a%x;
+            }
+            if(b=>y|| b<=-y){
+                b = b%y;
+            }
+            if(c=>z || c<=-z){
+                c = c%z;
+            }
+           
+            pos.push([a,b,c])
+        }
+        this.positions = pos;
+        
+    }
+    inRange(target,min,max){
+        if (min<=target<=max ){
+            return true
+        }
+        else{
+            return false
+        }
+    }
     genMeshes() {
         let m;
         let c;
@@ -193,6 +255,14 @@ export class Set {
     }
 
     genElements() {
+        // fold state choosed : periodic condition =0  && this.isFoldedTest() == false
+        //unfold state : periodicCondition = 1 && this.isFoldedTest() ==true)
+        if(this.periodicCondition ==1 ){
+            this.genUnfoldPosition()
+        }
+        if(this.periodicCondition == 0 ){
+            this.genFoldedPositionFromUnfold()
+        }
         if(this.positions.length ==0){
             Alert.error('a');
             return

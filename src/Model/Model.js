@@ -39,7 +39,8 @@ export class Model {
     gridEnabled = false;
     axesEnabled = false;
     
-    folded = true;
+    Tofold = true;
+    ToUnfold=false;
     
     sidebarExpanded = false;
 
@@ -348,6 +349,31 @@ export class Model {
         this.lighting[type].updatePosition(pos.x, pos.y, pos.z);
         this.lighting[type].helper.update();
     }
+    /* PERIODIC BOUNDING TOOL FUNCTIONS */
+
+    toggleFoldState(id,toggle){
+        this.updateSets(id, [id, toggle], (id) => {
+            this.sets[id].elements =[];
+            this.sets[id].meshes = [];
+            this.sets[id].periodicCondition=0;
+            this.sets[id].genElements();
+            this.sets[id].setElements();
+            this.sets[id].genMeshes();
+        });
+        
+    }
+    toggleUnfoldState(id,toggle){
+        this.updateSets(id, [id, toggle], (id) => {
+            this.sets[id].elements =[];
+            this.sets[id].meshes = [];
+            this.sets[id].periodicCondition=1;
+            this.sets[id].genElements();
+            this.sets[id].setElements();
+            this.sets[id].genMeshes();
+        });
+    }
+
+
 
     /* REFERENCE TOOLS FUNCTIONS */
 
@@ -449,18 +475,8 @@ export class Model {
         }
     }
 
-    togglePeriodicBounding(){
-        this.periodicBoundingEnabled = !this.periodicBoundingEnabled;
-        if(this.periodicBoundingEnabled){
-            
-        }
-        else{
-            for(let a of this.tools.periodicBounding){
-               
-            }
-        }
-    }
-
+    
+    
 
     /* SLICING FUNCTIONS */
 

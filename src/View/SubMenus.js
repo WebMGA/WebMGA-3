@@ -166,6 +166,76 @@ export class ModelsOptions extends React.Component {
     }
 }
 
+export class PeriodicBoundingOption extends React.Component{
+    constructor(props) {
+        super();
+        this.state = View.state.model;
+
+        this.model = props.model;
+        this.toggleFold = this.toggleFold.bind(this);
+        this.toggleUnFold= this.toggleUnFold.bind(this);
+    }
+   
+    toggleFold() {
+        let toggle = !this.state.configurations[this.state.active].displayFoldState;
+        this.setState({
+            displayFoldState: toggle
+        });
+        View.state.model.configurations[this.state.active].displayFoldState = toggle;
+        this.model.toggleFoldState(this.state.active, toggle);
+        this.model.update();
+    }
+    toggleUnFold() {
+        let toggle = !this.state.configurations[this.state.active].displayUnFoldState;
+        this.setState({
+            displayUnFoldState: toggle
+        });
+        View.state.model.configurations[this.state.active].displayUnFoldState = toggle;
+        this.model.toggleUnfoldState(this.state.active, toggle);
+        this.model.update();
+    }
+
+    render() {
+        const configState = this.state.configurations[this.state.active];
+        return (
+            <div>
+
+                <Grid fluid>
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Fold </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked={configState.displayFoldState} onClick={this.toggleFold}> Show</Checkbox>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Unfold </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked={configState.displayUnFoldState} onClick={this.toggleUnFold}> Show</Checkbox>
+                        </Col>
+                    </Row>
+                </Grid>
+                <br />
+
+                <br />
+            </div>
+        );
+    }
+}
+
 export class CameraOptions extends React.Component {
 
     constructor(props) {
@@ -457,62 +527,10 @@ export class SlicingOptions extends React.Component {
     }
 
 }
-export class PeriodicBoundingOption extends React.Component{
-    constructor(props){
-        super();
-        this.state = View.state.periodic;
-        this.model = props.model;
-        this.toggleFoldEnabled = this.toggleFoldEnabled.bind(this);
-        this.toggleUnFoldEnabled = this.toggleUnFoldEnabled.bind(this);
 
-    }
-    toggleFoldEnabled(){
-        
-        
-    }
-    toggleUnFoldEnabled(){
-        this.model.update();
-    }
 
-    render() {
-        const fold = this.state;
-        const unfold = this.state;
+      
 
-        return (
-            <div >
-                 <Grid fluid>
-                    <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={12}>
-                            <br />
-                            <p><b> Fold </b></p>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={2} />
-                        <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={fold} onclick={this.toggleFoldEnabled}>  Show </Checkbox>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={12}>
-                            <br />
-                            <p><b> Unfold </b></p>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={2} />
-                        <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked ={unfold} onclick ={this.toggleUnFoldEnabled}> Show </Checkbox>
-                        </Col>
-                    </Row>
-                </Grid>
-               
-            </div>
-        );
-    }
-}
 
 export const AdditionalLightsNav = ({ active, onSelect }) => {
     return (

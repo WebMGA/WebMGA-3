@@ -17,6 +17,7 @@ export class View {
         this.model = m;
         this.header = <GeneralMenu chronometer={chrono} functions={io} model={this.model} toggler ={toggler}/>;
         this.sidebar = <VisualisationMenu model={this.model} sidebarExpanded={this.expanded} toggler={toggler}/>;
+        
     }
 
 
@@ -28,7 +29,6 @@ export class View {
         View.state = state;
         this.loadLightingAndCamera(state);
         this.loadReferenceAndSlicing(state);
-        this.loadPeriodic(state);
         this.loadModel(state);
     }
 
@@ -39,6 +39,8 @@ export class View {
             this.model.updateUserColour(i, substate.colour);
             this.model.toggleUserColour(i, substate.colourFromDirector);
             this.model.toggleWireframe(i, substate.displayAsWireframe);
+            this.model.toggleFoldState(i,substate.displayFoldState);
+            this.model.toggleUnfoldState(i,substate.displayUnfoldState);
             this.model.updateShape(i, substate.shape, substate.parameters);
         }
     }
@@ -46,14 +48,10 @@ export class View {
     loadState(state){
         this.loadReferenceAndSlicing(state);
         this.loadLightingAndCamera(state);
-        this.loadPeriodic(state);
+        
     }
-    loadPeriodic(state){
-        if (this.xor(this.model.folded, state.reference.folded)) {
-            this.model.update();
-        }
+ 
 
-    }
     loadReferenceAndSlicing(state) {
 
         if (this.xor(this.model.gridEnabled, state.reference.showGrid)) {
@@ -106,7 +104,6 @@ export class View {
     setDefaultState(init) {
         View.state = {};
         View.state.reference = this.ReferenceDefaultState;
-        View.state.periodic = this.PeriodicDefaultState;
         View.state.ambientLight = this.AmbientLightDefaultState;
         View.state.pointLight = this.PointLightDefaultState;
         View.state.directionalLight = this.DirectionalLightDefaultState;
@@ -140,7 +137,7 @@ export class View {
         active: 0,
         reset: 0,
         sets: [],
-        configurations: []
+        configurations: [],
     }
 
     SlicingDefaultState = {
@@ -164,7 +161,9 @@ export class View {
             b: 255
         },
         colourFromDirector: true,
-        displayAsWireframe: true
+        displayAsWireframe: true,
+        displayFoldState :true,
+        displayUnfoldState:false
     }
 
     CameraDefaultState = {
@@ -218,10 +217,7 @@ export class View {
         }
 
     }
-    PeriodicDefaultState={
-        folded : true,
-        unfolded : true
-    }
+    
     ReferenceDefaultState = {
         boundingShapeEnabled: false,
         activeShape: 'box',
