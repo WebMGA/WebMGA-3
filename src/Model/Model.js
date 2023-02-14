@@ -486,12 +486,12 @@ export class Model {
         this.clippingIntersections = false;
 
         this.clippingPlanes = [
-            new Plane(new Vector3(1, 0, 0), 50),
-            new Plane(new Vector3(-1, 0, 0), 50),
-            new Plane(new Vector3(0, 1, 0), 50),
-            new Plane(new Vector3(0, -1, 0), 50),
-            new Plane(new Vector3(0, 0, 1), 50),
-            new Plane(new Vector3(0, 0, -1), 50)
+            new Plane(new Vector3(1, 0, 0), 80),
+            new Plane(new Vector3(-1, 0, 0), 80),
+            new Plane(new Vector3(0, 1, 0), 80),
+            new Plane(new Vector3(0, -1, 0), 80),
+            new Plane(new Vector3(0, 0, 1), 80),
+            new Plane(new Vector3(0, 0, -1), 80)
         ];
 
         this.clippingHelpers = [

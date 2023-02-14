@@ -143,9 +143,9 @@ export class View {
     SlicingDefaultState = {
         clipIntersection: false,
         helpers: [false, false, false],
-        x: [-50, 50],
-        y: [-50, 50],
-        z: [-50, 50]
+        x: [-80, 80],
+        y: [-80, 80],
+        z: [-80, 80]
     }
 
     ConfigurationDefaultState = {

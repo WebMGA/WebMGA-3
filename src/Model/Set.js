@@ -147,6 +147,7 @@ export class Set {
     }
 
     genUnfoldPosition(){
+    
         if(this.isFoldedTest()== false){
             Alert.info('Model is already unfolded');
             return
