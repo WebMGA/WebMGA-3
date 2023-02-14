@@ -173,6 +173,7 @@ export class PeriodicBoundingOption extends React.Component{
         this.model = props.model;
         this.toggleFold = this.toggleFold.bind(this);
         this.toggleUnFold= this.toggleUnFold.bind(this);
+        this.toggleBoundingShapeEnabled= this.toggleBoundingShapeEnabled.bind(this);
     }
    
     toggleFold() {
@@ -193,13 +194,39 @@ export class PeriodicBoundingOption extends React.Component{
         this.model.toggleUnfoldState(this.state.active,toggle);
         this.model.update();
     }
+    toggleBoundingShapeEnabled() {
+        let toggle = !View.state.reference.boundingShapeEnabled;
+        this.setState({
+            boundingShapeEnabled: toggle
+        });
+        View.state.reference.boundingShapeEnabled = toggle;
+        this.model.updateBoundingShape(View.state.reference.activeShape, toggle);
+        this.model.update();
+    }
+    
 
     render() {
         const configState = this.state.configurations[this.state.active];
+        const enabled = this.state.boundingShapeEnabled;
+        const activeShape = this.state.activeShape;
         return (
+            
             <div>
 
                 <Grid fluid>
+                <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Bounding Box </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked={enabled} onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
+                        </Col>
+                    </Row>
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
@@ -783,8 +810,8 @@ export class ReferenceOptions extends React.Component {
         this.state = View.state.reference;
 
         this.model = props.model;
-        this.toggleBoundingShapeEnabled = this.toggleBoundingShapeEnabled.bind(this);
-        this.selectShape = this.selectShape.bind(this);
+        // this.toggleBoundingShapeEnabled = this.toggleBoundingShapeEnabled.bind(this);
+        // this.selectShape = this.selectShape.bind(this);
         this.toggleAxes = this.toggleAxes.bind(this);
         this.toggleGrid = this.toggleGrid.bind(this);
         this.updateColour = this.updateColour.bind(this);
@@ -817,24 +844,24 @@ export class ReferenceOptions extends React.Component {
         this.model.update();
         View.state.reference.size = val;
     }
-    toggleBoundingShapeEnabled() {
-        let toggle = !View.state.reference.boundingShapeEnabled;
-        this.setState({
-            boundingShapeEnabled: toggle
-        });
-        View.state.reference.boundingShapeEnabled = toggle;
-        this.model.updateBoundingShape(this.state.activeShape, toggle);
-        this.model.update();
-    }
+    // toggleBoundingShapeEnabled() {
+    //     let toggle = !View.state.reference.boundingShapeEnabled;
+    //     this.setState({
+    //         boundingShapeEnabled: toggle
+    //     });
+    //     View.state.reference.boundingShapeEnabled = toggle;
+    //     this.model.updateBoundingShape(this.state.activeShape, toggle);
+    //     this.model.update();
+    // }
     
-    selectShape(val) {
-        this.setState({
-            activeShape: val
-        });
-        View.state.reference.activeShape = val;
-        this.model.updateBoundingShape(val, this.state.boundingShapeEnabled);
-        this.model.update();
-    }
+    // selectShape(val) {
+    //     this.setState({
+    //         activeShape: val
+    //     });
+    //     View.state.reference.activeShape = val;
+    //     this.model.updateBoundingShape(val, this.state.boundingShapeEnabled);
+    //     this.model.update();
+    // }
     toggleMulticolour() {
         this.setState({
             multicolour: !this.state.multicolour
@@ -861,8 +888,8 @@ export class ReferenceOptions extends React.Component {
     }
 
     render() {
-        const enabled = this.state.boundingShapeEnabled;
-        const activeShape = this.state.activeShape;
+        // const enabled = this.state.boundingShapeEnabled;
+        // const activeShape = this.state.activeShape;
         const showAxes = this.state.showAxes;
         const showGrid = this.state.showGrid;
         const colour = this.state.gridColour;
@@ -872,7 +899,7 @@ export class ReferenceOptions extends React.Component {
             <div>
 
                 <Grid fluid>
-                    <Row className="show-grid">
+                    {/* <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
@@ -884,8 +911,8 @@ export class ReferenceOptions extends React.Component {
                         <Col xs={12}>
                             <Checkbox style={{ marginLeft: 12 }} checked={enabled} onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
                         </Col>
-                    </Row>
-                    <Row className="show-grid">
+                    </Row> */}
+                    {/* <Row className="show-grid">
                         <Col xs={3} />
                         <Col xs={12}>
                             <FormGroup controlId="radioList">
@@ -894,10 +921,10 @@ export class ReferenceOptions extends React.Component {
                                     {/* <Radio disabled={true} value="sphere" >Sphere </Radio>
                                     <Radio disabled={true} value="cylinder" >Cylinder </Radio> */}
 
-                                </RadioGroup>
+                                {/* </RadioGroup>
                             </FormGroup>
                         </Col>
-                    </Row>
+                    </Row> */} 
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
