@@ -30,7 +30,7 @@ export class Set {
     clipIntersection;
     colourMap;
     unitBox;
-    isFolded;
+    
     
     
     positions = [];
@@ -65,25 +65,27 @@ export class Set {
         
     }
 
-    // isFoldedTest(){
-    //     let x = this.unitBox[0];
-    //     let y = this.unitBox[1];
-    //     let z = this.unitBox[2];
-    //     let SetisFolded =false;
-    //     for (let i = 0; i < this.positions.length; i++){
-    //         let a = this.positions[i][0];
-    //         let b = this.positions[i][1];
-    //         let c = this.positions[i][2];
-    //         if(-x<=a<=x&&-y<=b<=y&&-z<=c<=z){
-    //             SetisFolded = true;
-    //         }
-    //         else{
-    //             SetisFolded = false;
-    //         }   
-    //     }
-    //     return SetisFolded;
+    isFoldedTest(){
+        let x = this.unitBox[0]/2;
+        let y = this.unitBox[1]/2;
+        let z = this.unitBox[2]/2;
+        for (let i = 0; i < this.positions.length; i++){
+            let a = this.positions[i][0];
+            let b = this.positions[i][1];
+            let c = this.positions[i][2];
+            if(a>=x || a<=-x){
+                return false
+            }
+            if(b>=y|| b<=-y){
+                return false
+            }
+            if(c>=z || c<=-z){
+               return false
+            }
+        return true;
         
-    // }
+    }
+}
 
     genSet(){
         this.validateData();
@@ -145,6 +147,10 @@ export class Set {
     }
 
     genUnfoldPosition(){
+        if(this.isFoldedTest()== false){
+            Alert.info('Model is already unfolded');
+            return
+        }
         let pos =[];
         let x = this.unitBox[0];
         let y = this.unitBox[1];
@@ -161,6 +167,10 @@ export class Set {
     }
 
     genFoldedPositionFromUnfold(){
+        if(this.isFoldedTest()== true){
+            Alert.info('Model is already folded');
+            return
+        }
         let pos =[];
         let x = this.unitBox[0]/2;
         let y = this.unitBox[1]/2;
@@ -170,13 +180,13 @@ export class Set {
             let a = this.positions[i][0];
             let b = this.positions[i][1];
             let c = this.positions[i][2];
-            if(a=>x || a<=-x){
+            if(a>=x || a<=-x){
                 a = a%x;
             }
-            if(b=>y|| b<=-y){
+            if(b>=y|| b<=-y){
                 b = b%y;
             }
-            if(c=>z || c<=-z){
+            if(c>=z || c<=-z){
                 c = c%z;
             }
            
