@@ -39,8 +39,6 @@ export class Model {
     gridEnabled = false;
     axesEnabled = false;
     
-    Tofold = true;
-    ToUnfold=false;
     
     sidebarExpanded = false;
 
@@ -352,25 +350,29 @@ export class Model {
     /* PERIODIC BOUNDING TOOL FUNCTIONS */
 
     toggleFoldState(id,toggle){
-        this.updateSets(id, [id, toggle], (id) => {
-            this.sets[id].elements =[];
-            this.sets[id].meshes = [];
-            this.sets[id].periodicCondition=0;
-            this.sets[id].genElements();
-            this.sets[id].setElements();
-            this.sets[id].genMeshes();
-        });
+        if(toggle){
+            this.updateSets(id, [id], (id) => {
+                this.sets[id].elements =[];
+                this.sets[id].meshes = [];
+                this.sets[id].genFoldedPositionFromUnfold();
+                this.sets[id].genElements();
+                this.sets[id].setElements();
+                this.sets[id].genMeshes();
+            })};
         
     }
     toggleUnfoldState(id,toggle){
-        this.updateSets(id, [id, toggle], (id) => {
-            this.sets[id].elements =[];
-            this.sets[id].meshes = [];
-            this.sets[id].periodicCondition=1;
-            this.sets[id].genElements();
-            this.sets[id].setElements();
-            this.sets[id].genMeshes();
-        });
+        if(toggle){
+            this.updateSets(id, [id], (id) => {
+                this.sets[id].elements =[];
+                this.sets[id].meshes = [];
+                this.sets[id].genUnfoldPosition();
+                this.sets[id].genElements();
+                this.sets[id].setElements();
+                this.sets[id].genMeshes();
+            });
+        }
+        
     }
 
 

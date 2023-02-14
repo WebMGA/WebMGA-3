@@ -31,7 +31,7 @@ export class Set {
     colourMap;
     unitBox;
     isFolded;
-    periodicCondition;
+    
     
     positions = [];
     orientations = [];
@@ -65,25 +65,25 @@ export class Set {
         
     }
 
-    isFoldedTest(){
-        let x = this.unitBox[0];
-        let y = this.unitBox[1];
-        let z = this.unitBox[2];
-        let SetisFolded =false;
-        for (let i = 0; i < this.positions.length; i++){
-            let a = this.positions[i][0];
-            let b = this.positions[i][1];
-            let c = this.positions[i][2];
-            if(-x<=a<=x&&-y<=b<=y&&-z<=c<=z){
-                SetisFolded = true;
-            }
-            else{
-                SetisFolded = false;
-            }   
-        }
-        return SetisFolded;
+    // isFoldedTest(){
+    //     let x = this.unitBox[0];
+    //     let y = this.unitBox[1];
+    //     let z = this.unitBox[2];
+    //     let SetisFolded =false;
+    //     for (let i = 0; i < this.positions.length; i++){
+    //         let a = this.positions[i][0];
+    //         let b = this.positions[i][1];
+    //         let c = this.positions[i][2];
+    //         if(-x<=a<=x&&-y<=b<=y&&-z<=c<=z){
+    //             SetisFolded = true;
+    //         }
+    //         else{
+    //             SetisFolded = false;
+    //         }   
+    //     }
+    //     return SetisFolded;
         
-    }
+    // }
 
     genSet(){
         this.validateData();
@@ -116,8 +116,7 @@ export class Set {
         this.userColour = new Color("#FFFFFF");
         this.colourByDirector = true;
         this.wireframe = true;
-        this.periodicCondition = 0;
-        this.isFolded = this.isFoldedTest(); 
+        // this.isFolded = this.isFoldedTest(); 
         this.lod = 2;
         this.shapeType = 'Ellipsoid';
         this.parameters = Parameters.Ellipsoid.vals;
@@ -255,14 +254,7 @@ export class Set {
     }
 
     genElements() {
-        // fold state choosed : periodic condition =0  && this.isFoldedTest() == false
-        //unfold state : periodicCondition = 1 && this.isFoldedTest() ==true)
-        if(this.periodicCondition ==1 ){
-            this.genUnfoldPosition()
-        }
-        if(this.periodicCondition == 0 ){
-            this.genFoldedPositionFromUnfold()
-        }
+       
         if(this.positions.length ==0){
             Alert.error('a');
             return

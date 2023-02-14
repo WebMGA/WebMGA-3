@@ -170,7 +170,6 @@ export class PeriodicBoundingOption extends React.Component{
     constructor(props) {
         super();
         this.state = View.state.model;
-
         this.model = props.model;
         this.toggleFold = this.toggleFold.bind(this);
         this.toggleUnFold= this.toggleUnFold.bind(this);
@@ -182,7 +181,7 @@ export class PeriodicBoundingOption extends React.Component{
             displayFoldState: toggle
         });
         View.state.model.configurations[this.state.active].displayFoldState = toggle;
-        this.model.toggleFoldState(this.state.active, toggle);
+        this.model.toggleFoldState(this.state.active,toggle);
         this.model.update();
     }
     toggleUnFold() {
@@ -191,7 +190,7 @@ export class PeriodicBoundingOption extends React.Component{
             displayUnFoldState: toggle
         });
         View.state.model.configurations[this.state.active].displayUnFoldState = toggle;
-        this.model.toggleUnfoldState(this.state.active, toggle);
+        this.model.toggleUnfoldState(this.state.active,toggle);
         this.model.update();
     }
 
