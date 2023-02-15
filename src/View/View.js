@@ -13,12 +13,15 @@ export class View {
     constructor(m, io, chrono, toggler) {
         View.state = {
         }
+        //View.state.slicing.x=[-80,80];
         this.expanded = false;
         this.model = m;
         this.header = <GeneralMenu chronometer={chrono} functions={io} model={this.model} toggler ={toggler}/>;
         this.sidebar = <VisualisationMenu model={this.model} sidebarExpanded={this.expanded} toggler={toggler}/>;
+
         
     }
+    
 
 
     getData() {
@@ -143,7 +146,7 @@ export class View {
     SlicingDefaultState = {
         clipIntersection: false,
         helpers: [false, false, false],
-        x: [-80, 80],
+        x: [-180, 80],
         y: [-80, 80],
         z: [-80, 80]
     }

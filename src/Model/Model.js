@@ -73,6 +73,7 @@ export class Model {
         this.cameraPostion = null;
         this.lightHelperWarningGiven = false;
         this.selectedSet = 0;
+        //this.removeclipping();
         this.initClippers();
 
         this.lookAt = new Vector3(0, 0, 0);
@@ -352,6 +353,9 @@ export class Model {
     toggleFoldState(id,toggle){
         if(toggle==true){
             this.updateSets(id, [id], (id) => {
+                this.updateSlicer(0, [-50,50]);
+                this.updateSlicer(1, [-50,50]);
+                this.updateSlicer(2, [-50,50]);
                 this.sets[id].elements =[];
                 this.sets[id].meshes = [];
                 this.sets[id].genFoldedPositionFromUnfold();
@@ -361,6 +365,9 @@ export class Model {
             });}
         else if(toggle == false){
             this.updateSets(id, [id], (id) => {
+                this.updateSlicer(0, [-80,80]);
+                this.updateSlicer(1, [-80,80]);
+                this.updateSlicer(2, [-80,80]);
                 this.sets[id].elements =[];
                 this.sets[id].meshes = [];
                 this.sets[id].genUnfoldPosition();
@@ -502,31 +509,42 @@ export class Model {
 
     initClippers() {
         this.clippingIntersections = false;
-
+       
+   
         this.clippingPlanes = [
-            new Plane(new Vector3(1, 0, 0), 80),
-            new Plane(new Vector3(-1, 0, 0), 80),
-            new Plane(new Vector3(0, 1, 0), 80),
-            new Plane(new Vector3(0, -1, 0), 80),
-            new Plane(new Vector3(0, 0, 1), 80),
-            new Plane(new Vector3(0, 0, -1), 80)
+            new Plane(new Vector3(1, 0, 0), 180),
+            new Plane(new Vector3(-1, 0, 0), 180),
+            new Plane(new Vector3(0, 1, 0), 180),
+            new Plane(new Vector3(0, -1, 0), 180),
+            new Plane(new Vector3(0, 0, 1), 180),
+            new Plane(new Vector3(0, 0, -1), 180)
         ];
-
-        this.clippingHelpers = [
-            new PlaneHelper(this.clippingPlanes[0], 100, 0xff0000),
-            new PlaneHelper(this.clippingPlanes[1], 100, 0xff0000),
-            new PlaneHelper(this.clippingPlanes[2], 100, 0x00ff00),
-            new PlaneHelper(this.clippingPlanes[3], 100, 0x00ff00),
-            new PlaneHelper(this.clippingPlanes[4], 100, 0x0000ff),
-            new PlaneHelper(this.clippingPlanes[5], 100, 0x0000ff)
-        ];
+       
+       this.clippingHelpers = [
+        new PlaneHelper(this.clippingPlanes[0], 100, 0xff0000),
+        new PlaneHelper(this.clippingPlanes[1], 100, 0xff0000),
+        new PlaneHelper(this.clippingPlanes[2], 100, 0x00ff00),
+        new PlaneHelper(this.clippingPlanes[3], 100, 0x00ff00),
+        new PlaneHelper(this.clippingPlanes[4], 100, 0x0000ff),
+        new PlaneHelper(this.clippingPlanes[5], 100, 0x0000ff)];
 
         for (let helper of this.clippingHelpers) {
             helper.visible = false;
             this.scene.add(helper);
         }
-    }
 
+        
+    }
+    removeclipping(){
+        for (let a of this.clippingPlanes) {
+            this.scene.remove(a);
+        }
+        for (let a of this.clippingHelpers) {
+            this.scene.remove(a);
+        }
+
+    
+    }
     toggleClipIntersection(toggle) {
         for (let set of this.sets) {
             set.toggleClipIntersection(toggle);

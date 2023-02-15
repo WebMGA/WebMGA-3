@@ -214,33 +214,19 @@ export class Set {
             } else {
                 c = this.userColour;
             }
-            if(this.isFoldedTest()== false){
-                mat = new MeshPhongMaterial({
-                    color: c,
-                    clippingPlanes: [],
-                    clipIntersection: false,
-                    side : THREE.FrontSide,
-                    shininess: 40,
-                    clipShadows: true
-                });
-                mat.wireframe = this.wireframe;
-                gutsMaterial = new THREE.MeshBasicMaterial( {color: c, side: THREE.BackSide,clippingPlanes: [],clipShadows: true} );
-            
-
-            }
-            else{
-                mat = new MeshPhongMaterial({
-                    color: c,
-                    clippingPlanes: this.clippingPlanes,
-                    clipIntersection: false,
-                    side : THREE.FrontSide,
-                    shininess: 40,
-                    clipShadows: true
-                });
-                mat.wireframe = this.wireframe;
-                gutsMaterial = new THREE.MeshBasicMaterial( {color: c, side: THREE.BackSide, clippingPlanes: this.clippingPlanes, clipShadows: true} );
-            
-            }
+        
+            mat = new MeshPhongMaterial({
+                color: c,
+                clippingPlanes: this.clippingPlanes,
+                clipIntersection: false,
+                side : THREE.FrontSide,
+                shininess: 40,
+                clipShadows: true
+            });
+            mat.wireframe = this.wireframe;
+            gutsMaterial = new THREE.MeshBasicMaterial( {color: c, side: THREE.BackSide, clippingPlanes: this.clippingPlanes, clipShadows: true} );
+        
+           
             // mat = new MeshPhongMaterial({
             //     color: c,
             //     clippingPlanes: this.clippingPlanes,

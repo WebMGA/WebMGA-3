@@ -104,8 +104,8 @@ export const SliceSlider = (props) => {
                 <Col md={16}>
                     <InputGroup>
                         <InputNumber
-                            min={-50.0}
-                            max={50.0}
+                            min={-100.0}
+                            max={100.0}
                             value={value[0]}
                             step={0.1}
                             onChange={nextValue => {
@@ -119,8 +119,8 @@ export const SliceSlider = (props) => {
                         />
                         <InputGroup.Addon>to</InputGroup.Addon>
                         <InputNumber
-                            min={-50.0}
-                            max={50.0}
+                            min={-100.0}
+                            max={100.0}
                             value={value[1]}
                             step={0.1}
                             onChange={(nextValue) => {
@@ -138,8 +138,8 @@ export const SliceSlider = (props) => {
             <Row>
                 <Col md={21}>
                     <RangeSlider
-                        min={-50.0}
-                        max={50.0}
+                        min={-100.0}
+                        max={100.0}
                         progress
                         style={{ marginLeft: 35, marginTop: 30 }}
                         value={value}

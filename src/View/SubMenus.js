@@ -170,8 +170,8 @@ export class PeriodicBoundingOption extends React.Component{
     constructor(props) {
         super();
         this.state = View.state.model;
-        this.state.configurations[this.state.active].displayFoldState=true;
-        this.state.boundingShapeEnabled =false;
+        //this.state.configurations[this.state.active].displayFoldState=true;
+        //this.state.boundingShapeEnabled =false;
         this.model = props.model;
         this.toggleFold = this.toggleFold.bind(this);
         //this.toggleUnFold= this.toggleUnFold.bind(this);
@@ -184,7 +184,19 @@ export class PeriodicBoundingOption extends React.Component{
             displayFoldState: toggle
         });
         View.state.model.configurations[this.state.active].displayFoldState = toggle;
-        this.model.toggleFoldState(this.state.active,toggle);
+        if(toggle==false){
+            View.state.slicing.x =[-80,80];
+            View.state.slicing.y =[-80,80];
+            View.state.slicing.z =[-80,80];
+       
+        }
+        else{
+            View.state.slicing.x =[-50,50];
+            View.state.slicing.y =[-50,50];
+            View.state.slicing.z =[-50,50];
+       
+        }
+         this.model.toggleFoldState(this.state.active,toggle);
         this.model.update();
     }
     // toggleUnFold() {
@@ -428,9 +440,11 @@ export class SlicingOptions extends React.Component {
 
     constructor(props) {
         super();
-        this.state = View.state.slicing;
+        this.state = View.state.slicing
         this.model = props.model;
-
+        // this.state.x =[-100,100];
+        // this.state.y =[-100,100];
+        // this.state.z =[-100,100];
         this.toggleIntersection = this.toggleIntersection.bind(this);
         this.toggleHelperX = this.toggleHelperX.bind(this);
         this.toggleHelperY = this.toggleHelperY.bind(this);
@@ -490,13 +504,13 @@ export class SlicingOptions extends React.Component {
     updateSlicer(i, val) {
         switch (i) {
             case 0:
-                View.state.slicing.x = val;
+                this.state.x = val;
                 break;
             case 1:
-                View.state.slicing.y = val;
+                this.state.y = val;
                 break;
             case 2:
-                View.state.slicing.z = val;
+                this.state.z = val;
                 break;
             default:
                 Alert.error('Error: Unexpected Slicing Identifier');
