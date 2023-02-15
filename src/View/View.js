@@ -40,7 +40,7 @@ export class View {
             this.model.toggleUserColour(i, substate.colourFromDirector);
             this.model.toggleWireframe(i, substate.displayAsWireframe);
             this.model.toggleFoldState(i,substate.displayFoldState);
-            this.model.toggleUnfoldState(i,substate.displayUnfoldState);
+            // this.model.toggleUnfoldState(i,substate.displayUnfoldState);
             this.model.updateShape(i, substate.shape, substate.parameters);
         }
     }
@@ -163,7 +163,8 @@ export class View {
         colourFromDirector: true,
         displayAsWireframe: true,
         displayFoldState :true,
-        displayUnfoldState:false
+        boundingShapeEnabled:false
+        //displayUnfoldState:false
     }
 
     CameraDefaultState = {

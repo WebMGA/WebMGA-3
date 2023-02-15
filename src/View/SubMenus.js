@@ -170,9 +170,11 @@ export class PeriodicBoundingOption extends React.Component{
     constructor(props) {
         super();
         this.state = View.state.model;
+        this.state.configurations[this.state.active].displayFoldState=true;
+        this.state.boundingShapeEnabled =false;
         this.model = props.model;
         this.toggleFold = this.toggleFold.bind(this);
-        this.toggleUnFold= this.toggleUnFold.bind(this);
+        //this.toggleUnFold= this.toggleUnFold.bind(this);
         this.toggleBoundingShapeEnabled= this.toggleBoundingShapeEnabled.bind(this);
     }
    
@@ -185,21 +187,21 @@ export class PeriodicBoundingOption extends React.Component{
         this.model.toggleFoldState(this.state.active,toggle);
         this.model.update();
     }
-    toggleUnFold() {
-        let toggle = !this.state.configurations[this.state.active].displayUnFoldState;
-        this.setState({
-            displayUnFoldState: toggle
-        });
-        View.state.model.configurations[this.state.active].displayUnFoldState = toggle;
-        this.model.toggleUnfoldState(this.state.active,toggle);
-        this.model.update();
-    }
+    // toggleUnFold() {
+    //     let toggle = !this.state.configurations[this.state.active].displayUnFoldState;
+    //     this.setState({
+    //         displayUnFoldState: toggle
+    //     });
+    //     View.state.model.configurations[this.state.active].displayUnFoldState = toggle;
+    //     this.model.toggleUnfoldState(this.state.active,toggle);
+    //     this.model.update();
+    // }
     toggleBoundingShapeEnabled() {
-        let toggle = !View.state.reference.boundingShapeEnabled;
+        let toggle = !this.state.boundingShapeEnabled;
         this.setState({
             boundingShapeEnabled: toggle
         });
-        View.state.reference.boundingShapeEnabled = toggle;
+        this.state.boundingShapeEnabled = toggle;
         this.model.updateBoundingShape(View.state.reference.activeShape, toggle);
         this.model.update();
     }
@@ -208,7 +210,6 @@ export class PeriodicBoundingOption extends React.Component{
     render() {
         const configState = this.state.configurations[this.state.active];
         const enabled = this.state.boundingShapeEnabled;
-        const activeShape = this.state.activeShape;
         return (
             
             <div>
@@ -224,23 +225,23 @@ export class PeriodicBoundingOption extends React.Component{
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={enabled} onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
+                            <Checkbox style={{ marginLeft: 12 }} checked={enabled}onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
                         </Col>
                     </Row>
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
-                            <p><b> Fold </b></p>
+                            <p><b> Periodic Bounding Condition  </b></p>
                         </Col>
                     </Row>
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={configState.displayFoldState} onClick={this.toggleFold}> Show</Checkbox>
+                            <Checkbox style={{ marginLeft: 12 }} checked={configState.displayFoldState} onClick={this.toggleFold}> Fold</Checkbox>
                         </Col>
                     </Row>
-                    <Row className="show-grid">
+                    {/* <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
@@ -252,7 +253,7 @@ export class PeriodicBoundingOption extends React.Component{
                         <Col xs={12}>
                             <Checkbox style={{ marginLeft: 12 }} checked={configState.displayUnFoldState} onClick={this.toggleUnFold}> Show</Checkbox>
                         </Col>
-                    </Row>
+                    </Row> */}
                 </Grid>
                 <br />
 

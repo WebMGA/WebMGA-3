@@ -68,7 +68,7 @@ export class Model {
         this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance"});
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.localClippingEnabled = true;
-        this.renderer.setFaceCulling( THREE.CullFaceBack)
+        this.renderer.setFaceCulling( THREE.CullFaceBack);
         this.rotating = false;
         this.cameraPostion = null;
         this.lightHelperWarningGiven = false;
@@ -350,7 +350,7 @@ export class Model {
     /* PERIODIC BOUNDING TOOL FUNCTIONS */
 
     toggleFoldState(id,toggle){
-        if(toggle){
+        if(toggle==true){
             this.updateSets(id, [id], (id) => {
                 this.sets[id].elements =[];
                 this.sets[id].meshes = [];
@@ -358,11 +358,8 @@ export class Model {
                 this.sets[id].genElements();
                 this.sets[id].setElements();
                 this.sets[id].genMeshes();
-            })};
-        
-    }
-    toggleUnfoldState(id,toggle){
-        if(toggle){
+            });}
+        else if(toggle == false){
             this.updateSets(id, [id], (id) => {
                 this.sets[id].elements =[];
                 this.sets[id].meshes = [];
@@ -372,8 +369,29 @@ export class Model {
                 this.sets[id].genMeshes();
             });
         }
-        
     }
+    // toggleUnfoldState(id,toggle){
+    //     if(toggle){
+    //         this.updateSets(id, [id], (id) => {
+    //             this.sets[id].elements =[];
+    //             this.sets[id].meshes = [];
+    //             this.sets[id].genUnfoldPosition();
+    //             this.sets[id].genElements();
+    //             this.sets[id].setElements();
+    //             this.sets[id].genMeshes();
+    //         });
+    //     }
+    //     else if(toggle == false){
+    //         this.updateSets(id, [id], (id) => {
+    //             this.sets[id].elements =[];
+    //             this.sets[id].meshes = [];
+    //             this.sets[id].genFoldedPositionFromUnfold();
+    //             this.sets[id].genElements();
+    //             this.sets[id].setElements();
+    //             this.sets[id].genMeshes();
+    //         });
+    //     }
+    //}
 
 
 

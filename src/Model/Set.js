@@ -160,7 +160,7 @@ export class Set {
         for (let i = 0; i < this.positions.length; i++){
             let rnd1 = (Math.random() * (2) -1) 
             let rnd2 = (Math.random() * (2) -1)
-            let rnd3 =(Math.random() * (2) -1)
+            let rnd3 = (Math.random() * (2) -1)
             pos.push([this.positions[i][0]+rnd1*x ,this.positions[i][1]+rnd2*y,this.positions[i][2]+rnd3*z])
         }
         this.positions = pos;
@@ -173,25 +173,20 @@ export class Set {
             return
         }
         let pos =[];
-        let x = this.unitBox[0]/2;
-        let y = this.unitBox[1]/2;
-        let z = this.unitBox[2]/2;
+        let lx = this.unitBox[0]/2;
+        let ly = this.unitBox[1]/2;
+        let lz = this.unitBox[2]/2;
 
         for (let i = 0; i < this.positions.length; i++){
-            let a = this.positions[i][0];
-            let b = this.positions[i][1];
-            let c = this.positions[i][2];
-            if(a>=x || a<=-x){
-                a = a%x;
-            }
-            if(b>=y|| b<=-y){
-                b = b%y;
-            }
-            if(c>=z || c<=-z){
-                c = c%z;
-            }
+            let rx = this.positions[i][0];
+            let ry = this.positions[i][1];
+            let rz = this.positions[i][2];
+            
+            rx = rx%lx;
+            ry = ry%ly;
+            rz = rz%lz;
            
-            pos.push([a,b,c])
+            pos.push([rx,ry,rz])
         }
         this.positions = pos;
         
