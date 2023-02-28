@@ -38,8 +38,8 @@ export class Model {
 
     gridEnabled = false;
     axesEnabled = false;
-    boundingShapeEnabled = false;
-    periodicBoundingEnabled = false;
+    
+    
     sidebarExpanded = false;
 
     cameraType = 'perspective';
@@ -51,12 +51,14 @@ export class Model {
     clippingPlanes;
     clippingHelpers;
     clipIntersections;
+    
 
     constructor(chronometer, notify) {
         this.scene = new Scene();
         this.chronometer = chronometer;
         this.setDefault();
         this.notify = notify;
+       
     }
 
     /* GENERAL FUNCTIONS */
@@ -66,17 +68,19 @@ export class Model {
         this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance"});
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.localClippingEnabled = true;
-        this.renderer.setFaceCulling( THREE.CullFaceBack)
+        this.renderer.setFaceCulling( THREE.CullFaceBack);
         this.rotating = false;
         this.cameraPostion = null;
         this.lightHelperWarningGiven = false;
         this.selectedSet = 0;
+        //this.removeclipping();
         this.initClippers();
 
         this.lookAt = new Vector3(0, 0, 0);
 
         this.updateDimensions();
         this.setCamera(this.cameraType);
+
 
         this.lighting = [
             new Light('ambient'),
@@ -111,6 +115,7 @@ export class Model {
             temp.orientationType = set.orientationType;
             temp.positions = set.positions;
             temp.orientations = set.orientations;
+            // temp.unitBox = set.unitBox;
             model.sets.push(temp);
             temp = {};
         }
@@ -343,6 +348,59 @@ export class Model {
         this.lighting[type].updatePosition(pos.x, pos.y, pos.z);
         this.lighting[type].helper.update();
     }
+    /* PERIODIC BOUNDING TOOL FUNCTIONS */
+
+    toggleFoldState(id,toggle){
+        if(toggle==true){
+            this.updateSets(id, [id], (id) => {
+                this.updateSlicer(0, [-50,50]);
+                this.updateSlicer(1, [-50,50]);
+                this.updateSlicer(2, [-50,50]);
+                this.sets[id].elements =[];
+                this.sets[id].meshes = [];
+                this.sets[id].genFoldedPositionFromUnfold();
+                this.sets[id].genElements();
+                this.sets[id].setElements();
+                this.sets[id].genMeshes();
+            });}
+        else if(toggle == false){
+            this.updateSets(id, [id], (id) => {
+                this.updateSlicer(0, [-80,80]);
+                this.updateSlicer(1, [-80,80]);
+                this.updateSlicer(2, [-80,80]);
+                this.sets[id].elements =[];
+                this.sets[id].meshes = [];
+                this.sets[id].genUnfoldPosition();
+                this.sets[id].genElements();
+                this.sets[id].setElements();
+                this.sets[id].genMeshes();
+            });
+        }
+    }
+    // toggleUnfoldState(id,toggle){
+    //     if(toggle){
+    //         this.updateSets(id, [id], (id) => {
+    //             this.sets[id].elements =[];
+    //             this.sets[id].meshes = [];
+    //             this.sets[id].genUnfoldPosition();
+    //             this.sets[id].genElements();
+    //             this.sets[id].setElements();
+    //             this.sets[id].genMeshes();
+    //         });
+    //     }
+    //     else if(toggle == false){
+    //         this.updateSets(id, [id], (id) => {
+    //             this.sets[id].elements =[];
+    //             this.sets[id].meshes = [];
+    //             this.sets[id].genFoldedPositionFromUnfold();
+    //             this.sets[id].genElements();
+    //             this.sets[id].setElements();
+    //             this.sets[id].genMeshes();
+    //         });
+    //     }
+    //}
+
+
 
     /* REFERENCE TOOLS FUNCTIONS */
 
@@ -444,49 +502,49 @@ export class Model {
         }
     }
 
-    togglePeriodicBounding(){
-        this.periodicBoundingEnabled = !this.periodicBoundingEnabled;
-        if(this.periodicBoundingEnabled){
-            for (let a of this.tools.genPeriodicBouding())
-            this.scene.add(a);
-        }
-        else{
-            for(let a of this.tools.periodicBounding){
-                this.scene.remove(a);
-            }
-        }
-    }
-
+    
+    
 
     /* SLICING FUNCTIONS */
 
     initClippers() {
         this.clippingIntersections = false;
-
+       
+   
         this.clippingPlanes = [
-            new Plane(new Vector3(1, 0, 0), 50),
-            new Plane(new Vector3(-1, 0, 0), 50),
-            new Plane(new Vector3(0, 1, 0), 50),
-            new Plane(new Vector3(0, -1, 0), 50),
-            new Plane(new Vector3(0, 0, 1), 50),
-            new Plane(new Vector3(0, 0, -1), 50)
+            new Plane(new Vector3(1, 0, 0), 180),
+            new Plane(new Vector3(-1, 0, 0), 180),
+            new Plane(new Vector3(0, 1, 0), 180),
+            new Plane(new Vector3(0, -1, 0), 180),
+            new Plane(new Vector3(0, 0, 1), 180),
+            new Plane(new Vector3(0, 0, -1), 180)
         ];
-
-        this.clippingHelpers = [
-            new PlaneHelper(this.clippingPlanes[0], 100, 0xff0000),
-            new PlaneHelper(this.clippingPlanes[1], 100, 0xff0000),
-            new PlaneHelper(this.clippingPlanes[2], 100, 0x00ff00),
-            new PlaneHelper(this.clippingPlanes[3], 100, 0x00ff00),
-            new PlaneHelper(this.clippingPlanes[4], 100, 0x0000ff),
-            new PlaneHelper(this.clippingPlanes[5], 100, 0x0000ff)
-        ];
+       
+       this.clippingHelpers = [
+        new PlaneHelper(this.clippingPlanes[0], 100, 0xff0000),
+        new PlaneHelper(this.clippingPlanes[1], 100, 0xff0000),
+        new PlaneHelper(this.clippingPlanes[2], 100, 0x00ff00),
+        new PlaneHelper(this.clippingPlanes[3], 100, 0x00ff00),
+        new PlaneHelper(this.clippingPlanes[4], 100, 0x0000ff),
+        new PlaneHelper(this.clippingPlanes[5], 100, 0x0000ff)];
 
         for (let helper of this.clippingHelpers) {
             helper.visible = false;
             this.scene.add(helper);
         }
-    }
 
+        
+    }
+    removeclipping(){
+        for (let a of this.clippingPlanes) {
+            this.scene.remove(a);
+        }
+        for (let a of this.clippingHelpers) {
+            this.scene.remove(a);
+        }
+
+    
+    }
     toggleClipIntersection(toggle) {
         for (let set of this.sets) {
             set.toggleClipIntersection(toggle);

@@ -9,7 +9,7 @@ import {
 
 } from 'three';
 import * as THREE from 'three';
-import {eigs} from 'mathjs';
+import {eigs, ParenthesisNodeDependencies, planckMassDependencies} from 'mathjs';
 import * as SHAPE from './Shapes.js';
 import Model from './Model';
 import Parameters from './Parameters';
@@ -29,19 +29,25 @@ export class Set {
     clippingPlanes;
     clipIntersection;
     colourMap;
-
+    unitBox;
+    
+    
+    
     positions = [];
     orientations = [];
     elements = [];
     meshes = [];
+
+    
 
     constructor(data, cp, ci) {
         this.name = data.name;
         this.orientationType = data.orientationType;
         this.positions = data.positions;
         this.orientations = data.orientations;
+        this.unitBox = data.unitBox;
         this.clippingPlanes = cp;
-        this.clipIntersection = ci;
+        this.clipIntersection = ci; 
 
         this.setDefaults();
 
@@ -54,7 +60,34 @@ export class Set {
         if (this.name == null) {
             this.name = this.shapeType;
         }
+    
+        this.genSet();
+        
+    }
 
+    isFoldedTest(){
+        let x = this.unitBox[0]/2;
+        let y = this.unitBox[1]/2;
+        let z = this.unitBox[2]/2;
+        for (let i = 0; i < this.positions.length; i++){
+            let a = this.positions[i][0];
+            let b = this.positions[i][1];
+            let c = this.positions[i][2];
+            if(a>=x || a<=-x){
+                return false
+            }
+            if(b>=y|| b<=-y){
+                return false
+            }
+            if(c>=z || c<=-z){
+               return false
+            }
+        return true;
+        
+    }
+}
+
+    genSet(){
         this.validateData();
         this.genGeometries();
         this.genElements();
@@ -62,6 +95,7 @@ export class Set {
         this.genMeshes();
     }
 
+    
 
     validateData() {
         if (this.positions.length !== this.orientations.length) {
@@ -84,6 +118,7 @@ export class Set {
         this.userColour = new Color("#FFFFFF");
         this.colourByDirector = true;
         this.wireframe = true;
+        // this.isFolded = this.isFoldedTest(); 
         this.lod = 2;
         this.shapeType = 'Ellipsoid';
         this.parameters = Parameters.Ellipsoid.vals;
@@ -105,13 +140,72 @@ export class Set {
             mesh.material.clipIntersection = toggle;
         }
     }
+    genUnitBox(){
+    
+        return this.unitBox;
 
+    }
+
+    genUnfoldPosition(){
+    
+        if(this.isFoldedTest()== false){
+            Alert.info('Model is already unfolded');
+            return
+        }
+        let pos =[];
+        let x = this.unitBox[0];
+        let y = this.unitBox[1];
+        let z = this.unitBox[2];
+
+        for (let i = 0; i < this.positions.length; i++){
+            let rnd1 = (Math.random() * (2) -1) 
+            let rnd2 = (Math.random() * (2) -1)
+            let rnd3 = (Math.random() * (2) -1)
+            pos.push([this.positions[i][0]+rnd1*x ,this.positions[i][1]+rnd2*y,this.positions[i][2]+rnd3*z])
+        }
+        this.positions = pos;
+        
+    }
+
+    genFoldedPositionFromUnfold(){
+        if(this.isFoldedTest()== true){
+            Alert.info('Model is already folded');
+            return
+        }
+        let pos =[];
+        let lx = this.unitBox[0]/2;
+        let ly = this.unitBox[1]/2;
+        let lz = this.unitBox[2]/2;
+
+        for (let i = 0; i < this.positions.length; i++){
+            let rx = this.positions[i][0];
+            let ry = this.positions[i][1];
+            let rz = this.positions[i][2];
+            
+            rx = rx%lx;
+            ry = ry%ly;
+            rz = rz%lz;
+           
+            pos.push([rx,ry,rz])
+        }
+        this.positions = pos;
+        
+    }
+    inRange(target,min,max){
+        if (min<=target<=max ){
+            return true
+        }
+        else{
+            return false
+        }
+    }
     genMeshes() {
         let m;
         let c;
         let mat;
         let gutsMaterial;
         let v;
+        let ab =true;
 
         for (let elem of this.elements) {
             if (this.colourByDirector) {
@@ -120,7 +214,7 @@ export class Set {
             } else {
                 c = this.userColour;
             }
-
+        
             mat = new MeshPhongMaterial({
                 color: c,
                 clippingPlanes: this.clippingPlanes,
@@ -131,6 +225,18 @@ export class Set {
             });
             mat.wireframe = this.wireframe;
             gutsMaterial = new THREE.MeshBasicMaterial( {color: c, side: THREE.BackSide, clippingPlanes: this.clippingPlanes, clipShadows: true} );
+        
+           
+            // mat = new MeshPhongMaterial({
+            //     color: c,
+            //     clippingPlanes: this.clippingPlanes,
+            //     clipIntersection: false,
+            //     side : THREE.FrontSide,
+            //     shininess: 40,
+            //     clipShadows: true
+            // });
+            // mat.wireframe = this.wireframe;
+            // gutsMaterial = new THREE.MeshBasicMaterial( {color: c, side: THREE.BackSide, clippingPlanes: this.clippingPlanes, clipShadows: true} );
 					
             //stencil buffer
             //view-source:https://threejs.org/examples/webgl_clipping_stencil.html
@@ -167,6 +273,11 @@ export class Set {
     }
 
     genElements() {
+       
+        if(this.positions.length ==0){
+            Alert.error('a');
+            return
+        }
         for (let i = 0; i < this.positions.length; i++) {
             this.elements.push(new this.Element(this.positions[i], this.getRotations(this.orientationType, this.orientations[i])));
         }

@@ -166,6 +166,115 @@ export class ModelsOptions extends React.Component {
     }
 }
 
+export class PeriodicBoundingOption extends React.Component{
+    constructor(props) {
+        super();
+        this.state = View.state.model;
+        //this.state.configurations[this.state.active].displayFoldState=true;
+        //this.state.boundingShapeEnabled =false;
+        this.model = props.model;
+        this.toggleFold = this.toggleFold.bind(this);
+        //this.toggleUnFold= this.toggleUnFold.bind(this);
+        this.toggleBoundingShapeEnabled= this.toggleBoundingShapeEnabled.bind(this);
+    }
+   
+    toggleFold() {
+        let toggle = !this.state.configurations[this.state.active].displayFoldState;
+        this.setState({
+            displayFoldState: toggle
+        });
+        View.state.model.configurations[this.state.active].displayFoldState = toggle;
+        if(toggle==false){
+            View.state.slicing.x =[-80,80];
+            View.state.slicing.y =[-80,80];
+            View.state.slicing.z =[-80,80];
+       
+        }
+        else{
+            View.state.slicing.x =[-50,50];
+            View.state.slicing.y =[-50,50];
+            View.state.slicing.z =[-50,50];
+       
+        }
+         this.model.toggleFoldState(this.state.active,toggle);
+        this.model.update();
+    }
+    // toggleUnFold() {
+    //     let toggle = !this.state.configurations[this.state.active].displayUnFoldState;
+    //     this.setState({
+    //         displayUnFoldState: toggle
+    //     });
+    //     View.state.model.configurations[this.state.active].displayUnFoldState = toggle;
+    //     this.model.toggleUnfoldState(this.state.active,toggle);
+    //     this.model.update();
+    // }
+    toggleBoundingShapeEnabled() {
+        let toggle = !this.state.boundingShapeEnabled;
+        this.setState({
+            boundingShapeEnabled: toggle
+        });
+        this.state.boundingShapeEnabled = toggle;
+        this.model.updateBoundingShape(View.state.reference.activeShape, toggle);
+        this.model.update();
+    }
+    
+
+    render() {
+        const configState = this.state.configurations[this.state.active];
+        const enabled = this.state.boundingShapeEnabled;
+        return (
+            
+            <div>
+
+                <Grid fluid>
+                <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Bounding Box </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked={enabled}onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Periodic Bounding Condition  </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked={configState.displayFoldState} onClick={this.toggleFold}> Fold</Checkbox>
+                        </Col>
+                    </Row>
+                    {/* <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Unfold </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked={configState.displayUnFoldState} onClick={this.toggleUnFold}> Show</Checkbox>
+                        </Col>
+                    </Row> */}
+                </Grid>
+                <br />
+
+                <br />
+            </div>
+        );
+    }
+}
+
 export class CameraOptions extends React.Component {
 
     constructor(props) {
@@ -331,9 +440,11 @@ export class SlicingOptions extends React.Component {
 
     constructor(props) {
         super();
-        this.state = View.state.slicing;
+        this.state = View.state.slicing
         this.model = props.model;
-
+        // this.state.x =[-100,100];
+        // this.state.y =[-100,100];
+        // this.state.z =[-100,100];
         this.toggleIntersection = this.toggleIntersection.bind(this);
         this.toggleHelperX = this.toggleHelperX.bind(this);
         this.toggleHelperY = this.toggleHelperY.bind(this);
@@ -393,13 +504,13 @@ export class SlicingOptions extends React.Component {
     updateSlicer(i, val) {
         switch (i) {
             case 0:
-                View.state.slicing.x = val;
+                this.state.x = val;
                 break;
             case 1:
-                View.state.slicing.y = val;
+                this.state.y = val;
                 break;
             case 2:
-                View.state.slicing.z = val;
+                this.state.z = val;
                 break;
             default:
                 Alert.error('Error: Unexpected Slicing Identifier');
@@ -457,6 +568,10 @@ export class SlicingOptions extends React.Component {
     }
 
 }
+
+
+      
+
 
 export const AdditionalLightsNav = ({ active, onSelect }) => {
     return (
@@ -710,9 +825,8 @@ export class ReferenceOptions extends React.Component {
         this.state = View.state.reference;
 
         this.model = props.model;
-        this.toggleBoundingShapeEnabled = this.toggleBoundingShapeEnabled.bind(this);
-        this.togglePeriodicBounding = this.togglePeriodicBounding.bind(this);
-        this.selectShape = this.selectShape.bind(this);
+        // this.toggleBoundingShapeEnabled = this.toggleBoundingShapeEnabled.bind(this);
+        // this.selectShape = this.selectShape.bind(this);
         this.toggleAxes = this.toggleAxes.bind(this);
         this.toggleGrid = this.toggleGrid.bind(this);
         this.updateColour = this.updateColour.bind(this);
@@ -745,32 +859,24 @@ export class ReferenceOptions extends React.Component {
         this.model.update();
         View.state.reference.size = val;
     }
-    toggleBoundingShapeEnabled() {
-        let toggle = !View.state.reference.boundingShapeEnabled;
-        this.setState({
-            boundingShapeEnabled: toggle
-        });
-        View.state.reference.boundingShapeEnabled = toggle;
-        this.model.updateBoundingShape(this.state.activeShape, toggle);
-        this.model.update();
-    }
-    togglePeriodicBounding(){
-        this.setState({
-            periodicBoundingEnabled : !View.state.reference.showPeriodic
-        });
-        this.model.togglePeriodicBounding();
-        this.model.update();
-        View.state.reference.showPeriodic =!View.state.reference.showPeriodic;
-        
-    }
-    selectShape(val) {
-        this.setState({
-            activeShape: val
-        });
-        View.state.reference.activeShape = val;
-        this.model.updateBoundingShape(val, this.state.boundingShapeEnabled);
-        this.model.update();
-    }
+    // toggleBoundingShapeEnabled() {
+    //     let toggle = !View.state.reference.boundingShapeEnabled;
+    //     this.setState({
+    //         boundingShapeEnabled: toggle
+    //     });
+    //     View.state.reference.boundingShapeEnabled = toggle;
+    //     this.model.updateBoundingShape(this.state.activeShape, toggle);
+    //     this.model.update();
+    // }
+    
+    // selectShape(val) {
+    //     this.setState({
+    //         activeShape: val
+    //     });
+    //     View.state.reference.activeShape = val;
+    //     this.model.updateBoundingShape(val, this.state.boundingShapeEnabled);
+    //     this.model.update();
+    // }
     toggleMulticolour() {
         this.setState({
             multicolour: !this.state.multicolour
@@ -797,9 +903,8 @@ export class ReferenceOptions extends React.Component {
     }
 
     render() {
-        const enabled = this.state.boundingShapeEnabled;
-        const showPeriodic = this.state.showPeriodic;
-        const activeShape = this.state.activeShape;
+        // const enabled = this.state.boundingShapeEnabled;
+        // const activeShape = this.state.activeShape;
         const showAxes = this.state.showAxes;
         const showGrid = this.state.showGrid;
         const colour = this.state.gridColour;
@@ -809,7 +914,7 @@ export class ReferenceOptions extends React.Component {
             <div>
 
                 <Grid fluid>
-                    <Row className="show-grid">
+                    {/* <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
@@ -821,8 +926,8 @@ export class ReferenceOptions extends React.Component {
                         <Col xs={12}>
                             <Checkbox style={{ marginLeft: 12 }} checked={enabled} onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
                         </Col>
-                    </Row>
-                    <Row className="show-grid">
+                    </Row> */}
+                    {/* <Row className="show-grid">
                         <Col xs={3} />
                         <Col xs={12}>
                             <FormGroup controlId="radioList">
@@ -831,23 +936,10 @@ export class ReferenceOptions extends React.Component {
                                     {/* <Radio disabled={true} value="sphere" >Sphere </Radio>
                                     <Radio disabled={true} value="cylinder" >Cylinder </Radio> */}
 
-                                </RadioGroup>
+                                {/* </RadioGroup>
                             </FormGroup>
                         </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={2} />
-                        <Col xs={12}>
-                            <br />
-                            <p><b> Periodic Bounding </b></p>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={showPeriodic} onClick={this.togglePeriodicBounding} disabled ={!enabled}> Show </Checkbox>
-                        </Col>
-                    </Row>
+                    </Row> */} 
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
@@ -881,9 +973,6 @@ export class ReferenceOptions extends React.Component {
                             </Whisper>
                         </Col>
                     </Row>
-
-
-
 
                     <Row className="show-grid">
                         <Col xs={2} />

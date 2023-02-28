@@ -13,11 +13,15 @@ export class View {
     constructor(m, io, chrono, toggler) {
         View.state = {
         }
+        //View.state.slicing.x=[-80,80];
         this.expanded = false;
         this.model = m;
         this.header = <GeneralMenu chronometer={chrono} functions={io} model={this.model} toggler ={toggler}/>;
         this.sidebar = <VisualisationMenu model={this.model} sidebarExpanded={this.expanded} toggler={toggler}/>;
+
+        
     }
+    
 
 
     getData() {
@@ -38,6 +42,8 @@ export class View {
             this.model.updateUserColour(i, substate.colour);
             this.model.toggleUserColour(i, substate.colourFromDirector);
             this.model.toggleWireframe(i, substate.displayAsWireframe);
+            this.model.toggleFoldState(i,substate.displayFoldState);
+            // this.model.toggleUnfoldState(i,substate.displayUnfoldState);
             this.model.updateShape(i, substate.shape, substate.parameters);
         }
     }
@@ -45,7 +51,9 @@ export class View {
     loadState(state){
         this.loadReferenceAndSlicing(state);
         this.loadLightingAndCamera(state);
+        
     }
+ 
 
     loadReferenceAndSlicing(state) {
 
@@ -107,6 +115,7 @@ export class View {
         View.state.model = this.ModelDefaultState;
         View.state.model.configurations = [];
         View.state.model.sets = [];
+        
 
 
         for (let i in this.model.sets) {
@@ -131,15 +140,15 @@ export class View {
         active: 0,
         reset: 0,
         sets: [],
-        configurations: []
+        configurations: [],
     }
 
     SlicingDefaultState = {
         clipIntersection: false,
         helpers: [false, false, false],
-        x: [-50, 50],
-        y: [-50, 50],
-        z: [-50, 50]
+        x: [-180, 80],
+        y: [-80, 80],
+        z: [-80, 80]
     }
 
     ConfigurationDefaultState = {
@@ -155,7 +164,10 @@ export class View {
             b: 255
         },
         colourFromDirector: true,
-        displayAsWireframe: true
+        displayAsWireframe: true,
+        displayFoldState :true,
+        boundingShapeEnabled:false
+        //displayUnfoldState:false
     }
 
     CameraDefaultState = {
@@ -209,7 +221,7 @@ export class View {
         }
 
     }
-
+    
     ReferenceDefaultState = {
         boundingShapeEnabled: false,
         activeShape: 'box',
