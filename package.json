@@ -1,5 +1,5 @@
 {
-  "homepage": "https://astromarx.github.io/WebMGA",
+  "homepage": "https://hiiamyue.github.io/WebMGA-2",
   "name": "webmga",
   "version": "0.1.0",
   "private": true,
@@ -22,9 +22,9 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
+    "start": "react-scripts --openssl-legacy-provider start",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -48,6 +48,6 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^3.1.0"
+    "gh-pages": "^3.2.3"
   }
 }

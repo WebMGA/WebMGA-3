@@ -307,7 +307,7 @@ class Controller {
         //     });
     }
 
-    export = (height, width) => {
+    export = (height, width,resolution) => {
         // fix orthographic projection
 
         this.model.height = height;
@@ -316,14 +316,14 @@ class Controller {
 
         this.model.renderer.setSize(width, height);
         this.model.renderer.render(this.model.scene, this.model.camera);
-        const dataURL = this.model.renderer.domElement.toDataURL("image/png", 1.0).replace("image/png", "image/octet-stream");
+        const dataURL = this.model.renderer.domElement.toDataURL("image/jpeg", resolution).replace("image/jpeg", "image/octet-stream");
 
         this.model.updateDimensions();
         this.model.updateCamera();
 
 
         var link = document.createElement('a');
-        link.download = "WebMGA Visualisation.png";
+        link.download = "WebMGA Visualisation.jpeg";
         link.href = dataURL;
         link.click();
 
