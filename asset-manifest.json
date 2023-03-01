@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.js": "/WebMGA/static/js/main.5cbd5022.chunk.js",
-    "main.js.map": "/WebMGA/static/js/main.5cbd5022.chunk.js.map",
-    "runtime-main.js": "/WebMGA/static/js/runtime-main.ed948091.js",
-    "runtime-main.js.map": "/WebMGA/static/js/runtime-main.ed948091.js.map",
-    "static/css/2.2a7509dd.chunk.css": "/WebMGA/static/css/2.2a7509dd.chunk.css",
-    "static/js/2.70cf5e5e.chunk.js": "/WebMGA/static/js/2.70cf5e5e.chunk.js",
-    "static/js/2.70cf5e5e.chunk.js.map": "/WebMGA/static/js/2.70cf5e5e.chunk.js.map",
-    "index.html": "/WebMGA/index.html",
-    "static/css/2.2a7509dd.chunk.css.map": "/WebMGA/static/css/2.2a7509dd.chunk.css.map",
-    "static/js/2.70cf5e5e.chunk.js.LICENSE.txt": "/WebMGA/static/js/2.70cf5e5e.chunk.js.LICENSE.txt"
+    "main.js": "/WebMGA-2/static/js/main.5cbd5022.chunk.js",
+    "main.js.map": "/WebMGA-2/static/js/main.5cbd5022.chunk.js.map",
+    "runtime-main.js": "/WebMGA-2/static/js/runtime-main.101a9e0a.js",
+    "runtime-main.js.map": "/WebMGA-2/static/js/runtime-main.101a9e0a.js.map",
+    "static/css/2.2a7509dd.chunk.css": "/WebMGA-2/static/css/2.2a7509dd.chunk.css",
+    "static/js/2.85e26c07.chunk.js": "/WebMGA-2/static/js/2.85e26c07.chunk.js",
+    "static/js/2.85e26c07.chunk.js.map": "/WebMGA-2/static/js/2.85e26c07.chunk.js.map",
+    "index.html": "/WebMGA-2/index.html",
+    "static/css/2.2a7509dd.chunk.css.map": "/WebMGA-2/static/css/2.2a7509dd.chunk.css.map",
+    "static/js/2.85e26c07.chunk.js.LICENSE.txt": "/WebMGA-2/static/js/2.85e26c07.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.ed948091.js",
+    "static/js/runtime-main.101a9e0a.js",
     "static/css/2.2a7509dd.chunk.css",
-    "static/js/2.70cf5e5e.chunk.js",
+    "static/js/2.85e26c07.chunk.js",
     "static/js/main.5cbd5022.chunk.js"
   ]
 }
