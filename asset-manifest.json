@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.js": "/WebMGA-2/static/js/main.5cbd5022.chunk.js",
-    "main.js.map": "/WebMGA-2/static/js/main.5cbd5022.chunk.js.map",
+    "main.js": "/WebMGA-2/static/js/main.ac7a87a8.chunk.js",
+    "main.js.map": "/WebMGA-2/static/js/main.ac7a87a8.chunk.js.map",
     "runtime-main.js": "/WebMGA-2/static/js/runtime-main.101a9e0a.js",
     "runtime-main.js.map": "/WebMGA-2/static/js/runtime-main.101a9e0a.js.map",
     "static/css/2.2a7509dd.chunk.css": "/WebMGA-2/static/css/2.2a7509dd.chunk.css",
-    "static/js/2.85e26c07.chunk.js": "/WebMGA-2/static/js/2.85e26c07.chunk.js",
-    "static/js/2.85e26c07.chunk.js.map": "/WebMGA-2/static/js/2.85e26c07.chunk.js.map",
+    "static/js/2.36975c5d.chunk.js": "/WebMGA-2/static/js/2.36975c5d.chunk.js",
+    "static/js/2.36975c5d.chunk.js.map": "/WebMGA-2/static/js/2.36975c5d.chunk.js.map",
     "index.html": "/WebMGA-2/index.html",
     "static/css/2.2a7509dd.chunk.css.map": "/WebMGA-2/static/css/2.2a7509dd.chunk.css.map",
-    "static/js/2.85e26c07.chunk.js.LICENSE.txt": "/WebMGA-2/static/js/2.85e26c07.chunk.js.LICENSE.txt"
+    "static/js/2.36975c5d.chunk.js.LICENSE.txt": "/WebMGA-2/static/js/2.36975c5d.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.101a9e0a.js",
     "static/css/2.2a7509dd.chunk.css",
-    "static/js/2.85e26c07.chunk.js",
-    "static/js/main.5cbd5022.chunk.js"
+    "static/js/2.36975c5d.chunk.js",
+    "static/js/main.ac7a87a8.chunk.js"
   ]
 }
