@@ -2,7 +2,8 @@ import Model from "./Model/Model";
 import View from "./View/View"
 import 'rsuite/dist/styles/rsuite-dark.css';
 import { std, mean } from 'mathjs';
-
+import unfolded_sample1 from'./Samples/UnfoldedSC4.json';
+import unforded_sample2 from'./Samples/UnfoldedE3.json';
 import sample1 from './Samples/dummy-vector.json';
 import sample2 from './Samples/dummy-quaternion.json';
 import sample3 from './Samples/sc4-isotropic.json';
@@ -287,6 +288,12 @@ class Controller {
                 break;
             case 16:
                 sample = sample16;
+                break;
+            case 17:
+                sample =unfolded_sample1;
+                break;
+            case 18:
+                sample =unforded_sample2 ;
                 break;
             default:
                 Alert.error('Error: File does not exist');

@@ -199,15 +199,7 @@ export class PeriodicBoundingOption extends React.Component{
          this.model.toggleFoldState(this.state.active,toggle);
         this.model.update();
     }
-    // toggleUnFold() {
-    //     let toggle = !this.state.configurations[this.state.active].displayUnFoldState;
-    //     this.setState({
-    //         displayUnFoldState: toggle
-    //     });
-    //     View.state.model.configurations[this.state.active].displayUnFoldState = toggle;
-    //     this.model.toggleUnfoldState(this.state.active,toggle);
-    //     this.model.update();
-    // }
+
     toggleBoundingShapeEnabled() {
         let toggle = !this.state.boundingShapeEnabled;
         this.setState({

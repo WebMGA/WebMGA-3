@@ -84,6 +84,10 @@ class LibraryDropdown extends React.Component {
                     <Dropdown.Item eventKey={1}>Unit Vector Orientations</Dropdown.Item>
                     <Dropdown.Item eventKey={2}>Quaternion Orientations</Dropdown.Item>
                 </Dropdown.Menu>
+                <Dropdown.Menu title="Unfolded Samples">
+                <Dropdown.Item eventKey={17}>Unfolded SC4 Nematic</Dropdown.Item>
+                <Dropdown.Item eventKey={18}>Unfolded E3 Chiral Nematic</Dropdown.Item>
+                </Dropdown.Menu>
                 <Dropdown.Menu title="Spherocylinders">
                     <Dropdown.Item eventKey={3}>SC4 Isotropic</Dropdown.Item>
                     <Dropdown.Item eventKey={4}>SC4 Nematic</Dropdown.Item>

@@ -115,7 +115,7 @@ export class Model {
             temp.orientationType = set.orientationType;
             temp.positions = set.positions;
             temp.orientations = set.orientations;
-            // temp.unitBox = set.unitBox;
+            temp.unitBox = set.unitBox;
             model.sets.push(temp);
             temp = {};
         }
@@ -365,12 +365,10 @@ export class Model {
             });}
         else if(toggle == false){
             this.updateSets(id, [id], (id) => {
-                this.updateSlicer(0, [-80,80]);
-                this.updateSlicer(1, [-80,80]);
-                this.updateSlicer(2, [-80,80]);
                 this.sets[id].elements =[];
                 this.sets[id].meshes = [];
-                this.sets[id].genUnfoldPosition();
+                this.sets[id].Folded_position =[];
+                //this.sets[id].genUnfoldPosition();
                 this.sets[id].genElements();
                 this.sets[id].setElements();
                 this.sets[id].genMeshes();

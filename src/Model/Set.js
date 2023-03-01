@@ -34,6 +34,7 @@ export class Set {
     
     
     positions = [];
+    Folded_position=[]
     orientations = [];
     elements = [];
     meshes = [];
@@ -163,7 +164,7 @@ export class Set {
             let rnd3 = (Math.random() * (2) -1)
             pos.push([this.positions[i][0]+rnd1*x ,this.positions[i][1]+rnd2*y,this.positions[i][2]+rnd3*z])
         }
-        this.positions = pos;
+        this.Folded_position = pos;
         
     }
 
@@ -188,7 +189,7 @@ export class Set {
            
             pos.push([rx,ry,rz])
         }
-        this.positions = pos;
+        this.Folded_position = pos;
         
     }
     inRange(target,min,max){
@@ -273,13 +274,12 @@ export class Set {
     }
 
     genElements() {
-       
-        if(this.positions.length ==0){
-            Alert.error('a');
-            return
+        let pos = this.positions
+        if (this.Folded_position.length>0){
+            pos = this.Folded_position;
         }
-        for (let i = 0; i < this.positions.length; i++) {
-            this.elements.push(new this.Element(this.positions[i], this.getRotations(this.orientationType, this.orientations[i])));
+        for (let i = 0; i < pos.length; i++) {
+            this.elements.push(new this.Element(pos[i], this.getRotations(this.orientationType, this.orientations[i])));
         }
         this.calculateDirector();
         for(let elem of this.elements){
