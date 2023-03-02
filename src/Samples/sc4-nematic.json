@@ -6768,7 +6768,7 @@
     },
     "state": {
         "reference": {
-            "boundingShapeEnabled": true,
+            "boundingShapeEnabled": false,
             "activeShape": "box",
             "showAxes": false,
             "showGrid": false,

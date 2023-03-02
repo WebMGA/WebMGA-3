@@ -353,9 +353,6 @@ export class Model {
     toggleFoldState(id,toggle){
         if(toggle==true){
             this.updateSets(id, [id], (id) => {
-                this.updateSlicer(0, [-50,50]);
-                this.updateSlicer(1, [-50,50]);
-                this.updateSlicer(2, [-50,50]);
                 this.sets[id].elements =[];
                 this.sets[id].meshes = [];
                 this.sets[id].genFoldedPositionFromUnfold();
@@ -368,7 +365,6 @@ export class Model {
                 this.sets[id].elements =[];
                 this.sets[id].meshes = [];
                 this.sets[id].Folded_position =[];
-                //this.sets[id].genUnfoldPosition();
                 this.sets[id].genElements();
                 this.sets[id].setElements();
                 this.sets[id].genMeshes();

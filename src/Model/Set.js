@@ -164,7 +164,7 @@ export class Set {
             let rnd3 = (Math.random() * (2) -1)
             pos.push([this.positions[i][0]+rnd1*x ,this.positions[i][1]+rnd2*y,this.positions[i][2]+rnd3*z])
         }
-        this.Folded_position = pos;
+        this.positions = pos;
         
     }
 
