@@ -166,7 +166,7 @@ export class ModelsOptions extends React.Component {
     }
 }
 
-export class PeriodicBoundaryOption extends React.Component{
+export class PeriodicBoundingOption extends React.Component{
     constructor(props) {
         super();
         this.state = View.state.model;
