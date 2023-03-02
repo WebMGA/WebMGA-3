@@ -166,7 +166,7 @@ export class ModelsOptions extends React.Component {
     }
 }
 
-export class PeriodicBoundingOption extends React.Component{
+export class PeriodicBoundaryOption extends React.Component{
     constructor(props) {
         super();
         this.state = View.state.model;
@@ -236,7 +236,7 @@ export class PeriodicBoundingOption extends React.Component{
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
-                            <p><b> Periodic Bounding Condition  </b></p>
+                            <p><b> Periodic Boundary Conditions  </b></p>
                         </Col>
                     </Row>
                     <Row className="show-grid">
