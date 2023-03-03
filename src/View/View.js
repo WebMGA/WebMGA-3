@@ -164,10 +164,9 @@ export class View {
             b: 255
         },
         colourFromDirector: true,
-        displayAsWireframe: true,
-        displayFoldState :true,
+        displayAsWireframe: false,
+        //displayFoldState :true,
         boundingShapeEnabled:false
-        //displayUnfoldState:false
     }
 
     CameraDefaultState = {

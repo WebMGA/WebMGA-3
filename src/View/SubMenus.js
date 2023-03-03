@@ -166,6 +166,53 @@ export class ModelsOptions extends React.Component {
     }
 }
 
+export class VideoOptions extends React.Component{
+    constructor(props){
+        super();
+        this.state =View.state.model;
+    }
+    render(){
+        return(
+            <div>
+
+                <Grid fluid>
+                <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Play Video </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} > Play </Checkbox>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Download </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox> download</Checkbox>
+                        </Col>
+                    </Row>
+                  
+                </Grid>
+                <br />
+
+                <br />
+            </div>
+
+        )
+    }
+}
+
 export class PeriodicBoundingOption extends React.Component{
     constructor(props) {
         super();
@@ -223,7 +270,7 @@ export class PeriodicBoundingOption extends React.Component{
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
-                            <p><b> Bounding Box </b></p>
+                            <p><b> Unit Box </b></p>
                         </Col>
                     </Row>
                     <Row className="show-grid">
