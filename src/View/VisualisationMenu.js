@@ -130,6 +130,7 @@ class VisualisationMenu extends Component {
         this.toggler.closeSidemenu = () => {
             if (this.state.expand){
                 this.handleToggle();
+                this.model.disableClipping()
             }
         }
     }

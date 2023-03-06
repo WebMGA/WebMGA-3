@@ -231,19 +231,7 @@ export class PeriodicBoundingOption extends React.Component{
             displayFoldState: toggle
         });
         View.state.model.configurations[this.state.active].displayFoldState = toggle;
-        if(toggle==false){
-            View.state.slicing.x =[-80,80];
-            View.state.slicing.y =[-80,80];
-            View.state.slicing.z =[-80,80];
-       
-        }
-        else{
-            View.state.slicing.x =[-50,50];
-            View.state.slicing.y =[-50,50];
-            View.state.slicing.z =[-50,50];
-       
-        }
-         this.model.toggleFoldState(this.state.active,toggle);
+        this.model.toggleFoldState(this.state.active,toggle);
         this.model.update();
     }
 
@@ -481,10 +469,7 @@ export class SlicingOptions extends React.Component {
         super();
         this.state = View.state.slicing
         this.model = props.model;
-        // this.state.x =[-100,100];
-        // this.state.y =[-100,100];
-        // this.state.z =[-100,100];
-        this.toggleIntersection = this.toggleIntersection.bind(this);
+        this.toggleSlicer = this.toggleSlicer.bind(this);
         this.toggleHelperX = this.toggleHelperX.bind(this);
         this.toggleHelperY = this.toggleHelperY.bind(this);
         this.toggleHelperZ = this.toggleHelperZ.bind(this);
@@ -492,16 +477,10 @@ export class SlicingOptions extends React.Component {
         this.updateSlicer = this.updateSlicer.bind(this);
     }
 
-    toggleIntersection() {
-        let toggle = !this.state.clipIntersection;
-        this.setState(
-            {
-                clipIntersection: toggle
-            }
-        );
-        View.state.slicing.clipIntersection = toggle;
-        this.model.toggleClipIntersection(toggle);
-        this.model.update();
+    toggleSlicer(){
+        let toggle = !this.state.slicing_enabled;
+        this.model.enableClipping(toggle,View.state.model.active);
+        View.state.slicing.slicing_enabled = toggle
     }
 
     updateHelpers(helpers) {
@@ -541,6 +520,7 @@ export class SlicingOptions extends React.Component {
     }
 
     updateSlicer(i, val) {
+        
         switch (i) {
             case 0:
                 this.state.x = val;
@@ -560,19 +540,24 @@ export class SlicingOptions extends React.Component {
     }
     render() {
         const state = this.state;
+        const slicing_enabled = this.state.slicing_enabled;
         return (
             <div>
                 <br />
-                 {/* <Grid fluid>
-                    <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={20}>
-                            <Checkbox disabled={false} checked={state.clipIntersection} onClick={this.toggleIntersection}> Slice Intersection</Checkbox>
+                <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Enable Slicing</b></p>
                         </Col>
                     </Row>
-                </Grid>  */}
-                {/* TO DO */}
-                <SliceSlider title="X : " f={this.updateSlicer} index={0} vals={state.x} />
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked={slicing_enabled}onClick={this.toggleSlicer}> enable </Checkbox>
+                        </Col>
+                    </Row>
+                <SliceSlider title="X : " f={this.updateSlicer} index={0} vals={state.x} disabled={!slicing_enabled}/>
                 <br />
                 <Grid fluid>
                     <Row className="show-grid">

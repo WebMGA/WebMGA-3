@@ -119,7 +119,7 @@ export class Set {
         this.userColour = new Color("#FFFFFF");
         this.colourByDirector = true;
         this.wireframe = true;
-        // this.isFolded = this.isFoldedTest(); 
+        this.renderBackFace =false;
         this.lod = 2;
         this.shapeType = 'Ellipsoid';
         this.parameters = Parameters.Ellipsoid.vals;
@@ -200,6 +200,9 @@ export class Set {
             return false
         }
     }
+    setBackFace(bool){
+        this.renderBackFace =bool;
+    }
     genMeshes() {
         let m;
         let c;
@@ -216,37 +219,26 @@ export class Set {
                 c = this.userColour;
             }
         
-            mat = new MeshPhongMaterial({
+            mat =new MeshPhongMaterial({
                 color: c,
                 clippingPlanes: this.clippingPlanes,
                 clipIntersection: false,
                 side : THREE.FrontSide,
-                shininess: 40,
                 clipShadows: true
             });
             mat.wireframe = this.wireframe;
-            gutsMaterial = new THREE.MeshBasicMaterial( {color: c, side: THREE.BackSide, clippingPlanes: this.clippingPlanes, clipShadows: true} );
-        
-           
-            // mat = new MeshPhongMaterial({
-            //     color: c,
-            //     clippingPlanes: this.clippingPlanes,
-            //     clipIntersection: false,
-            //     side : THREE.FrontSide,
-            //     shininess: 40,
-            //     clipShadows: true
-            // });
-            // mat.wireframe = this.wireframe;
-            // gutsMaterial = new THREE.MeshBasicMaterial( {color: c, side: THREE.BackSide, clippingPlanes: this.clippingPlanes, clipShadows: true} );
-					
-            //stencil buffer
-            //view-source:https://threejs.org/examples/webgl_clipping_stencil.html
-            //https://stackoverflow.com/questions/36557486/three-js-object-clipping/37593904#37593904
+            if (this.renderBackFace){
+                gutsMaterial = new THREE.MeshBasicMaterial( {color: c, side: THREE.BackSide, clippingPlanes: this.clippingPlanes, clipShadows: true} );
+            }
 
             for (let g of elem.geometries) {
                 m = new Mesh(g, mat);
-                v = new Mesh(g,gutsMaterial)
-                this.meshes.push(m,v);
+                this.meshes.push(m);
+                if (this.renderBackFace){
+                    v = new Mesh(g,gutsMaterial);
+                    this.meshes.push(v);
+                }
+                
             }
         }
     }

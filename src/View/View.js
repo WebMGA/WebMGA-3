@@ -64,6 +64,7 @@ export class View {
         if (this.xor(this.model.axesEnabled, state.reference.showAxes)) {
             this.model.toggleAxes();
         }
+        this.model.enableClipping(state.slicing.slicing_enabled);
         this.model.updateReferenceColour(state.reference.gridColour);
         this.model.updateGridSize(state.reference.size);
         this.model.updateBoundingShape(state.reference.activeShape, state.reference.boundingShapeEnabled);
@@ -145,6 +146,7 @@ export class View {
 
     SlicingDefaultState = {
         clipIntersection: false,
+        slicing_enabled:false,
         helpers: [false, false, false],
         x: [-180, 80],
         y: [-80, 80],
