@@ -67,8 +67,8 @@ export class Model {
         
         this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance"});
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.localClippingEnabled = true;
-        this.renderer.setFaceCulling( THREE.CullFaceBack);
+        // this.renderer.localClippingEnabled = true;
+       
         this.rotating = false;
         this.cameraPostion = null;
         this.lightHelperWarningGiven = false;
@@ -500,10 +500,32 @@ export class Model {
     
 
     /* SLICING FUNCTIONS */
+    enableClipping(toggle,id){
+        if (toggle == true){
+            this.renderer.localClippingEnabled = true;
+            this.updateSets(id, [id], (id) => {
+                this.sets[id].elements =[];
+                this.sets[id].meshes = [];
+                this.sets[id].setBackFace(true);
+                this.sets[id].genElements();
+                this.sets[id].setElements();
+                this.sets[id].genMeshes();
+            });
+        }
+        else{
+            this.renderer.localClippingEnabled = false;
+        }
+        
+      
+    }
+
+    disableClipping(){
+        this.renderer.localClippingEnabled = false;
+    }
 
     initClippers() {
         this.clippingIntersections = false;
-       
+        
    
         this.clippingPlanes = [
             new Plane(new Vector3(1, 0, 0), 180),
@@ -529,16 +551,16 @@ export class Model {
 
         
     }
-    removeclipping(){
-        for (let a of this.clippingPlanes) {
-            this.scene.remove(a);
-        }
-        for (let a of this.clippingHelpers) {
-            this.scene.remove(a);
-        }
+    // removeclipping(){
+    //     for (let a of this.clippingPlanes) {
+    //         this.scene.remove(a);
+    //     }
+    //     for (let a of this.clippingHelpers) {
+    //         this.scene.remove(a);
+    //     }
 
     
-    }
+    // }
     toggleClipIntersection(toggle) {
         for (let set of this.sets) {
             set.toggleClipIntersection(toggle);
