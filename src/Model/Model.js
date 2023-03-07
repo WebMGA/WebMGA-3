@@ -51,7 +51,7 @@ export class Model {
     clippingPlanes;
     clippingHelpers;
     clipIntersections;
-    
+    numOfObject;
 
     constructor(chronometer, notify) {
         this.scene = new Scene();
@@ -75,9 +75,9 @@ export class Model {
         this.selectedSet = 0;
         //this.removeclipping();
         this.initClippers();
-
+        this.occlusionCullingEnabled =true;
         this.lookAt = new Vector3(0, 0, 0);
-
+        this.numOfObject =0;
         this.updateDimensions();
         this.setCamera(this.cameraType);
 
@@ -99,11 +99,20 @@ export class Model {
     }
 
     update() {
-        
         this.renderer.render(this.scene, this.camera);
+        this.getRender_Object_number(this.scene)
         if (!this.rotating) {
             this.chronometer.click();
         }
+    }
+    getRender_Object_number(scene){
+        let num =0;
+        scene.traverse( function( object ) {
+            if ( object instanceof THREE.Mesh ){
+                num = num+1;
+            };
+        } );
+        this.numOfObject = num;
     }
 
     getData() {
