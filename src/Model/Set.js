@@ -142,11 +142,11 @@ export class Set {
         }
     }
     genUnitBox(){
-    
+        // This is the user input unit box of whole molecule
         return this.unitBox;
 
     }
-
+    
     genUnfoldPosition(){
     
         if(this.isFoldedTest()== false){
@@ -209,7 +209,6 @@ export class Set {
         let mat;
         let gutsMaterial;
         let v;
-        let ab =true;
 
         for (let elem of this.elements) {
             if (this.colourByDirector) {

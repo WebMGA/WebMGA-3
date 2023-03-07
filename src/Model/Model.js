@@ -99,23 +99,48 @@ export class Model {
     }
 
     update() {
+        if (this.occlusionCullingEnabled == true){
+            this.occlusionCulling(this.scene)
+        }
+        
         this.renderer.render(this.scene, this.camera);
+        
         this.getRender_Object_number(this.scene)
         if (!this.rotating) {
             this.chronometer.click();
         }
     }
+
     getRender_Object_number(scene){
         let num =0;
-        scene.traverse( function( object ) {
-            if ( object instanceof THREE.Mesh ){
+        scene.traverse( function(child) {
+             //@ts-ignore
+            if ( child.isMesh){
                 num = num+1;
             };
         } );
-        this.numOfObject = num;
+       
+        this.numOfObject = (num-6)/3;
     }
+    occlusionCulling(scene){
+        let new_renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance"});
+        new_renderer.setSize(this.width, this.height)
+        //gen bounding box then turn off depth write
 
+        
+        
+    }
+// // updateSets(id, params, f) {
+//     for (const m of this.sets[id].meshes) {
+//         this.scene.remove(m);
+//     }
+//     f(...params);
+//     for (const m of this.sets[id].meshes) {
+//         this.scene.add(m);
+//     }
+// }
     getData() {
+        // To save config to download
         let model = {};
         let temp = {};
         model.sets = [];
