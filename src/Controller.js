@@ -218,10 +218,8 @@ class Controller {
             this.view.setState(data.state);
         }
         this.model.updateLOD(this.model.lod);
-        this.model.occlusionCulling();
-        // this.model.update();
+        this.model.update();
         this.externalToggle.closeSidemenu();
-
     }
 
     load = (file) => {

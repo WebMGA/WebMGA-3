@@ -55,7 +55,7 @@ export class Model {
 
     constructor(chronometer, notify) {
         this.scene = new Scene();
-        this.occlusion_scene =new Scene()
+        this.occlusion_scene =new Scene();
         this.chronometer = chronometer;
         this.setDefault();
         this.notify = notify;
@@ -93,19 +93,15 @@ export class Model {
 
         for (let l of this.lighting) {
             this.scene.add(l.light);
-            this.occlusion_scene.add(l.light)
+            // this.occlusion_scene.add(l.light)
         }
         this.scene.add(this.camera);
-        this.occlusion_scene.add(this.camera)
+        // this.occlusion_scene.add(this.camera)
         this.lod = 2;
     }
 
     update() {
-        if (this.occlusionCullingEnabled == true){
-            this.occlusionCulling()
-        }
-        
-        // this.renderer.render(this.scene, this.camera);
+        this.renderer.render(this.scene, this.camera);
         if (!this.rotating) {
             this.chronometer.click();
         }
