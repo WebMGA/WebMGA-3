@@ -177,16 +177,17 @@ class GeneralMenu extends React.Component {
         this.model = props.model;
         this.functions = props.functions;
         this.toggler = props.toggler;
-        this.state = { fps: 0, showDrawer: false, rotating: false };
+        this.state = { fps: 0, showDrawer: false, rotating: false ,numOfRender:this.model.numOfObject};
 
         this.updateFPS = this.updateFPS.bind(this);
         this.toggleDrawer = this.toggleDrawer.bind(this);
         this.toggleAutorotate = this.toggleAutorotate.bind(this);
         this.runPerformanceTest = this.runPerformanceTest.bind(this);
-
+     
 
         this.chronometer = props.chronometer;
         this.chronometer.f = this.updateFPS;
+     
 
         this.toggler.autorotate = () => {
             this.toggleAutorotate();
@@ -220,6 +221,7 @@ class GeneralMenu extends React.Component {
 
     continuousRender = () => {
         this.model.update();
+        this.updateNum();
         this.chronometer.click();
         this.model.controls.update();
         if (this.model.rotating) {
@@ -235,11 +237,12 @@ class GeneralMenu extends React.Component {
 
     updateFPS(fps) {
         this.setState({
-            fps: fps.toFixed(2)
+            fps: fps.toFixed(2),
+            numOfRender:this.model.numOfObject
         });
     }
-
     render() {
+        const num = this.state.numOfRender;
         const fps = this.state.fps;
         const showDrawer = this.state.showDrawer;
         const rotating = this.state.rotating;
@@ -252,6 +255,7 @@ class GeneralMenu extends React.Component {
                                 <ButtonToolbar>
                                 
                                     <Nav.Item active>fps: {fps}</Nav.Item>
+                                    <Nav.Item active>Molecules rendered: {num}</Nav.Item>
                                     <Nav.Item onClick={this.runPerformanceTest} appearance="active" icon={<Icon icon="dashboard" />}>Run Performance Test</Nav.Item>
                                     {/* <Whisper placement="bottom" trigger="hover" speaker={
                                         <Tooltip>

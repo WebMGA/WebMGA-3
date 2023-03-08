@@ -220,7 +220,6 @@ class Controller {
         this.model.updateLOD(this.model.lod);
         this.model.update();
         this.externalToggle.closeSidemenu();
-
     }
 
     load = (file) => {

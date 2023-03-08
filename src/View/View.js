@@ -167,7 +167,6 @@ export class View {
         },
         colourFromDirector: true,
         displayAsWireframe: false,
-        //displayFoldState :true,
         boundingShapeEnabled:false
     }
 

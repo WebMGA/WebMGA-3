@@ -51,10 +51,11 @@ export class Model {
     clippingPlanes;
     clippingHelpers;
     clipIntersections;
-    
+    numOfObject;
 
     constructor(chronometer, notify) {
         this.scene = new Scene();
+        this.occlusion_scene =new Scene();
         this.chronometer = chronometer;
         this.setDefault();
         this.notify = notify;
@@ -75,9 +76,8 @@ export class Model {
         this.selectedSet = 0;
         //this.removeclipping();
         this.initClippers();
-
+        this.occlusionCullingEnabled =true;
         this.lookAt = new Vector3(0, 0, 0);
-
         this.updateDimensions();
         this.setCamera(this.cameraType);
 
@@ -93,20 +93,45 @@ export class Model {
 
         for (let l of this.lighting) {
             this.scene.add(l.light);
+            // this.occlusion_scene.add(l.light)
         }
         this.scene.add(this.camera);
+        // this.occlusion_scene.add(this.camera)
         this.lod = 2;
     }
 
     update() {
-        
         this.renderer.render(this.scene, this.camera);
         if (!this.rotating) {
             this.chronometer.click();
         }
     }
 
+    getRender_Object_number(){
+        let num =0;
+        this.scene.traverse( function(child) {
+             //@ts-ignore
+            if ( child.isMesh){
+                num = num+1;
+            };
+        } );
+       
+        this.numOfObject = (num-6)/3;
+    }
+    occlusionCulling(){
+       //Add bounding Box of each molecule to scene
+       //Color write are set to be False;
+        for (let set of this.sets) {
+            for (const y of set.moleculeBoundingBox ) {
+                this.occlusion_scene.add(y);
+            }
+        } 
+
+        this.renderer.render(this.occlusion_scene,this.camera)
+    }
+
     getData() {
+        // To save config to download
         let model = {};
         let temp = {};
         model.sets = [];
@@ -228,6 +253,7 @@ export class Model {
                 this.scene.add(m);
             }
         }
+        this.getRender_Object_number();
     }
 
     /* LOD FUNCTIONS */
