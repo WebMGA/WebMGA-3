@@ -177,7 +177,7 @@ class GeneralMenu extends React.Component {
         this.model = props.model;
         this.functions = props.functions;
         this.toggler = props.toggler;
-        this.state = { fps: 0, showDrawer: false, rotating: false ,numOfRender:0};
+        this.state = { fps: 0, showDrawer: false, rotating: false ,numOfRender:this.model.numOfObject};
 
         this.updateFPS = this.updateFPS.bind(this);
         this.toggleDrawer = this.toggleDrawer.bind(this);

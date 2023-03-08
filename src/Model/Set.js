@@ -5,11 +5,14 @@ import {
     Quaternion,
     Euler,
     Color,
-    Material
+    Material,
+    Box3Helper,
+    Box3
 
 } from 'three';
 import * as THREE from 'three';
 import {eigs, ParenthesisNodeDependencies, planckMassDependencies} from 'mathjs';
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import * as SHAPE from './Shapes.js';
 import Model from './Model';
 import Parameters from './Parameters';
@@ -38,6 +41,7 @@ export class Set {
     orientations = [];
     elements = [];
     meshes = [];
+    moleculeBoundingBox = [];
 
     
 
@@ -49,7 +53,6 @@ export class Set {
         this.unitBox = data.unitBox;
         this.clippingPlanes = cp;
         this.clipIntersection = ci; 
-
         this.setDefaults();
 
         if (data.shapeType != null) {
@@ -61,7 +64,6 @@ export class Set {
         if (this.name == null) {
             this.name = this.shapeType;
         }
-    
         this.genSet();
         
     }
@@ -94,6 +96,7 @@ export class Set {
         this.genElements();
         this.setElements();
         this.genMeshes();
+        this.genListBoundingBox();
     }
 
     
@@ -142,7 +145,7 @@ export class Set {
         }
     }
     genUnitBox(){
-        // This is the user input unit box of whole molecule
+        // This is the user input unit box of whole 
         return this.unitBox;
 
     }
@@ -229,7 +232,6 @@ export class Set {
             if (this.renderBackFace){
                 gutsMaterial = new THREE.MeshBasicMaterial( {color: c, side: THREE.BackSide, clippingPlanes: this.clippingPlanes, clipShadows: true} );
             }
-
             for (let g of elem.geometries) {
                 m = new Mesh(g, mat);
                 this.meshes.push(m);
@@ -240,6 +242,22 @@ export class Set {
                 
             }
         }
+    }
+    genListBoundingBox(){
+        // Bounding Box for each molecule
+        let BoundingBoxs =[]
+        const color2 = new THREE.Color( '#00000')
+        for (let elem of this.elements){
+            let geo = BufferGeometryUtils.mergeBufferGeometries(elem.geometries);
+            let box = new Box3();
+            geo.computeBoundingBox();
+            box.copy(geo.boundingBox);
+            let boundingBox= new Box3Helper(box,color2);
+            boundingBox.material.colorWrite=true;
+            // boundingBox.material.depthWrite=false;
+            BoundingBoxs.push(boundingBox)
+        }
+        this.moleculeBoundingBox = BoundingBoxs;
     }
 
     setElements() {

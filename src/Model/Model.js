@@ -55,6 +55,7 @@ export class Model {
 
     constructor(chronometer, notify) {
         this.scene = new Scene();
+        this.occlusion_scene =new Scene()
         this.chronometer = chronometer;
         this.setDefault();
         this.notify = notify;
@@ -77,7 +78,6 @@ export class Model {
         this.initClippers();
         this.occlusionCullingEnabled =true;
         this.lookAt = new Vector3(0, 0, 0);
-        this.numOfObject =0;
         this.updateDimensions();
         this.setCamera(this.cameraType);
 
@@ -93,27 +93,27 @@ export class Model {
 
         for (let l of this.lighting) {
             this.scene.add(l.light);
+            this.occlusion_scene.add(l.light)
         }
         this.scene.add(this.camera);
+        this.occlusion_scene.add(this.camera)
         this.lod = 2;
     }
 
     update() {
         if (this.occlusionCullingEnabled == true){
-            this.occlusionCulling(this.scene)
+            this.occlusionCulling()
         }
         
-        this.renderer.render(this.scene, this.camera);
-        
-        this.getRender_Object_number(this.scene)
+        // this.renderer.render(this.scene, this.camera);
         if (!this.rotating) {
             this.chronometer.click();
         }
     }
 
-    getRender_Object_number(scene){
+    getRender_Object_number(){
         let num =0;
-        scene.traverse( function(child) {
+        this.scene.traverse( function(child) {
              //@ts-ignore
             if ( child.isMesh){
                 num = num+1;
@@ -122,23 +122,18 @@ export class Model {
        
         this.numOfObject = (num-6)/3;
     }
-    occlusionCulling(scene){
-        let new_renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance"});
-        new_renderer.setSize(this.width, this.height)
-        //gen bounding box then turn off depth write
+    occlusionCulling(){
+       //Add bounding Box of each molecule to scene
+       //Color write are set to be False;
+        for (let set of this.sets) {
+            for (const y of set.moleculeBoundingBox ) {
+                this.occlusion_scene.add(y);
+            }
+        } 
 
-        
-        
+        this.renderer.render(this.occlusion_scene,this.camera)
     }
-// // updateSets(id, params, f) {
-//     for (const m of this.sets[id].meshes) {
-//         this.scene.remove(m);
-//     }
-//     f(...params);
-//     for (const m of this.sets[id].meshes) {
-//         this.scene.add(m);
-//     }
-// }
+
     getData() {
         // To save config to download
         let model = {};
@@ -262,6 +257,7 @@ export class Model {
                 this.scene.add(m);
             }
         }
+        this.getRender_Object_number();
     }
 
     /* LOD FUNCTIONS */
