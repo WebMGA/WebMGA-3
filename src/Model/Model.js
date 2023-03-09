@@ -11,7 +11,6 @@ import {
     MeshStandardMaterial,
     Mesh
 } from 'three';
-import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Set from './Set.js'
 import Light from './Light.js'
@@ -19,6 +18,7 @@ import ReferenceTools from './ReferenceTools.js'
 import { Alert } from 'rsuite'
 import * as SHAPE from './Shapes.js';
 import Parameters from './Parameters';
+import { sin } from 'mathjs';
 
 
 export class Model {
@@ -69,7 +69,7 @@ export class Model {
         this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance",preserveDrawingBuffer:true});
         this.renderer.setPixelRatio(window.devicePixelRatio);
         // this.renderer.localClippingEnabled = true;
-       
+        this.animation = false;
         this.rotating = false;
         this.cameraPostion = null;
         this.lightHelperWarningGiven = false;
@@ -101,11 +101,23 @@ export class Model {
     }
 
     update() {
-        this.renderer.render(this.scene, this.camera);
+        this.renderer.setAnimationLoop(this.Video_Animation());
+        // this.renderer.render(this.scene, this.camera);
         if (!this.rotating) {
             this.chronometer.click();
         }
     }
+
+    Video_Animation(){
+        for (let set of this.sets) {
+            for(const m of set.positions){
+           
+            }
+        }
+        this.renderer.render(this.scene, this.camera);
+
+    }
+
 
     getRender_Object_number(){
         let num =0;
@@ -604,13 +616,7 @@ export class Model {
         }
     }
     /* Video SUITE */
-    animation(){
-        this.loadVideoFile();
-    }
-    loadVideoFile(){
-
-    }
-
+    
     /* PERFORMANCE TEST SUITE */
 
 

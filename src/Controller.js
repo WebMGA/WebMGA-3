@@ -24,6 +24,7 @@ import sample15 from './Samples/qmga-shapes.json'
 import sample16 from './Samples/threejs-shapes.json'
 
 import { Alert, Notification } from 'rsuite'
+import { PassThrough } from "stream";
 
 class Controller {
     model;
@@ -154,11 +155,16 @@ class Controller {
 
     start = () => {
         this.chronometer.model = this.model;
+        if(this.model.animation==true){
+            this.generate(video_sample,true); 
+        }
+        else{
+            this.generate(sample2,true); 
+        }
 
-        this.generate(sample2, true);
         this.addListeners();
-        this.render();
-        this.notify('info', 'Welcome to WebMGA',
+        // this.model.renderer.setAnimationLoop(this.Video_Animation());
+        this.notify('info', `Welcome to WebMGA`,
             (<div>
             <p style={{ width: 320 }} >
                 Check out the liquid crystal configurations in the Library, and head to the About section to learn more!
@@ -168,8 +174,6 @@ class Controller {
                 This application works best on the Chrome browser.
              </p></div>
             )
-
-
 
         );
     }
@@ -236,11 +240,41 @@ class Controller {
         }
         fileReader.onloadend = read;
         fileReader.readAsText(file);
+        
     }
-
+    generatePath(){
+        let lst =[]
+        // 100001
+        for(let i =1; i<20;i++){
+            var zeros = 8-i.toString().length;
+            var sg = (new Array(zeros).fill(0)).toString().replaceAll(',',"")+`${i}`;
+            var path = `./Video_sample/cnf.${sg}.json`
+            lst.push(path)
+        }
+        return lst;
+    }
+    loadVideoSample(){
+        let position_list =[];
+        let orientation_list =[]
+        let pathLst =this.generatePath();
+        // For testing obly generated 1 position
+        for (let x =0;x<pathLst.length;x++){
+            let model =import(`${pathLst[x]}`)
+            model.then(function(result) {
+            for (let set of result.default.model.sets){
+                position_list.push(set.positions);
+                orientation_list.push(set.orientations);
+            }
+        })
+        break;}
+        
+        console.log(position_list,orientation_list);
+        return(position_list,orientation_list);
+    }
+   
     loadSample = (id) => {
         let sample;
-
+       
         switch (id) {
             case 1:
                 sample = sample1;
@@ -306,8 +340,7 @@ class Controller {
                 Alert.error('Error: File does not exist');
                 return;
         }
-
-        this.generate(sample, false);
+        // this.generate(sample, false);
         Alert.success('File loaded successfully.');
     }
 
