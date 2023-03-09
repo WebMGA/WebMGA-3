@@ -342,7 +342,7 @@ class Controller {
         this.model.updateCamera();
 
 
-        this.notify('success', `Thank you!${resolution/10}`, (
+        this.notify('success', `Thank you!`, (
             <div>
                 Image exported successfully.
             </div>

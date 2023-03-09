@@ -603,7 +603,13 @@ export class Model {
             set.updateSlicers(i, vals);
         }
     }
+    /* Video SUITE */
+    animation(){
+        this.loadVideoFile();
+    }
+    loadVideoFile(){
 
+    }
 
     /* PERFORMANCE TEST SUITE */
 
@@ -691,5 +697,6 @@ export class Model {
     }
 
 }
+
 
 export default Model;

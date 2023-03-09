@@ -221,7 +221,6 @@ class GeneralMenu extends React.Component {
 
     continuousRender = () => {
         this.model.update();
-        this.updateNum();
         this.chronometer.click();
         this.model.controls.update();
         if (this.model.rotating) {
