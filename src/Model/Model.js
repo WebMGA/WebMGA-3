@@ -66,7 +66,7 @@ export class Model {
 
     setDefault() {
         
-        this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance"});
+        this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance",preserveDrawingBuffer:true});
         this.renderer.setPixelRatio(window.devicePixelRatio);
         // this.renderer.localClippingEnabled = true;
        

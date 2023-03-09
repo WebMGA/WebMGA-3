@@ -8,7 +8,7 @@ class ExportDropdown extends React.Component {
     constructor(props) {
         super();
         this.dimensions = [1000,1000];
-        this.resolution =[1.0];
+        this.resolution =[10];
         this.f = props.f;
         this.setResolution = this.setResolution.bind(this);
         this.setDimensions = this.setDimensions.bind(this);
@@ -18,8 +18,8 @@ class ExportDropdown extends React.Component {
     setDimensions(val, index) {
         this.dimensions[index] = parseInt(val);
     }
-    setResolution(val,index){
-        this.resolution[index] = parseInt(val);
+    setResolution(val){
+        this.resolution[0] = parseInt(val);
     }
     export() {
         this.f(...this.dimensions.concat(this.resolution));
@@ -34,7 +34,7 @@ class ExportDropdown extends React.Component {
                         { marginRight: 25 },
                         { marginTop: 18, marginLeft: 35 }
                     ]} />
-                 <ParameterSet f={this.setResolution} titles={['Resolution']} values={this.resolution} step={0.1} positive
+                 <ParameterSet f={this.setResolution} titles={['Resolution']} values={this.resolution} step={1} positive
                     styling={[
                         { marginRight: 25 },
                         { marginTop: 18, marginLeft: 35 }

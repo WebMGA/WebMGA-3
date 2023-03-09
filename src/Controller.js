@@ -323,18 +323,15 @@ class Controller {
 
     export = (height, width,resolution) => {
         // fix orthographic projection
-
         this.model.height = height;
         this.model.width = width;
         this.model.updateCamera();
 
         this.model.renderer.setSize(width, height);
+
         this.model.renderer.render(this.model.scene, this.model.camera);
-        const dataURL = this.model.renderer.domElement.toDataURL("image/jpeg", resolution).replace("image/jpeg", "image/octet-stream");
 
-        this.model.updateDimensions();
-        this.model.updateCamera();
-
+        const dataURL = this.model.renderer.domElement.toDataURL("image/jpeg",resolution/10);
 
         var link = document.createElement('a');
         link.download = "WebMGA Visualisation.jpeg";
@@ -345,7 +342,7 @@ class Controller {
         this.model.updateCamera();
 
 
-        this.notify('success', 'Thank you!', (
+        this.notify('success', `Thank you!${resolution/10}`, (
             <div>
                 Image exported successfully.
             </div>
