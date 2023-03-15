@@ -1,12 +1,12 @@
 import React from "react";
 import GeneralMenu from './GeneralMenu';
 import VisualisationMenu from './VisualisationMenu';
-
 export class View {
     header;
     sidebar;
     model;
     expanded;
+    submenu;
 
     static state;
 
@@ -17,9 +17,7 @@ export class View {
         this.expanded = false;
         this.model = m;
         this.header = <GeneralMenu chronometer={chrono} functions={io} model={this.model} toggler ={toggler}/>;
-        this.sidebar = <VisualisationMenu model={this.model} sidebarExpanded={this.expanded} toggler={toggler}/>;
-
-        
+        this.sidebar = <VisualisationMenu model={this.model} functions={io} sidebarExpanded={this.expanded} toggler={toggler}/>;
     }
     
 

@@ -9,5 +9,7 @@
 
                             }
                         ]
-                    }
+                    },
+                    "state":{"reference":{"boundingShapeEnabled":false,"activeShape":"box","showAxes":false,"showGrid":false,"multicolour":true,"gridColour":{"r":255,"g":255,"b":255},"size":50},"ambientLight":{"ambientLightColour":{"r":255,"g":255,"b":255,"i":40},"backgroundColour":{"r":0,"g":0,"b":0}},"pointLight":{"reset":0,"active":"point","enabled":true,"helper":false,"colour":{"r":255,"g":255,"b":255,"i":60},"position":{"x":5,"y":0,"z":5}},"directionalLight":{"reset":0,"active":"directional","enabled":true,"helper":false,"colour":{"r":255,"g":255,"b":255,"i":50},"position":{"x":-5,"y":0,"z":-5}},"camera":{"type":"orthographic","lookAt":{"x":0,"y":0,"z":0},"position":{"x":1.98,"y":-0.79,"z":-14.85},"zoom":28.440004613822982},"slicing":{"clipIntersection":false,"slicing_enabled":false,"helpers":[false,false,false],"x":[-180,80],"y":[-80,80],"z":[-80,80]},"model":{"active":0,"reset":0,"sets":["Set A"],"configurations":[{"title":"Set A","shape":"Ellipsoid","parameters":{"names":["X","Y","Z"],"vals":[0.2,0.4,0.8]},"colour":{"r":255,"g":255,"b":255},"colourFromDirector":true,"displayAsWireframe":false,"boundingShapeEnabled":false}]}}
+
     }

@@ -1,7 +1,8 @@
 
-import { Header, Dropdown, FormGroup, Drawer, Nav, Navbar, Icon, Button, ButtonToolbar, Slider, Form, ControlLabel, Whisper, Tooltip, Divider, Alert } from 'rsuite';
+import { Header, Dropdown, FormGroup, Drawer, Nav, Navbar, Icon, Button, ButtonToolbar, Slider, Form, ControlLabel, Whisper, Tooltip,Alert } from 'rsuite';
 import { ParameterSet } from './Tools';
 import React from "react";
+
 
 class ExportDropdown extends React.Component {
 
@@ -183,12 +184,13 @@ class GeneralMenu extends React.Component {
         this.toggleDrawer = this.toggleDrawer.bind(this);
         this.toggleAutorotate = this.toggleAutorotate.bind(this);
         this.runPerformanceTest = this.runPerformanceTest.bind(this);
+   
      
 
         this.chronometer = props.chronometer;
         this.chronometer.f = this.updateFPS;
      
-
+    
         this.toggler.autorotate = () => {
             this.toggleAutorotate();
         }
@@ -218,7 +220,7 @@ class GeneralMenu extends React.Component {
 
         this.chronometer.testing = true;
     }
-
+  
     continuousRender = () => {
         this.model.update();
         this.chronometer.click();
@@ -227,6 +229,7 @@ class GeneralMenu extends React.Component {
             requestAnimationFrame(this.continuousRender);
         }
     }
+
 
     toggleDrawer() {
         this.setState({

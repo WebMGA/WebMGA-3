@@ -169,9 +169,60 @@ export class ModelsOptions extends React.Component {
 export class VideoOptions extends React.Component{
     constructor(props){
         super();
-        this.state =View.state.model;
+        this.model = props.model;
+        this.state =View.state;
+        this.functions = props.functions;
+        this.RealTimeVideo = this.RealTimeVideo.bind(this);
+        this.VideoToggle = this.VideoToggle.bind(this);
+        this.generate = this.generate.bind(this);
+        this.f = props.functions;
+
     }
+    VideoToggle(){
+        this.setState({
+            video: !this.state.video
+        });
+        
+        this.state.video = !this.state.video;
+        if(this.state.video == true){
+            this.RealTimeVideo(0);
+        }
+    }
+    RealTimeVideo(i){
+        const samples = this.model.retrieveVideoSample();
+        if(i<19){
+            for (let set of this.model.sets) {
+                for (const m of set.meshes) {
+                    this.model.scene.remove(m);
+                }
+            }
+            console.log('scene removed',i)
+            // this.generate(samples[i].model.sets);
+            this.model.genSets(samples[i].model.sets);
+            this.setState(
+               samples[i].state
+            )
+            this.model.updateLOD(this.model.lod);
+            this.model.update();
+            this.model.controls.update();
+            console.log('running animation',i)
+
+            if(this.state.video == true ){
+                requestAnimationFrame( ()=> this.RealTimeVideo(i+1));
+                console.log('sending request',i+1)
+            };
+       
+        }
+        
+    }
+
+    generate(data){
+        console.log(this.functions);
+        this.functions[2](data,false);
+    }
+    
     render(){
+        const video = this.state.video;
         return(
             <div>
 
@@ -186,7 +237,7 @@ export class VideoOptions extends React.Component{
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} > Play </Checkbox>
+                            <Checkbox onClick={this.VideoToggle} checked={video}> Play </Checkbox>
                         </Col>
                     </Row>
                     <Row className="show-grid">
@@ -1027,3 +1078,4 @@ export class ReferenceOptions extends React.Component {
         );
     }
 }
+export default VideoOptions;

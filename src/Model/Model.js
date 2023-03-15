@@ -68,13 +68,14 @@ export class Model {
         
         this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance",preserveDrawingBuffer:true});
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        // this.renderer.localClippingEnabled = true;
+
         this.animation = false;
         this.rotating = false;
         this.cameraPostion = null;
         this.lightHelperWarningGiven = false;
         this.selectedSet = 0;
-        //this.removeclipping();
+        this.Video_sample_list=[];
+    
         this.initClippers();
         this.occlusionCullingEnabled =true;
         this.lookAt = new Vector3(0, 0, 0);
@@ -101,22 +102,22 @@ export class Model {
     }
 
     update() {
-        this.renderer.setAnimationLoop(this.Video_Animation());
-        // this.renderer.render(this.scene, this.camera);
+        // this.occlusionCulling();
+        
+        this.renderer.render(this.scene, this.camera);
         if (!this.rotating) {
             this.chronometer.click();
         }
     }
 
-    Video_Animation(){
-        for (let set of this.sets) {
-            for(const m of set.positions){
-           
-            }
-        }
-        this.renderer.render(this.scene, this.camera);
-
-    }
+    // Video_Animation(){
+    //     this.update();
+    //     // this.controls.update();
+    //     // if (this.rotating) {
+    //     requestAnimationFrame(this.Video_Animation());
+    //     // }
+    //     // console.log('time',timestamp)
+    // }
 
 
     getRender_Object_number(){
@@ -138,8 +139,13 @@ export class Model {
                 this.occlusion_scene.add(y);
             }
         } 
-
-        this.renderer.render(this.occlusion_scene,this.camera)
+        this.renderer.render(this.occlusion_scene,this.camera);
+        // const query = gl.createQuery();
+        // gl.beginQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE,query);
+        
+        // const currentQuery = gl.getQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE, query);
+        // gl.endQuery(query);
+        // console.log(currentQuery);
     }
 
     getData() {
@@ -616,7 +622,17 @@ export class Model {
         }
     }
     /* Video SUITE */
+   
     
+    SetVideoSample(list){
+        this.Video_sample_list = list;
+        
+    }
+    retrieveVideoSample(){
+        // console.log(this.Video_position_list,this.Video_orientation_list)
+        return this.Video_sample_list;
+    }
+   
     /* PERFORMANCE TEST SUITE */
 
 

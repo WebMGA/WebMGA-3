@@ -56,7 +56,7 @@ const CustomNav = ({ active, onSelect, ...props }) => {
     );
 };
 
-const MenuContent = ({ active, expand, onChange, model, toggler }) => {
+const MenuContent = ({ active, expand, onChange, model, toggler,functions}) => {
 
     var menuContent = [];
 
@@ -104,7 +104,7 @@ const MenuContent = ({ active, expand, onChange, model, toggler }) => {
                 menuContent.push(<PeriodicBoundingOption  key={active} model={model} />);
                 break;
             case "Video Rendering":
-                menuContent.push(<VideoOptions key={active} model={model} />);
+                menuContent.push(<VideoOptions key={active} model={model} functions ={functions} />);
                 break;
             default:
                 Alert.error('Error: Unknown Submenu Identifier');

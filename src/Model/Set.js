@@ -246,7 +246,7 @@ export class Set {
     genListBoundingBox(){
         // Bounding Box for each molecule
         let BoundingBoxs =[]
-        const color2 = new THREE.Color( '#00000')
+        const color2 = new THREE.Color( '0xff0000')
         for (let elem of this.elements){
             let geo = BufferGeometryUtils.mergeBufferGeometries(elem.geometries);
             let box = new Box3();
@@ -280,6 +280,25 @@ export class Set {
 
             geoms = [];
         }
+    }
+    setPositions(lst1,lst2){
+        // let pos =[];
+        // let x = this.unitBox[0];
+        // let y = this.unitBox[1];
+        // let z = this.unitBox[2];
+
+        // for (let i = 0; i < this.positions.length; i++){
+        //     let rnd1 = (Math.random() * (2) -1) 
+        //     let rnd2 = (Math.random() * (2) -1)
+        //     let rnd3 = (Math.random() * (2) -1)
+        //     pos.push([this.positions[i][0]+rnd1*x ,this.positions[i][1]+rnd2*y,this.positions[i][2]+rnd3*z])
+        // }
+        // this.positions = pos;
+        const pos = lst1;
+        const ori = lst2;
+        this.positions =pos;
+        this.orientations =ori;
+          
     }
 
     genElements() {
