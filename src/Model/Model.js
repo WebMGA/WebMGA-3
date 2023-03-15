@@ -102,9 +102,9 @@ export class Model {
     }
 
     update() {
-        // this.occlusionCulling();
-        
+        console.log(this.renderer.info);
         this.renderer.render(this.scene, this.camera);
+        
         if (!this.rotating) {
             this.chronometer.click();
         }
@@ -134,12 +134,12 @@ export class Model {
     occlusionCulling(){
        //Add bounding Box of each molecule to scene
        //Color write are set to be False;
-        for (let set of this.sets) {
-            for (const y of set.moleculeBoundingBox ) {
-                this.occlusion_scene.add(y);
-            }
-        } 
-        this.renderer.render(this.occlusion_scene,this.camera);
+        // for (let set of this.sets) {
+        //     for (const y of set.moleculeBoundingBox ) {
+        //         this.occlusion_scene.add(y);
+        //     }
+        // } 
+        // this.renderer.render(this.occlusion_scene,this.camera);
         // const query = gl.createQuery();
         // gl.beginQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE,query);
         
@@ -214,6 +214,8 @@ export class Model {
     updateSets(id, params, f) {
         for (const m of this.sets[id].meshes) {
             this.scene.remove(m);
+            m.geometry.dispose();
+            m.material.dispose(); 
         }
         f(...params);
         for (const m of this.sets[id].meshes) {
@@ -260,6 +262,8 @@ export class Model {
         for (let set of this.sets) {
             for (const m of set.meshes) {
                 this.scene.remove(m);
+                m.geometry.dispose ();
+                m.material.dispose ();
             }
         }
         this.sets = [];

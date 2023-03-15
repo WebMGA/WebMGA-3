@@ -194,6 +194,8 @@ export class VideoOptions extends React.Component{
             for (let set of this.model.sets) {
                 for (const m of set.meshes) {
                     this.model.scene.remove(m);
+                    m.geometry.dispose ();
+                    m.material.dispose ();
                 }
             }
             console.log('scene removed',i)

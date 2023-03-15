@@ -156,7 +156,6 @@ class Controller {
     start = () => {
         this.chronometer.model = this.model;
 
-        
         this.generate(sample2,true); 
         this.loadVideoSample();
         this.addListeners();
@@ -408,8 +407,6 @@ class Controller {
     }
 
     addListeners = () => {
-
-
         this.model.controls.addEventListener('change', this.render);
 
         document.body.style.overflow = "hidden";
