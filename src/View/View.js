@@ -20,8 +20,6 @@ export class View {
         this.sidebar = <VisualisationMenu model={this.model} functions={io} sidebarExpanded={this.expanded} toggler={toggler}/>;
     }
     
-
-
     getData() {
         return View.state;
     }
@@ -41,7 +39,6 @@ export class View {
             this.model.toggleUserColour(i, substate.colourFromDirector);
             this.model.toggleWireframe(i, substate.displayAsWireframe);
             this.model.toggleFoldState(i,substate.displayFoldState);
-            // this.model.toggleUnfoldState(i,substate.displayUnfoldState);
             this.model.updateShape(i, substate.shape, substate.parameters);
         }
     }

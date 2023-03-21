@@ -18,7 +18,6 @@ import ReferenceTools from './ReferenceTools.js'
 import { Alert } from 'rsuite'
 import * as SHAPE from './Shapes.js';
 import Parameters from './Parameters';
-import { sin } from 'mathjs';
 
 
 export class Model {
@@ -599,13 +598,7 @@ export class Model {
 
         
     }
-    // removeclipping(){
-    //     for (let a of this.clippingPlanes) {
-    //         this.scene.remove(a);
-    //     }
-    //     for (let a of this.clippingHelpers) {
-    //         this.scene.remove(a);
-    //     }
+
 
     
     // }
@@ -626,14 +619,77 @@ export class Model {
         }
     }
     /* Video SUITE */
-   
-    
-    SetVideoSample(list){
-        this.Video_sample_list = list;
+    uploadConfig(){
+        // window.showOpenFilePicker({multiple:true});
+        let fileHandle =[];
+        let lst =[]
+        async function getFile() {
+        fileHandle = await window.showOpenFilePicker({multiple:true});
+        for (let i=0; i< fileHandle.length;i++){
+            const file = await fileHandle[i].getFile();
+            const text = await file.text();
+            var data = JSON.parse(text);
+            console.log(data)
+            lst.push(data);
+        }
+        }
+        getFile();
         
+        this.Video_sample_list = lst;
+        this.notifyFinishUpload();
     }
+    notifyFinishUpload(){
+        this.notify('info', `Files loaded successfully`,
+            (<div>
+            <p style={{ width: 320 }} >
+                Now Select Viewing state!
+            </p>
+            </div>
+            ));
+    }
+    startRecording (){
+        console.log('test1')
+        const stream = this.renderer.domElement.captureStream(25);
+        const recordedChunks = [];
+        this.recordedChunks = recordedChunks;
+        console.log(stream);
+        const options = { mimeType: "video/webm; codecs=vp9" };
+        const mediaRecorder = new MediaRecorder(stream, options);
+        this.mediaRecorder = mediaRecorder;
+        this.mediaRecorder.start();
+
+    }
+    test1(param){
+        const samples = this.retrieveVideoSample();
+        const max_iter = samples.length;
+
+        console.log('test1')
+            const stream = this.renderer.domElement.captureStream(25);
+            const recordedChunks = [];
+            this.recordedChunks = recordedChunks;
+            console.log(stream);
+            const options = { mimeType: "video/webm; codecs=vp9" };
+            const mediaRecorder = new MediaRecorder(stream, options);
+            this.mediaRecorder = mediaRecorder;
+            this.mediaRecorder.start();
+
+        this.mediaRecorder.addEventListener('dataavailable', (event) => {
+            const videoBlob = new Blob([event.data], { type: 'video/webm' });
+            const videoUrl = URL.createObjectURL(videoBlob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = videoUrl;
+            downloadLink.download = 'video.webm';
+            downloadLink.click();
+            });
+        
+        param(0,samples,max_iter);
+
+        setTimeout(() => {
+            this.mediaRecorder.stop();
+            }, 10000);
+        }
+    
     retrieveVideoSample(){
-        // console.log(this.Video_position_list,this.Video_orientation_list)
         return this.Video_sample_list;
     }
    

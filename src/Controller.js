@@ -2,8 +2,6 @@ import Model from "./Model/Model";
 import View from "./View/View"
 import 'rsuite/dist/styles/rsuite-dark.css';
 import { std, mean } from 'mathjs';
-import video_sample from'./Video_sample/cnf.00000000.json';
-import video_sample2 from'./Video_sample/cnf.00000001.json';
 import unfolded_sample1 from'./Samples/UnfoldedSC4.json';
 import unforded_sample2 from'./Samples/UnfoldedE3.json';
 import sample1 from './Samples/dummy-vector.json';
@@ -157,7 +155,7 @@ class Controller {
         this.chronometer.model = this.model;
 
         this.generate(sample2,true); 
-        this.loadVideoSample();
+        
         this.addListeners();
         this.notify('info', `Welcome to WebMGA`,
             (<div>
@@ -171,7 +169,9 @@ class Controller {
             )
 
         );
+        // this.loadVideoSample();
     }
+    
 
     notify(type, title, description) {
         Notification[type]({
@@ -240,7 +240,8 @@ class Controller {
     generatePath(){
         let lst =[]
         // 100001
-        for(let i =0; i<20;i++){
+
+        for(let i =0; i<99999;i = i+100){
             var zeros = 8-i.toString().length;
             var sg = (new Array(zeros).fill(0)).toString().replaceAll(',',"")+`${i}`;
             var path = `./Video_sample/cnf.${sg}.json`
@@ -321,12 +322,6 @@ class Controller {
             case 18:
                 sample =unforded_sample2 ;
                 break;
-            case 19:
-                sample = video_sample;
-                break;
-            case 20:
-                sample =video_sample2;
-                break
             default:
                 Alert.error('Error: File does not exist');
                 return;

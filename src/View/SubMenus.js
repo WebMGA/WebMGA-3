@@ -3,7 +3,7 @@ import { Nav, Divider, Checkbox, FormGroup, RadioGroup, Radio, Grid, Row, Col, A
 import React from "react";
 import { SliceSlider, ParameterInput, ParameterSet, CustomSlider } from './Tools'
 import View from './View'
-
+import { EqualStencilFunc } from 'three';
 
 const TITLE_LEFT_MARGIN = 30;
 const dividerStyle = {
@@ -169,14 +169,21 @@ export class ModelsOptions extends React.Component {
 export class VideoOptions extends React.Component{
     constructor(props){
         super();
+        this.view =View;
         this.model = props.model;
         this.state =View.state;
-        this.functions = props.functions;
+        this.UploadFiles = this.UploadFiles.bind(this);
         this.RealTimeVideo = this.RealTimeVideo.bind(this);
         this.VideoToggle = this.VideoToggle.bind(this);
         this.generate = this.generate.bind(this);
         this.f = props.functions;
 
+    }
+    UploadFiles(){
+        this.model.uploadConfig();
+        this.setState({
+            upload:!this.state.upload
+        })
     }
     VideoToggle(){
         this.setState({
@@ -184,13 +191,16 @@ export class VideoOptions extends React.Component{
         });
         
         this.state.video = !this.state.video;
+        const samples = this.model.retrieveVideoSample();
         if(this.state.video == true){
-            this.RealTimeVideo(0);
+            // this.model.loadVideoSample();
+            const max_iter = samples.length;
+            this.model.test1(this.RealTimeVideo);
+            
         }
     }
-    RealTimeVideo(i){
-        const samples = this.model.retrieveVideoSample();
-        if(i<19){
+    RealTimeVideo(i,samples,max_iter){
+        if(i<max_iter){
             for (let set of this.model.sets) {
                 for (const m of set.meshes) {
                     this.model.scene.remove(m);
@@ -199,23 +209,18 @@ export class VideoOptions extends React.Component{
                 }
             }
             console.log('scene removed',i)
-            // this.generate(samples[i].model.sets);
+            console.log(samples[i])
             this.model.genSets(samples[i].model.sets);
-            this.setState(
-               samples[i].state
-            )
             this.model.updateLOD(this.model.lod);
             this.model.update();
             this.model.controls.update();
+            
             console.log('running animation',i)
-
             if(this.state.video == true ){
-                requestAnimationFrame( ()=> this.RealTimeVideo(i+1));
+                requestAnimationFrame( ()=> this.RealTimeVideo(i+1,samples,max_iter));
                 console.log('sending request',i+1)
             };
-       
         }
-        
     }
 
     generate(data){
@@ -225,11 +230,25 @@ export class VideoOptions extends React.Component{
     
     render(){
         const video = this.state.video;
+        const upload = this.state.upload;
         return(
             <div>
 
                 <Grid fluid>
-                <Row className="show-grid">
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Upload Configuration </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox onClick={this.UploadFiles} checked={upload}> upload </Checkbox>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
@@ -239,7 +258,7 @@ export class VideoOptions extends React.Component{
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox onClick={this.VideoToggle} checked={video}> Play </Checkbox>
+                            <Checkbox onClick={this.VideoToggle} checked={video} disabled={!upload}> Play </Checkbox>
                         </Col>
                     </Row>
                     <Row className="show-grid">
