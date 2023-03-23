@@ -9,7 +9,7 @@ import {
     MeshLambertMaterial,
     MeshPhongMaterial,
     MeshStandardMaterial,
-    Mesh
+    Mesh,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Set from './Set.js'
@@ -18,6 +18,7 @@ import ReferenceTools from './ReferenceTools.js'
 import { Alert } from 'rsuite'
 import * as SHAPE from './Shapes.js';
 import Parameters from './Parameters';
+
 
 
 export class Model {
@@ -68,18 +69,21 @@ export class Model {
         this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance",preserveDrawingBuffer:true});
         this.renderer.setPixelRatio(window.devicePixelRatio);
 
-        this.animation = false;
+
+        this.videoFileloaded =true;
         this.rotating = false;
         this.cameraPostion = null;
         this.lightHelperWarningGiven = false;
         this.selectedSet = 0;
         this.Video_sample_list=[];
-    
+        this.mediaRecorder= null;
+        this .clock = null;
         this.initClippers();
         this.occlusionCullingEnabled =true;
         this.lookAt = new Vector3(0, 0, 0);
         this.updateDimensions();
         this.setCamera(this.cameraType);
+        
 
 
         this.lighting = [
@@ -620,75 +624,71 @@ export class Model {
     }
     /* Video SUITE */
     uploadConfig(){
-        // window.showOpenFilePicker({multiple:true});
+    
         let fileHandle =[];
         let lst =[]
         async function getFile() {
         fileHandle = await window.showOpenFilePicker({multiple:true});
-        for (let i=0; i< fileHandle.length;i++){
+        {for (let i=0; i< fileHandle.length;i++){
             const file = await fileHandle[i].getFile();
             const text = await file.text();
             var data = JSON.parse(text);
-            console.log(data)
             lst.push(data);
-        }
-        }
-        getFile();
+            // console.log(i);
+        }};
+        return 'ahhhhh surreal'
+        };
         
+        // for (let set of this.model.sets) {
+        //     for (const m of set.meshes) {
+        //         this.model.scene.remove(m);
+        //         m.geometry.dispose ();
+        //         m.material.dispose ();
+        //     }
+        // }
+        // console.log('scene removed',i)
+        // console.log(samples[i])
+        // this.model.genSets(samples[i].model.sets);
+        // this.model.updateLOD(this.model.lod);
+        // this.model.update();
+        // this.model.controls.update();
+        // const model = this.model
+        // this.model = this.model.bind(this);
+        // console.log(this.model)
+
+        
+    
+        getFile().then(()=>{
+            for (let set of this.sets) {
+                for (const m of set.meshes) {
+                    this.scene.remove(m);
+                    m.geometry.dispose ();
+                    m.material.dispose ();
+                }}
+                this.genSets(lst[0].model.sets);
+                this.updateLOD(this.lod);
+                this.update();
+                this.controls.update();
+            }).then(()=>{
+                this.notifyFinishUpload();
+                })
         this.Video_sample_list = lst;
-        this.notifyFinishUpload();
+        return lst
     }
+    
     notifyFinishUpload(){
         this.notify('info', `Files loaded successfully`,
             (<div>
             <p style={{ width: 320 }} >
-                Now Select Viewing state!
+                Now Select Your Video Viewing configuration!
+                We recommend showing bounding box!
             </p>
             </div>
             ));
     }
-    startRecording (){
-        console.log('test1')
-        const stream = this.renderer.domElement.captureStream(25);
-        const recordedChunks = [];
-        this.recordedChunks = recordedChunks;
-        console.log(stream);
-        const options = { mimeType: "video/webm; codecs=vp9" };
-        const mediaRecorder = new MediaRecorder(stream, options);
-        this.mediaRecorder = mediaRecorder;
-        this.mediaRecorder.start();
-
-    }
-    test1(param){
-        const samples = this.retrieveVideoSample();
-        const max_iter = samples.length;
-
-        console.log('test1')
-            const stream = this.renderer.domElement.captureStream(25);
-            const recordedChunks = [];
-            this.recordedChunks = recordedChunks;
-            console.log(stream);
-            const options = { mimeType: "video/webm; codecs=vp9" };
-            const mediaRecorder = new MediaRecorder(stream, options);
-            this.mediaRecorder = mediaRecorder;
-            this.mediaRecorder.start();
-
-        this.mediaRecorder.addEventListener('dataavailable', (event) => {
-            const videoBlob = new Blob([event.data], { type: 'video/webm' });
-            const videoUrl = URL.createObjectURL(videoBlob);
-            const downloadLink = document.createElement('a');
-            downloadLink.href = videoUrl;
-            downloadLink.download = 'video.webm';
-            downloadLink.click();
-            });
-        
-        param(0,samples,max_iter);
-
-        setTimeout(() => {
-            this.mediaRecorder.stop();
-            }, 10000);
-        }
     
+    
+
     retrieveVideoSample(){
         return this.Video_sample_list;
     }

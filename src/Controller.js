@@ -177,7 +177,7 @@ class Controller {
         Notification[type]({
             title: title,
             placement: 'bottomEnd',
-            duration: 15000,
+            duration: 7000,
             description: description
         });
     }

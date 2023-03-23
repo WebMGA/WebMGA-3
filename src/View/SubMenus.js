@@ -3,7 +3,7 @@ import { Nav, Divider, Checkbox, FormGroup, RadioGroup, Radio, Grid, Row, Col, A
 import React from "react";
 import { SliceSlider, ParameterInput, ParameterSet, CustomSlider } from './Tools'
 import View from './View'
-import { EqualStencilFunc } from 'three';
+import ccapture from "ccapture.js-npmfixed";
 
 const TITLE_LEFT_MARGIN = 30;
 const dividerStyle = {
@@ -169,9 +169,8 @@ export class ModelsOptions extends React.Component {
 export class VideoOptions extends React.Component{
     constructor(props){
         super();
-        this.view =View;
         this.model = props.model;
-        this.state =View.state;
+        this.state =View.state
         this.UploadFiles = this.UploadFiles.bind(this);
         this.RealTimeVideo = this.RealTimeVideo.bind(this);
         this.VideoToggle = this.VideoToggle.bind(this);
@@ -181,26 +180,34 @@ export class VideoOptions extends React.Component{
     }
     UploadFiles(){
         this.model.uploadConfig();
+        let toggle = ! this.state.upload
         this.setState({
-            upload:!this.state.upload
+            upload: toggle
         })
+        View.state.upload = toggle;
+        
     }
     VideoToggle(){
         this.setState({
             video: !this.state.video
         });
-        
         this.state.video = !this.state.video;
-        const samples = this.model.retrieveVideoSample();
         if(this.state.video == true){
-            // this.model.loadVideoSample();
+            const samples = this.model.retrieveVideoSample();
             const max_iter = samples.length;
-            this.model.test1(this.RealTimeVideo);
+            var capturer = new ccapture( { format: 'webm' },{framerate:60},{verbose: true});
             
+            this.RealTimeVideo(0,samples,max_iter,capturer);
         }
     }
-    RealTimeVideo(i,samples,max_iter){
+    RealTimeVideo(i,samples,max_iter,capturer){
+        if(i ==0){
+            console.log('does this work?')
+            capturer.start();
+            capturer.capture(this.model.renderer.domElement);
+        }
         if(i<max_iter){
+            console.log('start render')
             for (let set of this.model.sets) {
                 for (const m of set.meshes) {
                     this.model.scene.remove(m);
@@ -214,13 +221,32 @@ export class VideoOptions extends React.Component{
             this.model.updateLOD(this.model.lod);
             this.model.update();
             this.model.controls.update();
+            capturer.capture( this.model.renderer.domElement )
             
             console.log('running animation',i)
             if(this.state.video == true ){
-                requestAnimationFrame( ()=> this.RealTimeVideo(i+1,samples,max_iter));
+                requestAnimationFrame( ()=> this.RealTimeVideo(i+1,samples,max_iter,capturer));
                 console.log('sending request',i+1)
             };
         }
+        if (i == max_iter){
+            // setTimeout(()=>{
+                console.log('ddjnajdnjkbnjsanjnkjxskmkm',capturer)
+                capturer.stop();
+                capturer.save(function( blob ) {
+                    console.log(blob);
+                    var url = URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'captured-video.webm';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+                // this.model.download();
+            // },2000)
+        }
+       
     }
 
     generate(data){
