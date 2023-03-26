@@ -100,7 +100,7 @@ const MenuContent = ({ active, expand, onChange, model, toggler,functions}) => {
                 menuContent.push(<ReferenceOptions key={active} model={model} />);
                 break;
             case "Video Rendering":
-                menuContent.push(<VideoOptions key={active} model={model} functions ={functions} />);
+                menuContent.push(<VideoOptions key={active} model={model} functions={functions}/>);
                 break;
             default:
                 Alert.error('Error: Unknown Submenu Identifier');
@@ -118,6 +118,7 @@ class VisualisationMenu extends Component {
             expand: props.sidebarExpanded,
             active: 'Models'
         };
+        this.functions = props.functions;
         this.model = props.model;
         this.handleToggle = this.handleToggle.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
@@ -162,7 +163,7 @@ class VisualisationMenu extends Component {
                             <CustomNav vertical appearance="subtle" active={active} onSelect={this.handleSelect} />
                         </Sidebar>
                         <Content >
-                            <MenuContent key={10} active={active} expand={expand} onChange={this.handleToggle} model={this.model} toggler={this.toggler}/>
+                            <MenuContent key={10} active={active} expand={expand} onChange={this.handleToggle} model={this.model} toggler={this.toggler} functions ={this.functions}/>
                         </Content>
 
                     </Container>

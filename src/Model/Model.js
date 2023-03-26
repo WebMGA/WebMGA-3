@@ -625,59 +625,23 @@ export class Model {
         }
     }
     /* Video SUITE */
-    uploadConfig(){
-    
-        let fileHandle =[];
-        let lst =[]
-        async function getFile() {
-        fileHandle = await window.showOpenFilePicker({multiple:true});
-        {for (let i=0; i< fileHandle.length;i++){
-            const file = await fileHandle[i].getFile();
-            const text = await file.text();
-            var data = JSON.parse(text);
-            lst.push(data);
-            // console.log(i);
-        }};
-        return 'ahhhhh surreal'
-        };
-        
-        // for (let set of this.model.sets) {
-        //     for (const m of set.meshes) {
-        //         this.model.scene.remove(m);
-        //         m.geometry.dispose ();
-        //         m.material.dispose ();
-        //     }
-        // }
-        // console.log('scene removed',i)
-        // console.log(samples[i])
-        // this.model.genSets(samples[i].model.sets);
-        // this.model.updateLOD(this.model.lod);
-        // this.model.update();
-        // this.model.controls.update();
-        // const model = this.model
-        // this.model = this.model.bind(this);
-        // console.log(this.model)
-
-        
-    
-        getFile().then(()=>{
-            for (let set of this.sets) {
-                for (const m of set.meshes) {
-                    this.scene.remove(m);
-                    m.geometry.dispose ();
-                    m.material.dispose ();
-                }}
-                this.genSets(lst[0].model.sets);
-                this.updateLOD(this.lod);
-                this.update();
-                this.controls.update();
-            }).then(()=>{
-                this.notifyFinishUpload();
-                })
-        this.Video_sample_list = lst;
-        return lst
-    }
-    
+    uploadConfig() {
+        return new Promise(async (resolve, reject) => {
+          let fileHandle = [];
+          let lst = [];
+          try {
+            fileHandle = await window.showOpenFilePicker({ multiple: true });
+            for (let i = 0; i < fileHandle.length; i++) {
+              const file = await fileHandle[i].getFile();
+              lst.push(file);
+            }
+            this.Video_sample_list = lst;
+            resolve(lst);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
     notifyFinishUpload(){
         this.notify('info', `Files loaded successfully`,
             (<div>

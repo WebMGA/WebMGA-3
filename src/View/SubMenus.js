@@ -2,7 +2,7 @@
 import { Nav, Divider, Checkbox, FormGroup, RadioGroup, Radio, Grid, Row, Col, Alert, Whisper, Tooltip, Icon } from 'rsuite';
 import React from "react";
 import { SliceSlider, ParameterInput, ParameterSet, CustomSlider } from './Tools'
-import View from './View'
+import { View } from './View'
 import ccapture from "ccapture.js-npmfixed";
 
 const TITLE_LEFT_MARGIN = 30;
@@ -171,6 +171,7 @@ export class VideoOptions extends React.Component{
         super();
         this.model = props.model;
         this.state =View.state;
+        this.functions = props.functions;
         this.UploadFiles = this.UploadFiles.bind(this);
         this.RealTimeVideo = this.RealTimeVideo.bind(this);
         this.VideoToggle = this.VideoToggle.bind(this);
@@ -179,7 +180,11 @@ export class VideoOptions extends React.Component{
 
     }
     UploadFiles(){
-        this.model.uploadConfig();
+        async function runAfterUpload(model, functions) {
+            const lst = await model.uploadConfig();
+            functions[1](lst[0],true);
+        }
+        runAfterUpload(this.model,this.functions)
         let toggle = ! this.state.upload
         this.setState({
             upload: toggle
@@ -187,6 +192,7 @@ export class VideoOptions extends React.Component{
         View.state.upload = toggle;
         
     }
+    
     VideoToggle(){
         this.setState({
             video: !this.state.video
@@ -211,19 +217,7 @@ export class VideoOptions extends React.Component{
         }
         if(i<max_iter){
             console.log('start render')
-            for (let set of this.model.sets) {
-                for (const m of set.meshes) {
-                    this.model.scene.remove(m);
-                    m.geometry.dispose ();
-                    m.material.dispose ();
-                }
-            }
-            console.log('scene removed',i)
-            console.log(samples[i])
-            this.model.genSets(samples[i].model.sets);
-            this.model.updateLOD(this.model.lod);
-            this.model.update();
-            this.model.controls.update();
+            this.functions[1](samples[i],true);
             capturer.capture( this.model.renderer.domElement )
             
             console.log('running animation',i)

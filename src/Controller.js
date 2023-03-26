@@ -2,6 +2,7 @@ import Model from "./Model/Model";
 import View from "./View/View"
 import 'rsuite/dist/styles/rsuite-dark.css';
 import { std, mean } from 'mathjs';
+import video_sample from'./Samples/cnf.00000174.json';
 import unfolded_sample1 from'./Samples/UnfoldedSC4.json';
 import unforded_sample2 from'./Samples/UnfoldedE3.json';
 import sample1 from './Samples/dummy-vector.json';
@@ -154,7 +155,7 @@ class Controller {
     start = () => {
         this.chronometer.model = this.model;
 
-        this.generate(sample2,true); 
+        this.generate(sample2,true,false); 
         
         this.addListeners();
         this.notify('info', `Welcome to WebMGA`,
@@ -208,9 +209,10 @@ class Controller {
         this.download(JSON.stringify(data), 'visualisation.webmga', 'application/json');
     }
 
-    generate = (data, starting) => {
+    generate = (data, starting,vid) => {
+        console.log('im called');
         this.model.genSets(data.model.sets);
-        if (data.state == null) {
+        if (data.state == null && vid ==false) {
             Alert.info("Setting default viewing state.");
             this.view.setDefaultState(starting);
         } else {
@@ -218,16 +220,20 @@ class Controller {
         }
         this.model.updateLOD(this.model.lod);
         this.model.update();
-        this.externalToggle.closeSidemenu();
+        if(vid == false){
+            this.externalToggle.closeSidemenu();
+        }
     }
 
-    load = (file) => {
+    load = (file,VIDEO) => {
         let fileReader = new FileReader();
         const read = () => {
             var data = JSON.parse(fileReader.result);
             try {
-                this.generate(data, false);
-                Alert.success('File loaded successfully.');
+                this.generate(data, false,VIDEO);
+                if(VIDEO == false){
+                    Alert.success('File loaded successfully.');
+                }
             } catch {
                 Alert.error('Error: Please review uploaded file. See manual for help.');
                 return;
@@ -237,30 +243,30 @@ class Controller {
         fileReader.readAsText(file);
         
     }
-    generatePath(){
-        let lst =[]
-        // 100001
+    // generatePath(){
+    //     let lst =[]
+    //     // 100001
 
-        for(let i =0; i<99999;i = i+100){
-            var zeros = 8-i.toString().length;
-            var sg = (new Array(zeros).fill(0)).toString().replaceAll(',',"")+`${i}`;
-            var path = `./Video_sample/cnf.${sg}.json`
-            lst.push(path)
-        }
-        return lst;
-    }
-    loadVideoSample(){
-        let sample_list =[];
-        let pathLst =this.generatePath();
-        // For testing obly generated 1 position
-        for (let x =0;x<pathLst.length;x++){
-            let model =import(`${pathLst[x]}`)
-            model.then(function(result) {
-            sample_list.push(result);
-        })
-        }
-        this.model.SetVideoSample(sample_list);
-    }
+    //     for(let i =0; i<99999;i = i+100){
+    //         var zeros = 8-i.toString().length;
+    //         var sg = (new Array(zeros).fill(0)).toString().replaceAll(',',"")+`${i}`;
+    //         var path = `./Video_sample/cnf.${sg}.json`
+    //         lst.push(path)
+    //     }
+    //     return lst;
+    // }
+    // loadVideoSample(){
+    //     let sample_list =[];
+    //     let pathLst =this.generatePath();
+    //     // For testing obly generated 1 position
+    //     for (let x =0;x<pathLst.length;x++){
+    //         let model =import(`${pathLst[x]}`)
+    //         model.then(function(result) {
+    //         sample_list.push(result);
+    //     })
+    //     }
+    //     this.model.SetVideoSample(sample_list);
+    // }
 
    
    
@@ -322,11 +328,14 @@ class Controller {
             case 18:
                 sample =unforded_sample2 ;
                 break;
+            case 19:
+                sample = video_sample;
+                break;
             default:
                 Alert.error('Error: File does not exist');
                 return;
         }
-        this.generate(sample, false);
+        this.generate(sample, false,false);
         Alert.success('File loaded successfully.');
     }
 
