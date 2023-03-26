@@ -18,6 +18,7 @@ import ReferenceTools from './ReferenceTools.js'
 import { Alert } from 'rsuite'
 import * as SHAPE from './Shapes.js';
 import Parameters from './Parameters';
+import View from "../View/View.js"
 
 
 
@@ -83,6 +84,7 @@ export class Model {
         this.lookAt = new Vector3(0, 0, 0);
         this.updateDimensions();
         this.setCamera(this.cameraType);
+        this.view = new View(this.model, this.io, this.chronometer, this.externalToggle);
         
 
 

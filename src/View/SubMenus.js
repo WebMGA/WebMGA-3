@@ -170,12 +170,12 @@ export class VideoOptions extends React.Component{
     constructor(props){
         super();
         this.model = props.model;
-        this.state =View.state
+        this.state =View.state;
         this.UploadFiles = this.UploadFiles.bind(this);
         this.RealTimeVideo = this.RealTimeVideo.bind(this);
         this.VideoToggle = this.VideoToggle.bind(this);
         this.generate = this.generate.bind(this);
-        this.f = props.functions;
+        this.FPS = this.FPS.bind(this);
 
     }
     UploadFiles(){
@@ -195,10 +195,13 @@ export class VideoOptions extends React.Component{
         if(this.state.video == true){
             const samples = this.model.retrieveVideoSample();
             const max_iter = samples.length;
-            var capturer = new ccapture( { format: 'webm' },{framerate:60},{verbose: true});
+            var capturer = new ccapture( { format: 'webm',framerate:30,quality:100,verbose: true });
             
             this.RealTimeVideo(0,samples,max_iter,capturer);
         }
+    }
+    FPS(){
+        
     }
     RealTimeVideo(i,samples,max_iter,capturer){
         if(i ==0){
@@ -257,6 +260,7 @@ export class VideoOptions extends React.Component{
     render(){
         const video = this.state.video;
         const upload = this.state.upload;
+        const FPS = this.state.fps;
         return(
             <div>
 
@@ -265,20 +269,20 @@ export class VideoOptions extends React.Component{
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
-                            <p><b> Upload Configuration </b></p>
+                            <p><b> Load Configurations </b></p>
                         </Col>
                     </Row>
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox onClick={this.UploadFiles} checked={upload}> upload </Checkbox>
+                            <Checkbox onClick={this.UploadFiles} checked={upload}> Load </Checkbox>
                         </Col>
                     </Row>
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
-                            <p><b> Play Video </b></p>
+                            <p><b> Create Video </b></p>
                         </Col>
                     </Row>
                     <Row className="show-grid">
@@ -291,15 +295,26 @@ export class VideoOptions extends React.Component{
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
-                            <p><b> Download </b></p>
+                            <p><b> Set Frame Rate </b></p>
                         </Col>
                     </Row>
                     <Row className="show-grid">
-                        <Col xs={1} />
+                        <Col xs={2} />
                         <Col xs={12}>
-                            <Checkbox> download</Checkbox>
+                        <form  >
+                        <label>
+                        <input type="text" value={FPS} style={{ color: 'black' }}defaultValue="20"/>
+                        </label>
+                        <button type="submit" style={{ color: 'black' }}>Submit</button>
+                        </form>
                         </Col>
                     </Row>
+                    {/* <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox> Submit </Checkbox>
+                        </Col>
+                    </Row> */}
                   
                 </Grid>
                 <br />
