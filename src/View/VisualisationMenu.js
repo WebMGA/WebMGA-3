@@ -1,7 +1,7 @@
 
 import { Sidebar, Nav, Icon, Navbar, Container, Content, IconButton, Alert } from 'rsuite';
 import React, { Component } from "react";
-import { CameraOptions, AdditionalLightOptions, AmbientLightOptions, ReferenceOptions, SlicingOptions, ModelsOptions,PeriodicBoundingOption,VideoOptions } from './SubMenus'
+import { CameraOptions, AdditionalLightOptions, AmbientLightOptions, ReferenceOptions, SlicingOptions, ModelsOptions,VideoOptions } from './SubMenus'
 
 
 const NavToggle = ({ expand, onChange }) => {
@@ -35,8 +35,7 @@ const CustomNav = ({ active, onSelect, ...props }) => {
                 <Nav.Item title="Slicing"  eventKey="Slicing" icon={<Icon style={navItemStyle} size="lg" icon="cut" />} />
                 {/* </Whisper> */}
                 {/* <Whisper placement="right" trigger="hover" speaker={(<Tooltip>Slicing</Tooltip>)}> */}
-                <Nav.Item title="Periodic Boundary Conditions"  eventKey="Periodic Boundary Conditions" icon={<Icon style={navItemStyle} size="lg" icon="growth" />} />
-                <Nav.Item title="Video Rendering"  eventKey="Video Rendering" icon={<Icon style={navItemStyle} size="lg" icon="film" />} />
+                 <Nav.Item title="Video Rendering"  eventKey="Video Rendering" icon={<Icon style={navItemStyle} size="lg" icon="film" />} />
                 {/* </Whisper> */}
                 {/* <Whisper placement="right" trigger="hover" speaker={(<Tooltip>View</Tooltip>)}> */}
                 <Nav.Item title="Camera"  eventKey="Camera" icon={<Icon style={navItemStyle} size="lg" icon="eye" />} />
@@ -99,9 +98,6 @@ const MenuContent = ({ active, expand, onChange, model, toggler,functions}) => {
                 break;
             case "Reference":
                 menuContent.push(<ReferenceOptions key={active} model={model} />);
-                break;
-            case "Periodic Boundary Conditions":
-                menuContent.push(<PeriodicBoundingOption  key={active} model={model} />);
                 break;
             case "Video Rendering":
                 menuContent.push(<VideoOptions key={active} model={model} functions ={functions} />);

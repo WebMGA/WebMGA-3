@@ -326,94 +326,7 @@ export class VideoOptions extends React.Component{
     }
 }
 
-export class PeriodicBoundingOption extends React.Component{
-    constructor(props) {
-        super();
-        this.state = View.state.model;
-        //this.state.configurations[this.state.active].displayFoldState=true;
-        //this.state.boundingShapeEnabled =false;
-        this.model = props.model;
-        this.toggleFold = this.toggleFold.bind(this);
-        //this.toggleUnFold= this.toggleUnFold.bind(this);
-        this.toggleBoundingShapeEnabled= this.toggleBoundingShapeEnabled.bind(this);
-    }
-   
-    toggleFold() {
-        let toggle = !this.state.configurations[this.state.active].displayFoldState;
-        this.setState({
-            displayFoldState: toggle
-        });
-        View.state.model.configurations[this.state.active].displayFoldState = toggle;
-        this.model.toggleFoldState(this.state.active,toggle);
-        this.model.update();
-    }
 
-    toggleBoundingShapeEnabled() {
-        let toggle = !this.state.boundingShapeEnabled;
-        this.setState({
-            boundingShapeEnabled: toggle
-        });
-        this.state.boundingShapeEnabled = toggle;
-        this.model.updateBoundingShape(View.state.reference.activeShape, toggle);
-        this.model.update();
-    }
-    
-
-    render() {
-        const configState = this.state.configurations[this.state.active];
-        const enabled = this.state.boundingShapeEnabled;
-        return (
-            
-            <div>
-
-                <Grid fluid>
-                <Row className="show-grid">
-                        <Col xs={2} />
-                        <Col xs={12}>
-                            <br />
-                            <p><b> Unit Box </b></p>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={enabled}onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={2} />
-                        <Col xs={12}>
-                            <br />
-                            <p><b> Periodic Boundary Conditions  </b></p>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={configState.displayFoldState} onClick={this.toggleFold}> Fold</Checkbox>
-                        </Col>
-                    </Row>
-                    {/* <Row className="show-grid">
-                        <Col xs={2} />
-                        <Col xs={12}>
-                            <br />
-                            <p><b> Unfold </b></p>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={configState.displayUnFoldState} onClick={this.toggleUnFold}> Show</Checkbox>
-                        </Col>
-                    </Row> */}
-                </Grid>
-                <br />
-
-                <br />
-            </div>
-        );
-    }
-}
 
 export class CameraOptions extends React.Component {
 
@@ -955,65 +868,42 @@ export class AmbientLightOptions extends React.Component {
         );
     }
 }
-
+   
 export class ReferenceOptions extends React.Component {
     constructor(props) {
         super();
         this.state = View.state.reference;
-
+        this.state.model = View.state.model;
         this.model = props.model;
-        // this.toggleBoundingShapeEnabled = this.toggleBoundingShapeEnabled.bind(this);
-        // this.selectShape = this.selectShape.bind(this);
+        this.toggleFold = this.toggleFold.bind(this);
+        this.toggleBoundingShapeEnabled= this.toggleBoundingShapeEnabled.bind(this);
         this.toggleAxes = this.toggleAxes.bind(this);
-        this.toggleGrid = this.toggleGrid.bind(this);
-        this.updateColour = this.updateColour.bind(this);
-        this.updateGridSize = this.updateGridSize.bind(this);
+
         this.toggleMulticolour = this.toggleMulticolour.bind(this);
 
     }
-    updateColour(val, type) {
-        let rgb = this.state.gridColour;
 
-        switch (type) {
-            case 'r':
-                rgb.r = val;
-                break;
-            case 'g':
-                rgb.g = val;
-                break;
-            case 'b':
-                rgb.b = val;
-                break;
-            default:
-                Alert.error('Error: Unexpected RGB Identifier');
-        }
-        this.model.updateReferenceColour(rgb);
+    toggleFold() {
+        let toggle = !this.state.model.configurations[this.state.model.active].displayFoldState;
+        this.setState({
+            displayFoldState: toggle
+        });
+        View.state.model.configurations[this.state.model.active].displayFoldState = toggle;
+        this.model.toggleFoldState(this.state.model.active,toggle);
         this.model.update();
-        View.state.reference.gridColour = rgb;
     }
-    updateGridSize(val) {
-        this.model.updateGridSize(val);
+
+    toggleBoundingShapeEnabled() {
+        let toggle = !this.state.model.boundingShapeEnabled;
+        this.setState({
+            boundingShapeEnabled: toggle
+        });
+        this.state.model.boundingShapeEnabled = toggle;
+        this.model.updateBoundingShape(View.state.reference.activeShape, toggle);
         this.model.update();
-        View.state.reference.size = val;
     }
-    // toggleBoundingShapeEnabled() {
-    //     let toggle = !View.state.reference.boundingShapeEnabled;
-    //     this.setState({
-    //         boundingShapeEnabled: toggle
-    //     });
-    //     View.state.reference.boundingShapeEnabled = toggle;
-    //     this.model.updateBoundingShape(this.state.activeShape, toggle);
-    //     this.model.update();
-    // }
     
-    // selectShape(val) {
-    //     this.setState({
-    //         activeShape: val
-    //     });
-    //     View.state.reference.activeShape = val;
-    //     this.model.updateBoundingShape(val, this.state.boundingShapeEnabled);
-    //     this.model.update();
-    // }
+
     toggleMulticolour() {
         this.setState({
             multicolour: !this.state.multicolour
@@ -1030,53 +920,43 @@ export class ReferenceOptions extends React.Component {
         this.model.update();
         View.state.reference.showAxes = !View.state.reference.showAxes;
     }
-    toggleGrid() {
-        this.setState({
-            showGrid: !this.state.showGrid
-        });
-        this.model.toggleGrid();
-        this.model.update();
-        View.state.reference.showGrid = !View.state.reference.showGrid;
-    }
 
     render() {
-        // const enabled = this.state.boundingShapeEnabled;
-        // const activeShape = this.state.activeShape;
+        const configState = this.state.model.configurations[this.state.model.active];
+        const enabled = this.state.model.boundingShapeEnabled;
+
         const showAxes = this.state.showAxes;
-        const showGrid = this.state.showGrid;
-        const colour = this.state.gridColour;
-        const size = this.state.size;
         const multicolour = this.state.multicolour;
         return (
             <div>
 
                 <Grid fluid>
-                    {/* <Row className="show-grid">
+                <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
-                            <p><b> Bounding Shape </b></p>
+                            <p><b> Unit Box </b></p>
                         </Col>
                     </Row>
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={enabled} onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
+                            <Checkbox style={{ marginLeft: 12 }} checked={enabled}onClick={this.toggleBoundingShapeEnabled}>  Show </Checkbox>
                         </Col>
-                    </Row> */}
-                    {/* <Row className="show-grid">
-                        <Col xs={3} />
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={2} />
                         <Col xs={12}>
-                            <FormGroup controlId="radioList">
-                                <RadioGroup name="radioList" value={activeShape} onChange={this.selectShape}>
-                                    <Radio disabled={!enabled} value="box"  >Box </Radio>
-                                    {/* <Radio disabled={true} value="sphere" >Sphere </Radio>
-                                    <Radio disabled={true} value="cylinder" >Cylinder </Radio> */}
-
-                                {/* </RadioGroup>
-                            </FormGroup>
+                            <br />
+                            <p><b> Periodic Boundary Conditions  </b></p>
                         </Col>
-                    </Row> */} 
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked={configState.displayFoldState} onClick={this.toggleFold}> Fold</Checkbox>
+                        </Col>
+                    </Row>
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
@@ -1111,31 +991,8 @@ export class ReferenceOptions extends React.Component {
                         </Col>
                     </Row>
 
-                    <Row className="show-grid">
-                        <Col xs={2} />
-                        <Col xs={12}>
-                            <br />
-                            <p><b> Grid </b></p>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={showGrid} onClick={this.toggleGrid}> Show</Checkbox>
-                        </Col>
-                    </Row>
                 </Grid>
-                <br />
-
-                <p style={{ marginLeft: TITLE_LEFT_MARGIN }}> Size </p>
-                <CustomSlider disabled={false} boundaries={[0, 100]} val={size} f={this.updateGridSize} />
-                <p style={{ marginLeft: TITLE_LEFT_MARGIN }}> RGB </p>
-                <CustomSlider disabled={false} boundaries={[0, 255]} val={colour.r} f={this.updateColour} type={'r'} />
-                <CustomSlider disabled={false} boundaries={[0, 255]} val={colour.g} f={this.updateColour} type={'g'} />
-                <CustomSlider disabled={false} boundaries={[0, 255]} val={colour.b} f={this.updateColour} type={'b'} />
-
-
-                <br />
+               
             </div>
         );
     }
