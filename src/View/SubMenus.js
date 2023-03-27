@@ -172,25 +172,42 @@ export class VideoOptions extends React.Component{
         this.model = props.model;
         this.state =View.state;
         this.functions = props.functions;
+        this.toggler = props.toggler;
+        this.vidstate =[];
+        this.state.fps =30;
+        this.setfps = this.setfps.bind(this);
         this.UploadFiles = this.UploadFiles.bind(this);
         this.RealTimeVideo = this.RealTimeVideo.bind(this);
         this.VideoToggle = this.VideoToggle.bind(this);
-        this.generate = this.generate.bind(this);
-        this.FPS = this.FPS.bind(this);
+        this.setVideoState = this.setVideoState.bind(this);
 
     }
+    setfps(val){
+     this.fps = val;
+     console.log(this.fps);
+    }
     UploadFiles(){
-        async function runAfterUpload(model, functions) {
-            const lst = await model.uploadConfig();
-            functions[1](lst[0],true);
-        }
-        runAfterUpload(this.model,this.functions)
         let toggle = ! this.state.upload
         this.setState({
             upload: toggle
         })
-        View.state.upload = toggle;
-        
+    
+        async function runAfterUpload(model, functions) {
+            const lst = await model.uploadConfig();
+            functions[1](lst[0],true);
+        }
+        runAfterUpload(this.model,this.functions).then(()=>{
+            this.model.notifyFinishUpload();
+        })
+        View.state.reference.upload =  !this.state.upload;
+    }
+    setVideoState(){
+        this.setState({
+            setVideoState: !this.state.setVideostate
+        });
+        var data = this.functions[5]();
+        this.vidstate  = data;
+        console.log(this.vidstate);
     }
     
     VideoToggle(){
@@ -199,16 +216,18 @@ export class VideoOptions extends React.Component{
         });
         this.state.video = !this.state.video;
         if(this.state.video == true){
+            this.toggler.closeSidemenu();
+            console.log('no side bar!')
             const samples = this.model.retrieveVideoSample();
             const max_iter = samples.length;
-            var capturer = new ccapture( { format: 'webm',framerate:30,quality:100,verbose: true });
+            var capturer = new ccapture( { format: 'webm',framerate:this.fps,quality:100});
+            setTimeout(() => {
+                this.RealTimeVideo(0,samples,max_iter,capturer);
+            }, 2000);
             
-            this.RealTimeVideo(0,samples,max_iter,capturer);
         }
     }
-    FPS(){
-        
-    }
+    
     RealTimeVideo(i,samples,max_iter,capturer){
         if(i ==0){
             console.log('does this work?')
@@ -217,7 +236,8 @@ export class VideoOptions extends React.Component{
         }
         if(i<max_iter){
             console.log('start render')
-            this.functions[1](samples[i],true);
+            var v = this.vidstate;
+            this.functions[1](samples[i],true,v);
             capturer.capture( this.model.renderer.domElement )
             
             console.log('running animation',i)
@@ -240,21 +260,14 @@ export class VideoOptions extends React.Component{
                     link.click();
                     document.body.removeChild(link);
                 });
-                // this.model.download();
-            // },2000)
-        }
-       
-    }
+        }}
 
-    generate(data){
-        console.log(this.functions);
-        this.functions[2](data,false);
-    }
-    
+
     render(){
         const video = this.state.video;
         const upload = this.state.upload;
-        const FPS = this.state.fps;
+        const setVideoState = this.state.videoState;
+        const fps = this.state.fps;
         return(
             <div>
 
@@ -272,6 +285,28 @@ export class VideoOptions extends React.Component{
                             <Checkbox onClick={this.UploadFiles} checked={upload}> Load </Checkbox>
                         </Col>
                     </Row>
+    
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Set Frame Rate</b></p>
+                        </Col>
+                    </Row>
+                    <CustomSlider boundaries={[1,200]} val={fps} f={this.setfps}type={'fps'} />
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> enviroment set up  </b></p>
+                        </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox onClick={this.setVideoState} checked={setVideoState}> Set </Checkbox>
+                        </Col>
+                    </Row>
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
@@ -284,35 +319,9 @@ export class VideoOptions extends React.Component{
                         <Col xs={12}>
                             <Checkbox onClick={this.VideoToggle} checked={video} disabled={!upload}> Play </Checkbox>
                         </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={2} />
-                        <Col xs={12}>
-                            <br />
-                            <p><b> Set Frame Rate </b></p>
-                        </Col>
-                    </Row>
-                    <Row className="show-grid">
-                        <Col xs={2} />
-                        <Col xs={12}>
-                        <form  >
-                        <label>
-                        <input type="text" value={FPS} style={{ color: 'black' }}defaultValue="20"/>
-                        </label>
-                        <button type="submit" style={{ color: 'black' }}>Submit</button>
-                        </form>
-                        </Col>
-                    </Row>
-                    {/* <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={12}>
-                            <Checkbox> Submit </Checkbox>
-                        </Col>
-                    </Row> */}
-                  
+                   </Row>
                 </Grid>
                 <br />
-
                 <br />
             </div>
 
@@ -374,13 +383,13 @@ export class CameraOptions extends React.Component {
         if (val != NaN && val != null) {
             switch (type) {
                 case 'x':
-                    position.x = val;
+                    position.x = parseInt(val);
                     break;
                 case 'y':
-                    position.y = val;
+                    position.y = parseInt(val) ;
                     break;
                 case 'z':
-                    position.z = val;
+                    position.z = parseInt(val) ;
                     break;
                 default:
                     Alert.error('Error: Unexpected Camera Position Input');
@@ -991,4 +1000,3 @@ export class ReferenceOptions extends React.Component {
         );
     }
 }
-export default VideoOptions;

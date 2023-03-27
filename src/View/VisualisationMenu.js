@@ -100,7 +100,7 @@ const MenuContent = ({ active, expand, onChange, model, toggler,functions}) => {
                 menuContent.push(<ReferenceOptions key={active} model={model} />);
                 break;
             case "Video Rendering":
-                menuContent.push(<VideoOptions key={active} model={model} functions={functions}/>);
+                menuContent.push(<VideoOptions key={active} model={model} functions={functions} toggler={toggler}/>);
                 break;
             default:
                 Alert.error('Error: Unknown Submenu Identifier');

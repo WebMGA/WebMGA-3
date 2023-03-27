@@ -32,7 +32,7 @@ class Controller {
 
     constructor() {
         
-        this.io = [this.save, this.load, this.export, this.loadSample, this.toggleAutorotate,this.generate];
+        this.io = [this.save, this.load, this.export, this.loadSample, this.toggleAutorotate,this.saveVideoState];
         this.externalToggle = new this.ExternalToggle();
         this.chronometer = new this.Chronometer(this.notify, this.externalToggle);
 
@@ -209,13 +209,25 @@ class Controller {
         this.download(JSON.stringify(data), 'visualisation.webmga', 'application/json');
     }
 
-    generate = (data, starting,vid) => {
-        console.log('im called');
+    saveVideoState=()=>{
+        let data = {};
+        data.state = this.view.getData();
+        console.log( 'get state');
+        return JSON.stringify(data);
+        
+    }
+
+    generate = (data, starting,vid,vidState) => {
+        console.log(vidState);
         this.model.genSets(data.model.sets);
-        if (data.state == null && vid ==false) {
-            Alert.info("Setting default viewing state.");
+        if (data.state == null) {
             this.view.setDefaultState(starting);
-        } else {
+
+            if(vid ==false){
+                Alert.info("Setting default viewing state.");
+            } 
+        }
+        else {
             this.view.setState(data.state);
         }
         this.model.updateLOD(this.model.lod);
@@ -225,12 +237,12 @@ class Controller {
         }
     }
 
-    load = (file,VIDEO) => {
+    load = (file,VIDEO,vidstate) => {
         let fileReader = new FileReader();
         const read = () => {
             var data = JSON.parse(fileReader.result);
             try {
-                this.generate(data, false,VIDEO);
+                this.generate(data,false,VIDEO,vidstate);
                 if(VIDEO == false){
                     Alert.success('File loaded successfully.');
                 }
@@ -243,30 +255,7 @@ class Controller {
         fileReader.readAsText(file);
         
     }
-    // generatePath(){
-    //     let lst =[]
-    //     // 100001
-
-    //     for(let i =0; i<99999;i = i+100){
-    //         var zeros = 8-i.toString().length;
-    //         var sg = (new Array(zeros).fill(0)).toString().replaceAll(',',"")+`${i}`;
-    //         var path = `./Video_sample/cnf.${sg}.json`
-    //         lst.push(path)
-    //     }
-    //     return lst;
-    // }
-    // loadVideoSample(){
-    //     let sample_list =[];
-    //     let pathLst =this.generatePath();
-    //     // For testing obly generated 1 position
-    //     for (let x =0;x<pathLst.length;x++){
-    //         let model =import(`${pathLst[x]}`)
-    //         model.then(function(result) {
-    //         sample_list.push(result);
-    //     })
-    //     }
-    //     this.model.SetVideoSample(sample_list);
-    // }
+   
 
    
    

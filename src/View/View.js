@@ -13,7 +13,6 @@ export class View {
     constructor(m, io, chrono, toggler) {
         View.state = {
         }
-        //View.state.slicing.x=[-80,80];
         this.expanded = false;
         this.model = m;
         this.header = <GeneralMenu chronometer={chrono} functions={io} model={this.model} toggler ={toggler}/>;
@@ -51,19 +50,10 @@ export class View {
  
 
     loadReferenceAndSlicing(state) {
-
-        if (this.xor(this.model.gridEnabled, state.reference.showGrid)) {
-            this.model.toggleGrid();
-        }
-
         if (this.xor(this.model.axesEnabled, state.reference.showAxes)) {
             this.model.toggleAxes();
         }
         this.model.enableClipping(state.slicing.slicing_enabled);
-        this.model.updateReferenceColour(state.reference.gridColour);
-        this.model.updateGridSize(state.reference.size);
-        this.model.updateBoundingShape(state.reference.activeShape, state.reference.boundingShapeEnabled);
-        this.model.toggleClipIntersection(state.slicing.clipIntersection);
         this.model.toggleHelper(0, state.slicing.helpers[0]);
         this.model.toggleHelper(1, state.slicing.helpers[1]);
         this.model.toggleHelper(2, state.slicing.helpers[2]);
@@ -111,8 +101,6 @@ export class View {
         View.state.model = this.ModelDefaultState;
         View.state.model.configurations = [];
         View.state.model.sets = [];
-        
-
 
         for (let i in this.model.sets) {
             let set = JSON.parse(JSON.stringify(this.ConfigurationDefaultState));
@@ -153,7 +141,7 @@ export class View {
         shape: 'Ellipsoid',
         parameters: {
             names: ['X', 'Y', 'Z'],
-            vals: [0.2, 0.4, 0.8]
+            vals: [1.0, 1.0, 0.2]
         },
         colour: {
             r: 255,
@@ -216,19 +204,16 @@ export class View {
         }
 
     }
-    
+
     ReferenceDefaultState = {
         boundingShapeEnabled: false,
         activeShape: 'box',
         showAxes: false,
-        showGrid: false,
         multicolour: true,
-        gridColour: {
-            r: 255,
-            g: 255,
-            b: 255,
-        },
         size: 50,
+        upload :false,
+        video:false,
+        videoState:false
 
     }
 

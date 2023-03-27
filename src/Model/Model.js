@@ -625,6 +625,9 @@ export class Model {
         }
     }
     /* Video SUITE */
+    setloaded(toggle){
+        console.log(toggle);
+    }
     uploadConfig() {
         return new Promise(async (resolve, reject) => {
           let fileHandle = [];
@@ -641,7 +644,8 @@ export class Model {
             reject(error);
           }
         });
-      }
+    }
+
     notifyFinishUpload(){
         this.notify('info', `Files loaded successfully`,
             (<div>
@@ -651,8 +655,7 @@ export class Model {
             </p>
             </div>
             ));
-    }
-    
+            }
     
 
     retrieveVideoSample(){
