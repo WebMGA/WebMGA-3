@@ -1,9 +1,10 @@
 
-import { Nav, Divider, Checkbox, FormGroup, RadioGroup, Radio, Grid, Row, Col, Alert, Whisper, Tooltip, Icon } from 'rsuite';
+import { Nav, Divider, Checkbox, FormGroup, RadioGroup, Radio, Grid, Row, Col, Alert, Whisper, Tooltip, Icon,Input } from 'rsuite';
 import React from "react";
 import { SliceSlider, ParameterInput, ParameterSet, CustomSlider } from './Tools'
 import { View } from './View'
 import ccapture from "ccapture.js-npmfixed";
+import { Scrollbars } from 'rc-scrollbars';
 
 const TITLE_LEFT_MARGIN = 30;
 const dividerStyle = {
@@ -34,13 +35,13 @@ export class ModelsOptions extends React.Component {
 
         switch (type) {
             case 'r':
-                colour.r = val;
+                colour.r = parseInt(val);
                 break;
             case 'g':
-                colour.g = val;
+                colour.g =  parseInt(val);
                 break;
             case 'b':
-                colour.b = val;
+                colour.b =  parseInt(val);
                 break;
             default:
                 Alert.error('Error: Unexpected RGB Identifier');
@@ -138,12 +139,11 @@ export class ModelsOptions extends React.Component {
         const sets = this.state.sets;
 
         return (
-            <div key={reset}>
-
-
+            <Scrollbars  style={{height:800}}>
+            <div key={reset} >
                 <Divider><strong style={dividerStyle}> Configuration</strong></Divider>
-                <ParameterInput f={this.selectSet} selectingSet title="Set" values={sets} active={title} styling={submenuParameterSetStyling} />
-                <ParameterInput f={this.selectShape} title="Shape" values={shapes} active={configState.shape} styling={submenuParameterSetStyling} />
+                <ParameterInput key ={5}f={this.selectSet} selectingSet title="Set" values={sets} active={title} styling={submenuParameterSetStyling} />
+                <ParameterInput key ={6}f={this.selectShape} title="Shape" values={shapes} active={configState.shape} styling={submenuParameterSetStyling} />
                 <ParameterSet f={this.updateParameter} titles={configState.parameters.names} values={configState.parameters.vals} step={0.1} positive styling={submenuParameterSetStyling} />
                 <br />
                 <Divider><strong style={dividerStyle}>  Material </strong></Divider>
@@ -162,6 +162,7 @@ export class ModelsOptions extends React.Component {
                 <CustomSlider f={this.updateUserColour} disabled={configState.colourFromDirector} boundaries={[0, 255]} val={configState.colour.g} type={'g'} />
                 <CustomSlider f={this.updateUserColour} disabled={configState.colourFromDirector} boundaries={[0, 255]} val={configState.colour.b} type={'b'} />
             </div>
+            </Scrollbars>
         );
     }
 }
@@ -170,92 +171,94 @@ export class VideoOptions extends React.Component{
     constructor(props){
         super();
         this.model = props.model;
-        this.state =View.state;
+        this.state =View.state.reference;
         this.functions = props.functions;
         this.toggler = props.toggler;
-        this.vidstate =[];
-        this.state.fps =30;
+        this.state.fps =24;
         this.setfps = this.setfps.bind(this);
         this.UploadFiles = this.UploadFiles.bind(this);
         this.RealTimeVideo = this.RealTimeVideo.bind(this);
         this.VideoToggle = this.VideoToggle.bind(this);
         this.setVideoState = this.setVideoState.bind(this);
+        this.filename = 'WebMGA-Video.webm';
+        this.setFileName = this.setFileName.bind(this);
 
+    }
+    setFileName (val){
+        this.filename = val;
+        console.log(this.filename);
     }
     setfps(val){
      this.fps = val;
-     console.log(this.fps);
     }
     UploadFiles(){
-        let toggle = ! this.state.upload
+        let toggle = ! this.state.upload;
         this.setState({
             upload: toggle
         })
-    
+        console.log(toggle)
         async function runAfterUpload(model, functions) {
             const lst = await model.uploadConfig();
-            functions[1](lst[0],true);
+            functions[1](lst[0],true,0);
         }
         runAfterUpload(this.model,this.functions).then(()=>{
             this.model.notifyFinishUpload();
         })
-        View.state.reference.upload =  !this.state.upload;
+        View.state.reference.upload = !View.state.reference.upload;
+        console.log(View.state.reference.upload)
     }
     setVideoState(){
-        this.setState({
-            setVideoState: !this.state.setVideostate
-        });
         var data = this.functions[5]();
         this.vidstate  = data;
+        View.state.VideoState =this.vidstate;
         console.log(this.vidstate);
     }
     
     VideoToggle(){
+        let toggle = !View.state.reference.video;
+        View.state.reference.video = toggle;
         this.setState({
-            video: !this.state.video
-        });
-        this.state.video = !this.state.video;
-        if(this.state.video == true){
+            video:toggle
+        })
+        if(this.state.video ===true){
             this.toggler.closeSidemenu();
             console.log('no side bar!')
             const samples = this.model.retrieveVideoSample();
             const max_iter = samples.length;
             var capturer = new ccapture( { format: 'webm',framerate:this.fps,quality:100});
             setTimeout(() => {
-                this.RealTimeVideo(0,samples,max_iter,capturer);
+                console.log('a',View.state.VideoState)
+                this.RealTimeVideo(0,samples,max_iter,capturer,View.state.VideoState);
             }, 2000);
-            
         }
     }
     
-    RealTimeVideo(i,samples,max_iter,capturer){
-        if(i ==0){
+    RealTimeVideo(i,samples,max_iter,capturer,vidState){
+        if(i ===0){
             console.log('does this work?')
             capturer.start();
             capturer.capture(this.model.renderer.domElement);
         }
         if(i<max_iter){
             console.log('start render')
-            var v = this.vidstate;
-            this.functions[1](samples[i],true,v);
+            this.functions[1].bind(this)(samples[i],i,vidState);
             capturer.capture( this.model.renderer.domElement )
             
             console.log('running animation',i)
-            if(this.state.video == true ){
-                requestAnimationFrame( ()=> this.RealTimeVideo(i+1,samples,max_iter,capturer));
+            if(this.state.video === true ){
+                requestAnimationFrame( ()=> this.RealTimeVideo(i+1,samples,max_iter,capturer,vidState));
                 console.log('sending request',i+1)
             };
         }
-        if (i == max_iter){
-            // setTimeout(()=>{
-                console.log('ddjnajdnjkbnjsanjnkjxskmkm',capturer)
+        if (i === max_iter){
+                console.log('max')
                 capturer.stop();
                 capturer.save(function( blob ) {
                     console.log(blob);
                     var url = URL.createObjectURL(blob);
                     var link = document.createElement('a');
                     link.href = url;
-                    link.download = 'captured-video.webm';
+                    link.download = 'WebMGA-Video.webm';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -282,7 +285,7 @@ export class VideoOptions extends React.Component{
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox onClick={this.UploadFiles} checked={upload}> Load </Checkbox>
+                            <Checkbox checked={upload} onClick={this.UploadFiles} > Load </Checkbox>
                         </Col>
                     </Row>
     
@@ -293,7 +296,7 @@ export class VideoOptions extends React.Component{
                             <p><b> Set Frame Rate</b></p>
                         </Col>
                     </Row>
-                    <CustomSlider boundaries={[1,200]} val={fps} f={this.setfps}type={'fps'} />
+                    <CustomSlider boundaries={[1,60]} val={fps} f={this.setfps}type={'fps'} />
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
@@ -317,7 +320,14 @@ export class VideoOptions extends React.Component{
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox onClick={this.VideoToggle} checked={video} disabled={!upload}> Play </Checkbox>
+                            <Checkbox onClick={this.VideoToggle} checked={video} disabled={!upload}> create </Checkbox>
+                        </Col>
+                   </Row>
+                   <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                        <Input style={{ width: 200 }} placeholder="Input file name" 
+                        onChange={(filename) => this.setFileName(filename)}/>
                         </Col>
                    </Row>
                 </Grid>
@@ -357,7 +367,7 @@ export class CameraOptions extends React.Component {
         this.setState({
             zoom: val
         });
-        this.model.updateCameraZoom(val);
+        this.model.updateCameraZoom(parseInt(val));
         this.model.update();
         View.state.camera.zoom = val;
     }
@@ -368,7 +378,7 @@ export class CameraOptions extends React.Component {
         });
         View.state.camera.type = val;
         this.model.setCamera(val);
-        if (val == "orthographic") {
+        if (val === "orthographic") {
             this.updateZoom(50);
 
         } else {
@@ -379,17 +389,16 @@ export class CameraOptions extends React.Component {
 
     updatePosition(val, type) {
         let position = this.state.position;
-
-        if (val != NaN && val != null) {
+        if (val != isNaN && val != null) {
             switch (type) {
                 case 'x':
                     position.x = parseInt(val);
                     break;
                 case 'y':
-                    position.y = parseInt(val) ;
+                    position.y = parseInt(val);
                     break;
                 case 'z':
-                    position.z = parseInt(val) ;
+                    position.z = parseInt(val);
                     break;
                 default:
                     Alert.error('Error: Unexpected Camera Position Input');
@@ -405,7 +414,7 @@ export class CameraOptions extends React.Component {
     updateLookat(val, type) {
         let lookAt = this.state.lookAt;
 
-        if (val != NaN && val != null) {
+        if (val != isNaN && val != null) {
             switch (type) {
                 case 0:
                     lookAt.x = parseFloat(val);
@@ -552,13 +561,28 @@ export class SlicingOptions extends React.Component {
         
         switch (i) {
             case 0:
-                this.state.x = val;
+                this.setState(
+                    {
+                        x:val
+                    }
+                );
+                // this.state.x = val;
                 break;
             case 1:
-                this.state.y = val;
+                this.setState(
+                    {
+                        y:val
+                    }
+                );
+                // this.state.y = val;
                 break;
             case 2:
-                this.state.z = val;
+                this.setState(
+                    {
+                        z:val
+                    }
+                );
+                // this.state.z = val;
                 break;
             default:
                 Alert.error('Error: Unexpected Slicing Identifier');
@@ -891,19 +915,20 @@ export class ReferenceOptions extends React.Component {
         this.setState({
             displayFoldState: toggle
         });
+        console.log(this.state.model);
         View.state.model.configurations[this.state.model.active].displayFoldState = toggle;
         this.model.toggleFoldState(this.state.model.active,toggle);
         this.model.update();
     }
 
     toggleBoundingShapeEnabled() {
-        let toggle = !this.state.model.boundingShapeEnabled;
+        let toggle = !this.state.boundingShapeEnabled;
         this.setState({
             boundingShapeEnabled: toggle
         });
-        this.state.model.boundingShapeEnabled = toggle;
         this.model.updateBoundingShape(View.state.reference.activeShape, toggle);
         this.model.update();
+        View.state.reference.boundingShapeEnabled = ! View.state.reference.boundingShapeEnabled;
     }
     
 
@@ -921,13 +946,13 @@ export class ReferenceOptions extends React.Component {
         });
         this.model.toggleAxes();
         this.model.update();
+        
         View.state.reference.showAxes = !View.state.reference.showAxes;
     }
 
     render() {
         const configState = this.state.model.configurations[this.state.model.active];
-        const enabled = this.state.model.boundingShapeEnabled;
-
+        const enabled = this.state.boundingShapeEnabled;
         const showAxes = this.state.showAxes;
         const multicolour = this.state.multicolour;
         return (

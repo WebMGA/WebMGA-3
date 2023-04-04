@@ -7,8 +7,6 @@ import {
     PlaneHelper,
     Plane,
     MeshLambertMaterial,
-    MeshPhongMaterial,
-    MeshStandardMaterial,
     Mesh,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -67,9 +65,8 @@ export class Model {
 
     setDefault() {
         
-        this.renderer = new WebGLRenderer({ antialias: false, preserveDrawingBuffer: false, powerPreference: "high-performance",preserveDrawingBuffer:true});
+        this.renderer = new WebGLRenderer({ antialias: false,powerPreference: "high-performance",preserveDrawingBuffer:true});
         this.renderer.setPixelRatio(window.devicePixelRatio);
-
 
         this.videoFileloaded =true;
         this.rotating = false;
@@ -77,8 +74,7 @@ export class Model {
         this.lightHelperWarningGiven = false;
         this.selectedSet = 0;
         this.Video_sample_list=[];
-        this.mediaRecorder= null;
-        this .clock = null;
+        this.clock = null;
         this.initClippers();
         this.occlusionCullingEnabled =true;
         this.lookAt = new Vector3(0, 0, 0);
@@ -115,14 +111,7 @@ export class Model {
         }
     }
 
-    // Video_Animation(){
-    //     this.update();
-    //     // this.controls.update();
-    //     // if (this.rotating) {
-    //     requestAnimationFrame(this.Video_Animation());
-    //     // }
-    //     // console.log('time',timestamp)
-    // }
+
 
 
     getRender_Object_number(){
@@ -198,7 +187,7 @@ export class Model {
         let particleSets = data.split("$");
         let setData, ps;
         for (let particleSet of particleSets) {
-            if (particleSet == "") {
+            if (particleSet === "") {
                 return;
             }
             else {
@@ -318,7 +307,7 @@ export class Model {
 
     setCamera(type) {
         this.cameraType = type;
-
+        // this.camera.dispose();
         if (type === 'perspective') {
             this.camera = new PerspectiveCamera(50, this.width / this.height, 0.1, 1000);
         } else {
@@ -328,10 +317,13 @@ export class Model {
         if (this.cameraPosition != null) {
             this.camera.position.set(...this.cameraPosition);
         }
-
+        // this.controls.dispose();
+        console.log(this.controls,this.camera);
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.target = this.lookAt;
         this.update();
+        
+        
     }
 
     updateCamera() {
@@ -353,7 +345,6 @@ export class Model {
     }
 
     updateCameraPosition(p) {
-
         this.cameraPosition = [p.x, p.y, p.z];
         this.camera.position.set(p.x, p.y, p.z);
         this.controls.update();
@@ -386,7 +377,7 @@ export class Model {
 
     toggleLightHelper(type, toggle) {
         if (toggle) {
-            if (this.bgColour == '#ffffff' && !this.lightHelperWarningGiven) {
+            if (this.bgColour === '#ffffff' && !this.lightHelperWarningGiven) {
                 Alert.warning('If the background colour and light colour are the same, the light helper may not be visible.');
                 this.lightHelperWarningGiven = true;
             }
@@ -404,7 +395,7 @@ export class Model {
     /* PERIODIC BOUNDING TOOL FUNCTIONS */
 
     toggleFoldState(id,toggle){
-        if(toggle==true){
+        if(toggle===true){
             this.updateSets(id, [id], (id) => {
                 this.sets[id].elements =[];
                 this.sets[id].meshes = [];
@@ -413,7 +404,7 @@ export class Model {
                 this.sets[id].setElements();
                 this.sets[id].genMeshes();
             });}
-        else if(toggle == false){
+        else if(toggle === false){
             this.updateSets(id, [id], (id) => {
                 this.sets[id].elements =[];
                 this.sets[id].meshes = [];
@@ -450,7 +441,6 @@ export class Model {
 
 
     /* REFERENCE TOOLS FUNCTIONS */
-
 
     toggleGrid() {
         this.gridEnabled = !this.gridEnabled;
@@ -554,7 +544,7 @@ export class Model {
 
     /* SLICING FUNCTIONS */
     enableClipping(toggle,id){
-        if (toggle == true){
+        if (toggle === true){
             this.renderer.localClippingEnabled = true;
             this.updateSets(id, [id], (id) => {
                 this.sets[id].elements =[];
@@ -661,7 +651,9 @@ export class Model {
     retrieveVideoSample(){
         return this.Video_sample_list;
     }
-   
+   removeVideoSample(){
+    delete this.Video_sample_list;
+   }
     /* PERFORMANCE TEST SUITE */
 
 

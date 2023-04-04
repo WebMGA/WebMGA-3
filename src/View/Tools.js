@@ -1,6 +1,6 @@
 
 
-import { Dropdown, RangeSlider, InputGroup, InputNumber, Row, Col, Slider, ButtonToolbar} from 'rsuite';
+import { Dropdown, RangeSlider,InputNumber, Row, Col, Slider, ButtonToolbar} from 'rsuite';
 import React, { useState } from "react";
 
 
@@ -8,9 +8,8 @@ export const ParameterSet = (props) => {
     var set = [];
 
     for (let i = 0; i < props.titles.length; i++) {
-
         set.push(
-            <ParameterInput key={i} title={props.titles[i]} values={props.values[i]} numerical f={props.f} index={i} step={props.step} positive={props.positive} styling={props.styling}/>
+            <ParameterInput title={props.titles[i]} values={props.values[i]} numerical f={props.f} index={i} step={props.step} positive={props.positive} styling={props.styling}/>
         );
     }
 
@@ -61,10 +60,10 @@ export class ParameterInput extends React.Component {
 
             for (let val of vals) {
                 (active.localeCompare(val)) ? act = false : act = true;
-                listItems.push(<Dropdown.Item eventKey={val} active={act} onSelect={this.changeValue}>{val}</Dropdown.Item>);
+                listItems.push(<Dropdown.Item key ={val} eventKey={val} active={act} onSelect={this.changeValue}>{val}</Dropdown.Item>);
             }
 
-            listItems.push(<Dropdown.Item eventKey={'panel'} panel style={{ width: 150 }}></Dropdown.Item>);
+            listItems.push(<Dropdown.Item key ={'panel'}eventKey={'panel'} panel style={{ width: 150 }}></Dropdown.Item>);
 
             InputBox = (
                 <ButtonToolbar style={{ width: 10, marginLeft: 0 }}>
@@ -102,7 +101,7 @@ export const SliceSlider = (props) => {
                 </Col>
                 <Col md={1} />
                 <Col md={16}>
-                    <InputGroup>
+                    {/* <InputGroup>
                         <InputNumber
                             min={-100.0}
                             max={100.0}
@@ -132,7 +131,7 @@ export const SliceSlider = (props) => {
                                 f(i, [start, parseFloat(nextValue)]);
                             }}
                         />
-                    </InputGroup>
+                    </InputGroup> */}
                 </Col>
             </Row>
             <Row>
@@ -157,7 +156,6 @@ export const SliceSlider = (props) => {
 }
 
 export const CustomSlider = (props) => {
-
     var f = props.f;
     var [value, setValue] = useState(props.val);
     var type;
@@ -173,14 +171,13 @@ export const CustomSlider = (props) => {
         type = props.type;
     }
 
-
     return (
 
         <Row>
             <Col md={10}>
                 <Slider
                     style={{ marginLeft: 25, marginTop: 16, width: 170 }}
-                    value={value}
+                    value={parseInt(value)}
                     min={min}
                     max={max}
                     disabled={disabled}
@@ -205,5 +202,4 @@ export const CustomSlider = (props) => {
             </Col>
         </Row>
     );
-
 }

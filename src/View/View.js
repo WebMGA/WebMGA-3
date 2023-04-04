@@ -25,7 +25,7 @@ export class View {
 
     setState(state) {
         View.state = state;
-        this.loadLightingAndCamera(state);
+        this.loadLightingAndCamera(state,false);
         this.loadReferenceAndSlicing(state);
         this.loadModel(state);
     }
@@ -42,9 +42,9 @@ export class View {
         }
     }
 
-    loadState(state){
+    loadState(state,vid){
+        this.loadLightingAndCamera(state,vid);
         this.loadReferenceAndSlicing(state);
-        this.loadLightingAndCamera(state);
         
     }
  
@@ -53,6 +53,7 @@ export class View {
         if (this.xor(this.model.axesEnabled, state.reference.showAxes)) {
             this.model.toggleAxes();
         }
+        this.model.toggleFoldState(0,state.boundingShapeEnabled);
         this.model.enableClipping(state.slicing.slicing_enabled);
         this.model.toggleHelper(0, state.slicing.helpers[0]);
         this.model.toggleHelper(1, state.slicing.helpers[1]);
@@ -62,7 +63,8 @@ export class View {
         this.model.updateSlicer(2, state.slicing.z);
     }
 
-    loadLightingAndCamera(state) {
+    loadLightingAndCamera(state,vid) {
+        console.log(state);
         let directionalLightColour = JSON.parse(JSON.stringify(state.directionalLight.colour));
         let pointLightColour = JSON.parse(JSON.stringify(state.pointLight.colour));
 
@@ -81,8 +83,12 @@ export class View {
         this.model.updateLightPosition(2, state.pointLight.position);
         this.model.toggleLightHelper(1, state.directionalLight.helper);
         this.model.toggleLightHelper(2, state.pointLight.helper);
-        this.model.setCamera(state.camera.type);
-
+        if(!vid){
+            this.model.setCamera(state.camera.type);
+        }
+        
+        
+        
         this.model.updateCameraPosition(state.camera.position);
         this.model.updateLookAt(state.camera.lookAt);
         
@@ -90,7 +96,7 @@ export class View {
     }
 
 
-    setDefaultState(init) {
+    setDefaultState(init,vid) {
         View.state = {};
         View.state.reference = this.ReferenceDefaultState;
         View.state.ambientLight = this.AmbientLightDefaultState;
@@ -108,8 +114,8 @@ export class View {
             View.state.model.sets.push(set.title);
             View.state.model.configurations.push(set);
         }
-
-        this.loadState(View.state)
+    
+        this.loadState(View.state,vid);
 
         if (!init) {
             this.loadModel(View.state);
@@ -119,6 +125,7 @@ export class View {
     xor(a, b) {
         return (a && !b) || (!a && b);
     }
+  
 
     ModelDefaultState = {
         active: 0,
@@ -141,7 +148,7 @@ export class View {
         shape: 'Ellipsoid',
         parameters: {
             names: ['X', 'Y', 'Z'],
-            vals: [1.0, 1.0, 0.2]
+            vals: [1, 1, 0.2]
         },
         colour: {
             r: 255,
@@ -149,8 +156,7 @@ export class View {
             b: 255
         },
         colourFromDirector: true,
-        displayAsWireframe: false,
-        boundingShapeEnabled:false
+        displayAsWireframe: false
     }
 
     CameraDefaultState = {

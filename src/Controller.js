@@ -86,7 +86,7 @@ class Controller {
 
         logPerformance = () => {
             this.rawPerformanceData.push(this.fps);
-            if (this.counter == this.tick) {
+            if (this.counter === this.tick) {
 
                 this.avgPerformanceData.push(mean(this.rawPerformanceData));
                 this.stdPerformanceData.push(std(this.rawPerformanceData));
@@ -128,7 +128,7 @@ class Controller {
         click = () => {
             this.frames++;
 
-            if (this.prevTime == null) {
+            if (this.prevTime === null) {
                 this.prevTime = Date.now();
             }
 
@@ -217,22 +217,26 @@ class Controller {
         
     }
 
-    generate = (data, starting,vid,vidState) => {
-        console.log(vidState);
+    generate = (data, starting,vid,vidstate) => {
         this.model.genSets(data.model.sets);
         if (data.state == null) {
-            this.view.setDefaultState(starting);
-
-            if(vid ==false){
+            if(vid ===false){
+                this.view.setDefaultState(starting,false);
                 Alert.info("Setting default viewing state.");
             } 
+            if(vid === true)
+            {
+                this.view.setDefaultState(starting,true);
+            }  
+            if(vidstate.length >0){
+                this.view.setState((JSON.parse(vidstate)).state);
+            }
         }
         else {
             this.view.setState(data.state);
         }
-        this.model.updateLOD(this.model.lod);
         this.model.update();
-        if(vid == false){
+        if(vid === false){
             this.externalToggle.closeSidemenu();
         }
     }
@@ -241,15 +245,15 @@ class Controller {
         let fileReader = new FileReader();
         const read = () => {
             var data = JSON.parse(fileReader.result);
-            try {
-                this.generate(data,false,VIDEO,vidstate);
-                if(VIDEO == false){
-                    Alert.success('File loaded successfully.');
-                }
-            } catch {
-                Alert.error('Error: Please review uploaded file. See manual for help.');
-                return;
+            // try {
+            this.generate(data,false,VIDEO,vidstate);
+            if(VIDEO === false){
+                Alert.success('File loaded successfully.');
             }
+            // } catch {
+            //     Alert.error('Error: Please review uploaded file. See manual for help.');
+            //     return;
+            // }
         }
         fileReader.onloadend = read;
         fileReader.readAsText(file);
@@ -419,7 +423,7 @@ class Controller {
             var key = e.keyCode;
             //TODO
             //spacebar
-            if (key == 32) {
+            if (key === 32) {
                 this.externalToggle.autorotate();
 
                 if (this.chronometer.testing) {
@@ -427,7 +431,7 @@ class Controller {
                 }
             }
             // //a
-            if (key == 65) {
+            if (key === 65) {
                 console.log(this.model.camera.position);
             }
             // //g

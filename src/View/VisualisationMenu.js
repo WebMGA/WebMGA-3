@@ -21,7 +21,7 @@ const NavToggle = ({ expand, onChange }) => {
     );
 };
 
-const navItemStyle = { margin: 6.5 };
+const navItemStyle = { margin: 6.5};
 
 var sidebarHeight = window.innerHeight - 56;
 

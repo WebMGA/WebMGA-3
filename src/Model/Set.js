@@ -5,13 +5,12 @@ import {
     Quaternion,
     Euler,
     Color,
-    Material,
     Box3Helper,
     Box3
 
 } from 'three';
 import * as THREE from 'three';
-import {eigs, ParenthesisNodeDependencies, planckMassDependencies} from 'mathjs';
+import {eigs} from 'mathjs';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import * as SHAPE from './Shapes.js';
 import Model from './Model';
@@ -42,6 +41,7 @@ export class Set {
     elements = [];
     meshes = [];
     moleculeBoundingBox = [];
+    // materials =[];
 
     
 
@@ -61,7 +61,7 @@ export class Set {
         if (data.parameters != null) {
             this.shapeType = data.parameters;
         }
-        if (this.name == null) {
+        if (this.name === null) {
             this.name = this.shapeType;
         }
         this.genSet();
@@ -72,6 +72,7 @@ export class Set {
         let x = this.unitBox[0]/2;
         let y = this.unitBox[1]/2;
         let z = this.unitBox[2]/2;
+        console.log(this.positions.length,x,y,z)
         for (let i = 0; i < this.positions.length; i++){
             let a = this.positions[i][0];
             let b = this.positions[i][1];
@@ -85,9 +86,9 @@ export class Set {
             if(c>=z || c<=-z){
                return false
             }
-        return true;
-        
+            console.log(i,a,b,c);    
     }
+    return true;
 }
 
     genSet(){
@@ -102,19 +103,19 @@ export class Set {
     
 
     validateData() {
-        if (this.positions.length !== this.orientations.length) {
-            throw 'Error: Position data does not correspond to orientation data. \n Total positions: ' + this.positions.length + '\n Total rotations: ' + this.orientations.length;
+        if (this.positions.length != this.orientations.length) {
+            throw new Error('Error: Position data does not correspond to orientation data. \n Total positions: ' + this.positions.length + '\n Total rotations: ' + this.orientations.length);
         }
 
         for (let p in this.parameters) {
             if (p < 0) {
-                throw 'Error: Invalid parameter ' + p.toString() + ' for ' + this.name + '\n Must be positive.';
+                throw  new Error('Error: Invalid parameter ' + p.toString() + ' for ' + this.name + '\n Must be positive.');
             }
         }
 
         let defaultParameters = Set.getParameters(this.shapeType);
         if (this.parameters.length != defaultParameters.vals.length) {
-            throw 'Error: Wrong number of parameters specified for ' + this.name + '. \n Required: ' + defaultParameters.names;
+            throw new Error('Error: Wrong number of parameters specified for ' + this.name + '. \n Required: ' + defaultParameters.names);
         }
     }
 
@@ -152,7 +153,7 @@ export class Set {
     
     genUnfoldPosition(){
     
-        if(this.isFoldedTest()== false){
+        if(this.isFoldedTest()=== false){
             Alert.info('Model is already unfolded');
             return
         }
@@ -172,7 +173,7 @@ export class Set {
     }
 
     genFoldedPositionFromUnfold(){
-        if(this.isFoldedTest()== true){
+        if(this.isFoldedTest()=== true){
             Alert.info('Model is already folded');
             return
         }
@@ -339,7 +340,7 @@ export class Set {
                 this.shape = new SHAPE.Preset('Torus', this.parameters);
                 break;
             default:
-                throw 'Error: unexpected shape identifier. \n Found: ' + this.shapeType;
+                throw new Error('Error: unexpected shape identifier. \n Found: ' + this.shapeType);
         }
 
         this.shape.LOD = this.lod;
@@ -382,7 +383,7 @@ export class Set {
                 q.setFromEuler(e)
                 break;
             default:
-                throw 'Error: Unexpected rotation type value. \n Found: ' + type + '\n Expected: v | q | a | e';
+                throw new Error('Error: Unexpected rotation type value. \n Found: ' + type + '\n Expected: v | q | a | e');
         }
 
         q.normalize();
@@ -404,7 +405,7 @@ export class Set {
     calculateDirector() {
         let n = this.elements.length;
 
-        if (this.elements.length == 0) {
+        if (this.elements.length === 0) {
             Alert.error('Error: No elements in set, director calculation failed.');
             return;
         }
@@ -451,7 +452,7 @@ export class Set {
 
         let norm = Math.sqrt(this.director[0]**2 + this.director[1]**2 + this.director[2]**2);
 
-        if (norm == 0 || norm == NaN || norm == undefined){
+        if (norm === 0 || norm === isNaN || norm === undefined){
             this.director = [0,0,1];
         }else{
             this.director[0] /= norm;

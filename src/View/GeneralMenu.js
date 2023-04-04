@@ -65,7 +65,6 @@ class LibraryDropdown extends React.Component {
     }
 
     render() {
-        const state = this.state;
         return (
             <Dropdown
                 title="Library"
@@ -138,8 +137,8 @@ class PerformanceDropdown extends React.Component {
                     <FormGroup>
                         <ControlLabel>Adjust LOD</ControlLabel>
                         <Whisper placement="bottom" trigger="hover" speaker={
-                            <Tooltip>
-                                Decreasing LOD will increase rendering speed.
+                            <Tooltip >
+                            Decreasing LOD will increase rendering speed.
                             </Tooltip>
                         }>
                             <Icon icon="question-circle" size="lg" />
@@ -279,14 +278,14 @@ class GeneralMenu extends React.Component {
                                         className='input-file'
                                         accept='.json,.webmga'
                                         onChange={e => this.functions[1](e.target.files[0])} />
-                                    <label for="upload-btn">
+                                    <label htmlFor="upload-btn">
                                         <Nav.Item icon={<Icon icon="file-upload" />}>Upload</Nav.Item>
                                     </label>
 
                                 </ButtonToolbar>
 
                             </Nav>
-                            <Nav pullLeft>
+                            <Nav >
                                 <h6 style={{ padding: 20 }}> WebMGA</h6>
                             </Nav>
                         </Navbar.Body>

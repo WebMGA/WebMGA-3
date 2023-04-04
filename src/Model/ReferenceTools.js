@@ -6,12 +6,8 @@ import {
     BufferGeometry,
     Line,
     Box3Helper,
-    Box3,
-    SphereBufferGeometry,
-    MeshBasicMaterial,
-    Mesh
+    Box3
 } from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import {Alert} from 'rsuite';
 
 export class ReferenceTools {
