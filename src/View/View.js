@@ -23,9 +23,9 @@ export class View {
         return View.state;
     }
 
-    setState(state) {
+    setState(state,vid) {
         View.state = state;
-        this.loadLightingAndCamera(state,false);
+        this.loadLightingAndCamera(state,vid);
         this.loadReferenceAndSlicing(state);
         this.loadModel(state);
     }
@@ -219,8 +219,7 @@ export class View {
         size: 50,
         upload :false,
         video:false,
-        videoState:false
-
+        VideoState:false
     }
 
     AmbientLightDefaultState = {

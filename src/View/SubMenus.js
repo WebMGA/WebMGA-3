@@ -180,13 +180,13 @@ export class VideoOptions extends React.Component{
         this.RealTimeVideo = this.RealTimeVideo.bind(this);
         this.VideoToggle = this.VideoToggle.bind(this);
         this.setVideoState = this.setVideoState.bind(this);
-        this.filename = 'WebMGA-Video.webm';
+        this.state.filename = 'WebMGA-Video.webm';
+        this.state.vidstate ={};
         this.setFileName = this.setFileName.bind(this);
 
     }
     setFileName (val){
-        this.filename = val;
-        console.log(this.filename);
+        this.state.filename = val;
     }
     setfps(val){
      this.fps = val;
@@ -209,9 +209,14 @@ export class VideoOptions extends React.Component{
     }
     setVideoState(){
         var data = this.functions[5]();
-        this.vidstate  = data;
-        View.state.VideoState =this.vidstate;
-        console.log(this.vidstate);
+        this.state.vidstate  = data;
+        console.log(this.state.VideoState,View.state.reference.VideoState)
+        View.state.reference.VideoState =!View.state.reference.VideoState;
+        this.setState({
+            VideoState :View.state.reference.VideoState
+        })
+        
+        console.log(this.state.VideoState,View.state.reference.VideoState);
     }
     
     VideoToggle(){
@@ -227,13 +232,13 @@ export class VideoOptions extends React.Component{
             const max_iter = samples.length;
             var capturer = new ccapture( { format: 'webm',framerate:this.fps,quality:100});
             setTimeout(() => {
-                console.log('a',View.state.VideoState)
-                this.RealTimeVideo(0,samples,max_iter,capturer,View.state.VideoState);
+                console.log('a',this.state.vidstate );
+                this.RealTimeVideo(0,samples,max_iter,capturer,this.state.vidstate ,this.state.filename);
             }, 2000);
         }
     }
     
-    RealTimeVideo(i,samples,max_iter,capturer,vidState){
+    RealTimeVideo(i,samples,max_iter,capturer,vidState,filename){
         if(i ===0){
             console.log('does this work?')
             capturer.start();
@@ -246,7 +251,7 @@ export class VideoOptions extends React.Component{
             
             console.log('running animation',i)
             if(this.state.video === true ){
-                requestAnimationFrame( ()=> this.RealTimeVideo(i+1,samples,max_iter,capturer,vidState));
+                requestAnimationFrame( ()=> this.RealTimeVideo(i+1,samples,max_iter,capturer,vidState,filename));
                 console.log('sending request',i+1)
             };
         }
@@ -258,7 +263,8 @@ export class VideoOptions extends React.Component{
                     var url = URL.createObjectURL(blob);
                     var link = document.createElement('a');
                     link.href = url;
-                    link.download = 'WebMGA-Video.webm';
+                    console.log(filename)
+                    link.download = filename + '.webm';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -301,7 +307,7 @@ export class VideoOptions extends React.Component{
                         <Col xs={2} />
                         <Col xs={12}>
                             <br />
-                            <p><b> enviroment set up  </b></p>
+                            <p><b> Enviroment set up  </b></p>
                         </Col>
                     </Row>
                     <Row className="show-grid">
@@ -320,14 +326,14 @@ export class VideoOptions extends React.Component{
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox onClick={this.VideoToggle} checked={video} disabled={!upload}> create </Checkbox>
+                            <Checkbox onClick={this.VideoToggle} checked={video} disabled={!upload||!setVideoState}> create </Checkbox>
                         </Col>
                    </Row>
                    <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                        <Input style={{ width: 200 }} placeholder="Input file name" 
-                        onChange={(filename) => this.setFileName(filename)}/>
+                            <Input style={{ width: 150,height:30 }} placeholder="Input file name" 
+                            onChange={(filename) => this.setFileName(filename)}/>
                         </Col>
                    </Row>
                 </Grid>

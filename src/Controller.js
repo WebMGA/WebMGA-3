@@ -229,11 +229,11 @@ class Controller {
                 this.view.setDefaultState(starting,true);
             }  
             if(vidstate.length >0){
-                this.view.setState((JSON.parse(vidstate)).state);
+                this.view.setState((JSON.parse(vidstate)).state,true);
             }
         }
         else {
-            this.view.setState(data.state);
+            this.view.setState(data.state,false);
         }
         this.model.update();
         if(vid === false){
