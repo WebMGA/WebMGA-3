@@ -2,7 +2,6 @@ import Model from "./Model/Model";
 import View from "./View/View"
 import 'rsuite/dist/styles/rsuite-dark.css';
 import { std, mean } from 'mathjs';
-import video_sample from'./Samples/cnf.00000174.json';
 import unfolded_sample1 from'./Samples/UnfoldedSC4.json';
 import unforded_sample2 from'./Samples/UnfoldedE3.json';
 import sample1 from './Samples/dummy-vector.json';
@@ -320,9 +319,6 @@ class Controller {
                 break;
             case 18:
                 sample =unforded_sample2 ;
-                break;
-            case 19:
-                sample = video_sample;
                 break;
             default:
                 Alert.error('Error: File does not exist');

@@ -317,9 +317,9 @@ export class Model {
         if (this.cameraPosition != null) {
             this.camera.position.set(...this.cameraPosition);
         }
-        // this.controls.dispose();
-        console.log(this.controls,this.camera);
+       
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        
         this.controls.target = this.lookAt;
         this.update();
         

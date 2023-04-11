@@ -61,6 +61,7 @@ export class View {
         this.model.updateSlicer(0, state.slicing.x);
         this.model.updateSlicer(1, state.slicing.y);
         this.model.updateSlicer(2, state.slicing.z);
+
     }
 
     loadLightingAndCamera(state,vid) {
@@ -85,11 +86,9 @@ export class View {
         this.model.toggleLightHelper(2, state.pointLight.helper);
         if(!vid){
             this.model.setCamera(state.camera.type);
+            this.model.updateCameraPosition(state.camera.position);
         }
         
-        
-        
-        this.model.updateCameraPosition(state.camera.position);
         this.model.updateLookAt(state.camera.lookAt);
         
         this.model.updateCameraZoom(state.camera.zoom);
@@ -121,6 +120,7 @@ export class View {
             this.loadModel(View.state);
         }
     }
+
 
     xor(a, b) {
         return (a && !b) || (!a && b);
@@ -210,16 +210,16 @@ export class View {
         }
 
     }
-
     ReferenceDefaultState = {
         boundingShapeEnabled: false,
         activeShape: 'box',
         showAxes: false,
         multicolour: true,
         size: 50,
-        upload :false,
+        fps :24,
+        uploaded :true,
         video:false,
-        VideoState:false
+        loadVideoState:false
     }
 
     AmbientLightDefaultState = {

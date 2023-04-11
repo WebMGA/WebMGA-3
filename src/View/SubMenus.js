@@ -174,14 +174,12 @@ export class VideoOptions extends React.Component{
         this.state =View.state.reference;
         this.functions = props.functions;
         this.toggler = props.toggler;
-        this.state.fps =24;
         this.setfps = this.setfps.bind(this);
         this.UploadFiles = this.UploadFiles.bind(this);
         this.RealTimeVideo = this.RealTimeVideo.bind(this);
         this.VideoToggle = this.VideoToggle.bind(this);
         this.setVideoState = this.setVideoState.bind(this);
         this.state.filename = 'WebMGA-Video.webm';
-        this.state.vidstate ={};
         this.setFileName = this.setFileName.bind(this);
 
     }
@@ -189,34 +187,39 @@ export class VideoOptions extends React.Component{
         this.state.filename = val;
     }
     setfps(val){
-     this.fps = val;
+     this.setState({
+        fps:val
+     })
+     View.state.reference.fps = val;
     }
     UploadFiles(){
-        let toggle = ! this.state.upload;
+        let toggle = ! this.state.uploaded;
         this.setState({
-            upload: toggle
+            uploaded: toggle
         })
-        console.log(toggle)
-        async function runAfterUpload(model, functions) {
-            const lst = await model.uploadConfig();
-            functions[1](lst[0],true,0);
+        if (toggle === true){
+            async function runAfterUpload(model, functions) {
+                const lst = await model.uploadConfig();
+                functions[1](lst[0],true,0);
+            }
+            runAfterUpload(this.model,this.functions).then(()=>{
+                this.model.notifyFinishUpload();
+            })
         }
-        runAfterUpload(this.model,this.functions).then(()=>{
-            this.model.notifyFinishUpload();
-        })
-        View.state.reference.upload = !View.state.reference.upload;
-        console.log(View.state.reference.upload)
+        else{
+            this.model.Video_sample_list =[];
+        }
+        
+        View.state.reference.uploaded= !View.state.reference.uploaded;
     }
     setVideoState(){
         var data = this.functions[5]();
         this.state.vidstate  = data;
-        console.log(this.state.VideoState,View.state.reference.VideoState)
-        View.state.reference.VideoState =!View.state.reference.VideoState;
+        let toggle = ! this.state.loadVideoState
         this.setState({
-            VideoState :View.state.reference.VideoState
+            loadVideoState :toggle
         })
-        
-        console.log(this.state.VideoState,View.state.reference.VideoState);
+        View.state.reference.loadVideoState =!View.state.reference.loadVideoState;  
     }
     
     VideoToggle(){
@@ -230,9 +233,8 @@ export class VideoOptions extends React.Component{
             console.log('no side bar!')
             const samples = this.model.retrieveVideoSample();
             const max_iter = samples.length;
-            var capturer = new ccapture( { format: 'webm',framerate:this.fps,quality:100});
+            var capturer = new ccapture( { format: 'webm',framerate:this.state.fps,quality:100});
             setTimeout(() => {
-                console.log('a',this.state.vidstate );
                 this.RealTimeVideo(0,samples,max_iter,capturer,this.state.vidstate ,this.state.filename);
             }, 2000);
         }
@@ -274,12 +276,11 @@ export class VideoOptions extends React.Component{
 
     render(){
         const video = this.state.video;
-        const upload = this.state.upload;
-        const setVideoState = this.state.videoState;
+        const upload = this.state.uploaded;
+        const setVideoState = this.state.loadVideoState;
         const fps = this.state.fps;
         return(
             <div>
-
                 <Grid fluid>
                     <Row className="show-grid">
                         <Col xs={2} />

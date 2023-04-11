@@ -75,7 +75,11 @@
                 "g": 255,
                 "b": 255
             },
-            "size": 50
+            "size": 50,
+            "uploaded":false,
+            "fps":24,
+            "video":false,
+            "loadVideoState":false
         },
         "ambientLight": {
             "ambientLightColour": {
