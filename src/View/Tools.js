@@ -1,6 +1,6 @@
 
 
-import { Dropdown, RangeSlider,InputNumber, Row, Col, Slider, ButtonToolbar} from 'rsuite';
+import { Dropdown, RangeSlider,InputNumber,InputGroup, Row, Col, Slider, ButtonToolbar} from 'rsuite';
 import React, { useState } from "react";
 
 
@@ -44,15 +44,13 @@ export class ParameterInput extends React.Component {
 
     render() {
         var InputBox;
-
         if (this.numerical) {
-            const defaultVal = this.values;
+            var defaultVal = this.values;
             InputBox =
                 (<div style={this.styling[0]}>
                     <InputNumber defaultValue={defaultVal} step={this.step} onChange={this.changeValue} min={this.min} />
                 </div>);
         } else {
-
             var vals = this.values;
             var active = this.active;
             var listItems = [];
@@ -67,7 +65,7 @@ export class ParameterInput extends React.Component {
 
             InputBox = (
                 <ButtonToolbar style={{ width: 10, marginLeft: 0 }}>
-                    <Dropdown style={{ width: 200 }} title={this.active}>
+                    <Dropdown style={{ width: 100 }} title={this.active}>
                         {listItems}
                     </Dropdown>
                 </ButtonToolbar>
@@ -88,7 +86,7 @@ export class ParameterInput extends React.Component {
 }
 
 export const SliceSlider = (props) => {
-    const [value, setValue] = React.useState(props.vals);
+    const[value, setValue] = React.useState(props.vals);
     let f = props.f;
     let i = props.index;
 
@@ -101,7 +99,7 @@ export const SliceSlider = (props) => {
                 </Col>
                 <Col md={1} />
                 <Col md={16}>
-                    {/* <InputGroup>
+                    <InputGroup>
                         <InputNumber
                             min={-100.0}
                             max={100.0}
@@ -109,6 +107,9 @@ export const SliceSlider = (props) => {
                             step={0.1}
                             onChange={nextValue => {
                                 const end = value[1];
+                                if(!nextValue||isNaN(nextValue)){
+                                    nextValue = 0;
+                                }
                                 if (parseFloat(nextValue) > end) {
                                     return;
                                 }
@@ -123,6 +124,9 @@ export const SliceSlider = (props) => {
                             value={value[1]}
                             step={0.1}
                             onChange={(nextValue) => {
+                                if(!nextValue||isNaN(nextValue)){
+                                    nextValue = 0;
+                                }
                                 const start = value[0];
                                 if (start > parseFloat(nextValue)) {
                                     return;
@@ -131,7 +135,7 @@ export const SliceSlider = (props) => {
                                 f(i, [start, parseFloat(nextValue)]);
                             }}
                         />
-                    </InputGroup> */}
+                    </InputGroup>
                 </Col>
             </Row>
             <Row>
@@ -144,7 +148,6 @@ export const SliceSlider = (props) => {
                         value={value}
                         onChange={value => {
                             setValue(value);
-
                             f(i, value);
                         }}
                     />
@@ -159,11 +162,8 @@ export const CustomSlider = (props) => {
     var f = props.f;
     var [value, setValue] = useState(props.val);
     var type;
-
-
     let disabled = props.disabled;
     const [min, max] = props.boundaries;
-
 
     if (props.type == null) {
         type = null;
@@ -189,12 +189,15 @@ export const CustomSlider = (props) => {
             </Col>
             <Col md={4}>
                 <InputNumber
-                    style={{ marginLeft: 80, marginTop: 3, marginBottom: 3, width: 70, height: 35 }}
+                    style={{ marginLeft: 80, marginTop: 3, marginBottom: 3, width: 65, height: 35 }}
                     min={min}
                     max={max}
                     value={value}
                     disabled={disabled}
                     onChange={value => {
+                        if(!value||isNaN(value)){
+                            value = 0;
+                        }
                         setValue(value);
                         f(value, props.type)
                     }}

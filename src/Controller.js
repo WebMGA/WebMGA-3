@@ -216,43 +216,36 @@ class Controller {
         
     }
 
-    generate = (data, starting,vid,vidstate) => {
+    generate = (data, starting,vidstate) => {
         this.model.genSets(data.model.sets);
-        if (data.state == null) {
-            if(vid ===false){
+        if (data.state == null) { 
+            if(vidstate){
+                this.view.setState((JSON.parse(vidstate)).state,true);
+            }
+            else{
                 this.view.setDefaultState(starting,false);
                 Alert.info("Setting default viewing state.");
-            } 
-            if(vid === true)
-            {
-                this.view.setDefaultState(starting,true);
-            }  
-            if(vidstate.length >0){
-                this.view.setState((JSON.parse(vidstate)).state,true);
             }
         }
         else {
             this.view.setState(data.state,false);
         }
         this.model.update();
-        if(vid === false){
-            this.externalToggle.closeSidemenu();
-        }
     }
 
     load = (file,VIDEO,vidstate) => {
         let fileReader = new FileReader();
         const read = () => {
             var data = JSON.parse(fileReader.result);
-            // try {
-            this.generate(data,false,VIDEO,vidstate);
+            try {
+            this.generate(data,false,vidstate);
             if(VIDEO === false){
                 Alert.success('File loaded successfully.');
             }
-            // } catch {
-            //     Alert.error('Error: Please review uploaded file. See manual for help.');
-            //     return;
-            // }
+            } catch {
+                Alert.error('Error: Please review uploaded file. See manual for help.');
+                return;
+            }
         }
         fileReader.onloadend = read;
         fileReader.readAsText(file);

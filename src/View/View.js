@@ -25,7 +25,9 @@ export class View {
 
     setState(state,vid) {
         View.state = state;
-        this.loadLightingAndCamera(state,vid);
+        if(!vid){
+            this.loadLightingAndCamera(state,vid);
+        }
         this.loadReferenceAndSlicing(state);
         this.loadModel(state);
     }
@@ -43,7 +45,9 @@ export class View {
     }
 
     loadState(state,vid){
-        this.loadLightingAndCamera(state,vid);
+        if(!vid){
+            this.loadLightingAndCamera(state,vid);
+        }
         this.loadReferenceAndSlicing(state);
         
     }
@@ -65,7 +69,7 @@ export class View {
     }
 
     loadLightingAndCamera(state,vid) {
-        console.log(state);
+        console.log('called load light')
         let directionalLightColour = JSON.parse(JSON.stringify(state.directionalLight.colour));
         let pointLightColour = JSON.parse(JSON.stringify(state.pointLight.colour));
 
@@ -75,8 +79,13 @@ export class View {
         if (!state.pointLight.enabled) {
             pointLightColour.i = 0;
         }
-
-        this.model.updateBg(state.ambientLight.backgroundColour);
+        if(state.ambientLight.darkBackGround){
+            this.model.updateBg("#000000");
+        }
+        if(!state.ambientLight.darkBackGround){
+            this.model.updateBg('#FFFFFF');
+        }
+        
         this.model.updateLight(0, state.ambientLight.ambientLightColour);
         this.model.updateLight(1, directionalLightColour);
         this.model.updateLight(2, pointLightColour);
@@ -85,7 +94,7 @@ export class View {
         this.model.toggleLightHelper(1, state.directionalLight.helper);
         this.model.toggleLightHelper(2, state.pointLight.helper);
         if(!vid){
-            this.model.setCamera(state.camera.type);
+            this.model.setCamera(state.camera.type,false);
             this.model.updateCameraPosition(state.camera.position);
         }
         
@@ -229,11 +238,7 @@ export class View {
             b: 255,
             i: 40
         },
-        backgroundColour: {
-            r: 0,
-            g: 0,
-            b: 0
-        }
+        darkBackGround:true
     }
 
 }

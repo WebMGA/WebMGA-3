@@ -6791,11 +6791,7 @@
                "b": 255,
                "i": 40
            },
-           "backgroundColour": {
-               "r": 0,
-               "g": 0,
-               "b": 0
-           }
+           "darkBackGround":true
        },
        "pointLight": {
            "reset": 0,

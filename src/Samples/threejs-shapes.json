@@ -88,11 +88,7 @@
                 "b": 255,
                 "i": 40
             },
-            "backgroundColour": {
-                "r": 255,
-                "g": 255,
-                "b": 255
-            }
+            "darkBackGround":true
         },
         "pointLight": {
             "reset": 0,

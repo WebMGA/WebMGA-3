@@ -20,7 +20,6 @@ export class ModelsOptions extends React.Component {
         super();
         this.state = View.state.model;
         this.model = props.model;
-
         this.selectShape = this.selectShape.bind(this);
         this.selectSet = this.selectSet.bind(this);
         this.updateParameter = this.updateParameter.bind(this);
@@ -72,8 +71,10 @@ export class ModelsOptions extends React.Component {
     }
 
     updateParameter(val, i) {
-        let parameter = parseFloat(val);
-
+        if (isNaN(val) ||!val) {
+            val =0
+        }
+        const parameter = parseFloat(val);
         let globalState = View.state.model.configurations[this.state.active];
         globalState.parameters.vals[i] = parameter;
 
@@ -184,7 +185,9 @@ export class VideoOptions extends React.Component{
 
     }
     setFileName (val){
-        this.state.filename = val;
+        this.setState({
+            filename:val
+        })
     }
     setfps(val){
      this.setState({
@@ -223,14 +226,15 @@ export class VideoOptions extends React.Component{
     }
     
     VideoToggle(){
-        let toggle = !View.state.reference.video;
-        View.state.reference.video = toggle;
+        console.log(this.state.video);
+        let toggle = !this.state.video;
         this.setState({
             video:toggle
         })
+        this.state.video = toggle;
+        console.log(this.state.video);
         if(this.state.video ===true){
             this.toggler.closeSidemenu();
-            console.log('no side bar!')
             const samples = this.model.retrieveVideoSample();
             const max_iter = samples.length;
             var capturer = new ccapture( { format: 'webm',framerate:this.state.fps,quality:100});
@@ -238,6 +242,7 @@ export class VideoOptions extends React.Component{
                 this.RealTimeVideo(0,samples,max_iter,capturer,this.state.vidstate ,this.state.filename);
             }, 2000);
         }
+        View.state.reference.video = !View.state.reference.video
     }
     
     RealTimeVideo(i,samples,max_iter,capturer,vidState,filename){
@@ -271,6 +276,9 @@ export class VideoOptions extends React.Component{
                     link.click();
                     document.body.removeChild(link);
                 });
+                View.state.reference.video =false;
+                View.state.reference.setVideoState = false;
+                
         }}
 
 
@@ -314,9 +322,20 @@ export class VideoOptions extends React.Component{
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox onClick={this.setVideoState} checked={setVideoState}> Set </Checkbox>
+                            <Checkbox onClick={this.setVideoState} checked={setVideoState}>Apply </Checkbox>
+                        </Col>
+                        <Col xs={1}>
+                            <Whisper placement="bottom" trigger="hover" speaker={
+                                <Tooltip>
+                                    Modify enviromental set ups such as show unit box at other menus.
+                                    Toggle Apply to apply settings to Video.
+                            </Tooltip>
+                            }>
+                                <Icon style={{ marginTop: 8 }} icon="question-circle" size="lg" />
+                            </Whisper>
                         </Col>
                     </Row>
+                   
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
@@ -325,18 +344,20 @@ export class VideoOptions extends React.Component{
                         </Col>
                     </Row>
                     <Row className="show-grid">
-                        <Col xs={1} />
+                        <Col xs={2} />
                         <Col xs={12}>
-                            <Checkbox onClick={this.VideoToggle} checked={video} disabled={!upload||!setVideoState}> create </Checkbox>
-                        </Col>
-                   </Row>
-                   <Row className="show-grid">
-                        <Col xs={1} />
-                        <Col xs={12}>
-                            <Input style={{ width: 150,height:30 }} placeholder="Input file name" 
+                        <p>Input File name:</p>
+                        <Input style={{ width:150,height:30,marginLeft: 20 }} placeholder="New_Video" 
                             onChange={(filename) => this.setFileName(filename)}/>
                         </Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox onClick={this.VideoToggle} checked={video} disabled={!upload||!setVideoState}> Create </Checkbox>
+                        </Col>
                    </Row>
+                   
                 </Grid>
                 <br />
                 <br />
@@ -384,7 +405,7 @@ export class CameraOptions extends React.Component {
             type: val
         });
         View.state.camera.type = val;
-        this.model.setCamera(val);
+        this.model.setCamera(val,false);
         if (val === "orthographic") {
             this.updateZoom(50);
 
@@ -421,21 +442,22 @@ export class CameraOptions extends React.Component {
     updateLookat(val, type) {
         let lookAt = this.state.lookAt;
 
-        if (val != isNaN && val != null) {
-            switch (type) {
-                case 0:
-                    lookAt.x = parseFloat(val);
-                    break;
-                case 1:
-                    lookAt.y = parseFloat(val);
-                    break;
-                case 2:
-                    lookAt.z = parseFloat(val);
-                    break;
-                default:
-                    Alert.error('Error: Unexpected Look At Input');
-                    return;
-            }
+        if (isNaN(val) ||!val) {
+            val =0
+        }
+        switch (type) {
+            case 0:
+                lookAt.x = parseFloat(val);
+                break;
+            case 1:
+                lookAt.y = parseFloat(val);
+                break;
+            case 2:
+                lookAt.z = parseFloat(val);
+                break;
+            default:
+                Alert.error('Error: Unexpected Look At Input');
+                return;
         }
 
         this.model.updateLookAt(lookAt);
@@ -565,7 +587,7 @@ export class SlicingOptions extends React.Component {
     }
 
     updateSlicer(i, val) {
-        
+    
         switch (i) {
             case 0:
                 this.setState(
@@ -594,6 +616,8 @@ export class SlicingOptions extends React.Component {
             default:
                 Alert.error('Error: Unexpected Slicing Identifier');
         }
+        
+        
 
         this.model.updateSlicer(i, val);
         this.model.update();
@@ -861,29 +885,26 @@ export class AmbientLightOptions extends React.Component {
         this.model.update();
         View.state.ambientLight.ambientLightColour = colour;
     }
-    updateBg(val, i) {
-        let colour = this.state.backgroundColour;
-
-        switch (i) {
-            case 'r':
-                colour.r = val;
-                break;
-            case 'g':
-                colour.g = val;
-                break;
-            case 'b':
-                colour.b = val;
-                break;
-            default:
-                Alert.error('Error: Unexpected RGB Identifier');
+    updateBg() {
+        console.log(this.state.darkBackGround)
+        let toggle = !this.state.darkBackGround;
+        this.setState({
+            darkBackGround:toggle
+        })
+        console.log(this.state.darkBackGround)
+        if (toggle === true){
+            this.model.updateBg("#000000");
         }
-        this.model.updateBg(colour);
+        else{
+            this.model.updateBg('#FFFFFF');
+        }
         this.model.update();
-        View.state.ambientLight.backgroundColour = colour;
+        View.state.ambientLight.darkBackGround = !View.state.ambientLight.darkBackGround;
+       
     }
     render() {
         const ambientLightColour = this.state.ambientLightColour;
-        const backgroundColour = this.state.backgroundColour;
+        const backgroundColour = this.state.darkBackGround;
         return (
             <div>
                 <Divider><strong style={dividerStyle}> Ambient Light </strong></Divider>
@@ -894,10 +915,12 @@ export class AmbientLightOptions extends React.Component {
                 <p style={{ marginLeft: TITLE_LEFT_MARGIN }}> Intensity </p>
                 <CustomSlider disabled={false} boundaries={[0, 100]} val={ambientLightColour.i} f={this.updateColour} type={'i'} />
                 <Divider><strong style={dividerStyle}> Background Colour</strong></Divider>
-                <p style={{ marginLeft: TITLE_LEFT_MARGIN }}> RGB </p>
-                <CustomSlider disabled={false} boundaries={[0, 255]} val={backgroundColour.r} f={this.updateBg} type={'r'} />
-                <CustomSlider disabled={false} boundaries={[0, 255]} val={backgroundColour.g} f={this.updateBg} type={'g'} />
-                <CustomSlider disabled={false} boundaries={[0, 255]} val={backgroundColour.b} f={this.updateBg} type={'b'} />
+                <Row className="show-grid">
+                        <Col xs={1} />
+                        <Col xs={12}>
+                            <Checkbox style={{ marginLeft: 12 }} checked ={backgroundColour} onClick={this.updateBg}> Dark Mode</Checkbox>
+                        </Col>
+                </Row>
             </div>
         );
     }
@@ -916,7 +939,7 @@ export class ReferenceOptions extends React.Component {
         this.toggleMulticolour = this.toggleMulticolour.bind(this);
 
     }
-
+   
     toggleFold() {
         let toggle = !this.state.model.configurations[this.state.model.active].displayFoldState;
         this.setState({
@@ -956,6 +979,7 @@ export class ReferenceOptions extends React.Component {
         
         View.state.reference.showAxes = !View.state.reference.showAxes;
     }
+
 
     render() {
         const configState = this.state.model.configurations[this.state.model.active];
@@ -1013,7 +1037,6 @@ export class ReferenceOptions extends React.Component {
 
                             <Checkbox style={{ marginLeft: 12 }} checked={multicolour} onClick={this.toggleMulticolour}> Multi-Colour</Checkbox>
 
-
                         </Col>
                         <Col xs={4}>
                             <Whisper placement="bottom" trigger="hover" speaker={
@@ -1025,6 +1048,8 @@ export class ReferenceOptions extends React.Component {
                             </Whisper>
                         </Col>
                     </Row>
+                    
+
 
                 </Grid>
                

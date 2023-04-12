@@ -76,14 +76,11 @@ export class Model {
         this.Video_sample_list=[];
         this.clock = null;
         this.initClippers();
-        this.occlusionCullingEnabled =true;
         this.lookAt = new Vector3(0, 0, 0);
         this.updateDimensions();
-        this.setCamera(this.cameraType);
+        this.setCamera(this.cameraType,true);
         this.view = new View(this.model, this.io, this.chronometer, this.externalToggle);
         
-
-
         this.lighting = [
             new Light('ambient'),
             new Light('directional'),
@@ -101,6 +98,7 @@ export class Model {
         // this.occlusion_scene.add(this.camera)
         this.lod = 2;
     }
+  
 
     update() {
         console.log(this.renderer.info);
@@ -110,8 +108,6 @@ export class Model {
             this.chronometer.click();
         }
     }
-
-
 
 
     getRender_Object_number(){
@@ -126,14 +122,15 @@ export class Model {
         this.numOfObject = (num-6)/3;
     }
     occlusionCulling(){
-       //Add bounding Box of each molecule to scene
-       //Color write are set to be False;
+    //    Add bounding Box of each molecule to scene
+    //    Color write are set to be False;
         // for (let set of this.sets) {
         //     for (const y of set.moleculeBoundingBox ) {
-        //         this.occlusion_scene.add(y);
+        //         this.scene.add(y);
+        //         console.log(y)
         //     }
         // } 
-        // this.renderer.render(this.occlusion_scene,this.camera);
+        this.renderer.render(this.scene, this.camera)
         // const query = gl.createQuery();
         // gl.beginQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE,query);
         
@@ -270,6 +267,7 @@ export class Model {
             }
         }
         this.getRender_Object_number();
+        this.occlusionCulling();
     }
 
     /* LOD FUNCTIONS */
@@ -305,9 +303,12 @@ export class Model {
         this.renderer.setSize(this.width, this.height);
     }
 
-    setCamera(type) {
+    setCamera(type,starting) {
+        console.log('set camera called')
+        if(this.camera){
+            this.camera='';
+        }
         this.cameraType = type;
-        // this.camera.dispose();
         if (type === 'perspective') {
             this.camera = new PerspectiveCamera(50, this.width / this.height, 0.1, 1000);
         } else {
@@ -317,8 +318,13 @@ export class Model {
         if (this.cameraPosition != null) {
             this.camera.position.set(...this.cameraPosition);
         }
-       
+        
+      
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+       
+        // else{
+        //     this.controls.update();
+        // }
         
         this.controls.target = this.lookAt;
         this.update();
@@ -360,7 +366,7 @@ export class Model {
     /* AMBIENT AND LIGHT FUNCTIONS */
 
     updateBg(colour) {
-        this.bgColour = Model.rgbToHex(colour.r, colour.g, colour.b);
+        this.bgColour = colour;
         this.renderer.setClearColor(this.bgColour);
     }
 
@@ -659,7 +665,7 @@ export class Model {
 
     initTesting(step) {
         // set desirable testing view
-        this.setCamera('orthographic');
+        this.setCamera('orthographic',false);
         this.updateCameraZoom(8);
         this.updateLightPosition(2, { x: 50, y: 0, z: 50 });
 
