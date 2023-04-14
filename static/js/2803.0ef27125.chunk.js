@@ -1,2 +1,0 @@
-(this.webpackJsonpwebmga=this.webpackJsonpwebmga||[]).push([[2803],{3250:function(s,t,a){"use strict";a.r(t),t.default=a.p+"static/media/load_old_cnf_to_json.9cb3f2b2.py"}}]);
-//# sourceMappingURL=2803.0ef27125.chunk.js.map
