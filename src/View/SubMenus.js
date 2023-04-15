@@ -2,7 +2,8 @@
 import { Nav, Divider, Checkbox, FormGroup, RadioGroup, Radio, Grid, Row, Col, Alert, Whisper, Tooltip, Icon,Input } from 'rsuite';
 import React from "react";
 import { SliceSlider, ParameterInput, ParameterSet, CustomSlider } from './Tools'
-import { View } from './View'
+import {View} from './View.js'
+
 import ccapture from "ccapture.js-npmfixed";
 import { Scrollbars } from 'rc-scrollbars';
 
@@ -10,10 +11,12 @@ const TITLE_LEFT_MARGIN = 30;
 const dividerStyle = {
     color: '#A4A9A3'
 }
+
 const submenuParameterSetStyling = [
     { width: 130, marginLeft: 10 },
     { marginTop: 10, marginLeft: 30 }
 ];
+
 export class ModelsOptions extends React.Component {
 
     constructor(props) {
@@ -408,7 +411,6 @@ export class CameraOptions extends React.Component {
         this.model.setCamera(val,false);
         if (val === "orthographic") {
             this.updateZoom(50);
-
         } else {
             this.updateZoom(1);
         }
@@ -542,12 +544,17 @@ export class SlicingOptions extends React.Component {
         this.toggleHelperZ = this.toggleHelperZ.bind(this);
         this.updateHelpers = this.updateHelpers.bind(this);
         this.updateSlicer = this.updateSlicer.bind(this);
+        console.log(this.state,View.state.slicing);
     }
 
     toggleSlicer(){
         let toggle = !this.state.slicing_enabled;
         this.model.enableClipping(toggle,View.state.model.active);
+        this.setState({
+            slicing_enabled :toggle
+        })
         View.state.slicing.slicing_enabled = toggle
+        console.log(this.state,View.state.slicing);
     }
 
     updateHelpers(helpers) {

@@ -8,6 +8,10 @@ import {
     Plane,
     MeshLambertMaterial,
     Mesh,
+    MeshBasicMaterial,
+    Color,
+    BoxGeometry,
+  
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Set from './Set.js'
@@ -16,7 +20,6 @@ import ReferenceTools from './ReferenceTools.js'
 import { Alert } from 'rsuite'
 import * as SHAPE from './Shapes.js';
 import Parameters from './Parameters';
-import View from "../View/View.js"
 
 
 
@@ -54,7 +57,6 @@ export class Model {
 
     constructor(chronometer, notify) {
         this.scene = new Scene();
-        this.occlusion_scene =new Scene();
         this.chronometer = chronometer;
         this.setDefault();
         this.notify = notify;
@@ -78,9 +80,7 @@ export class Model {
         this.initClippers();
         this.lookAt = new Vector3(0, 0, 0);
         this.updateDimensions();
-        this.setCamera(this.cameraType,true);
-        this.view = new View(this.model, this.io, this.chronometer, this.externalToggle);
-        
+        this.setCamera(this.cameraType,true); 
         this.lighting = [
             new Light('ambient'),
             new Light('directional'),
@@ -101,15 +101,41 @@ export class Model {
   
 
     update() {
-        console.log(this.renderer.info);
+        console.log('update called');
+        const gl = this.renderer.getContext();
+        var count =0;
+       
+    //     this.scene.traverse( function(child) {
+    //        if ( child.isMesh){
+    //         if (count<100){
+    //             child.visible = true;
+    //             console.log(child)
+    //         }
+    //         else{
+    //             child.visible = false;
+    //         }
+    //            count = count+1;
+    //        };
+    //    } );
+          
+        // gl.enable(gl.DEPTH_TEST);
+        // var query = gl.createQuery();
+        // gl.beginQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE,query)
         this.renderer.render(this.scene, this.camera);
+        // gl.endQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE,query);
+        // setTimeout(()=>{
+        //     console.log(gl.getQueryParameter(query, gl.QUERY_RESULT_AVAILABLE),query)
+        // if(gl.getQueryParameter(query, gl.QUERY_RESULT_AVAILABLE)) {
+        //     var result = gl.getQueryParameter(query,gl.QUERY_RESULT);
+        //     console.log(Number(result));
+        // }
+        
+        // },5000)
         
         if (!this.rotating) {
             this.chronometer.click();
         }
     }
-
-
     getRender_Object_number(){
         let num =0;
         this.scene.traverse( function(child) {
@@ -120,23 +146,38 @@ export class Model {
         } );
        
         this.numOfObject = (num-6)/3;
+        // this.numOfObject =this.renderer.info.render;
+        console.log(this.renderer.info.render)
     }
     occlusionCulling(){
-    //    Add bounding Box of each molecule to scene
-    //    Color write are set to be False;
-        // for (let set of this.sets) {
-        //     for (const y of set.moleculeBoundingBox ) {
-        //         this.scene.add(y);
-        //         console.log(y)
-        //     }
-        // } 
-        this.renderer.render(this.scene, this.camera)
-        // const query = gl.createQuery();
-        // gl.beginQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE,query);
-        
-        // const currentQuery = gl.getQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE, query);
-        // gl.endQuery(query);
-        // console.log(currentQuery);
+         
+    const renderer = new WebGLRenderer();
+    const gl = renderer.getContext();
+    console.log(gl)
+    const scene = new Scene();
+    const mesh1 = new Mesh(new BoxGeometry( 1, 1, 1 ), new MeshBasicMaterial( {color: 0x00ff00}));
+    const mesh2 = new Mesh(new BoxGeometry( 1, 1, 1 ), new MeshBasicMaterial( {color: 0x00ff00}));
+    scene.add(mesh1, mesh2);
+    var query = gl.createQuery();
+    const camera = this.camera = new PerspectiveCamera(50, this.width / this.height, 0.1, 1000);
+      
+    camera.position.z = 5;
+    for (let l of this.lighting) {
+        scene.add(l.light);}
+    gl.beginQuery(gl.ANY_SAMPLES_PASSED,query);
+    renderer.render(scene, camera);
+    gl.endQuery(gl.ANY_SAMPLES_PASSED,query);
+    var result = gl.getQueryParameter(query,gl.QUERY_RESULT);
+    console.log(Number(result));
+    console.log(result)
+
+
+
+
+
+
+    
+      
     }
 
     getData() {
@@ -158,8 +199,9 @@ export class Model {
 
     toggleSidebar() {
         this.sidebarExpanded = !this.sidebarExpanded;
-        this.updateDimensions();
+        // this.updateDimensions();
         this.updateCamera();
+        console.log(this.sidebarExpanded)
     }
 
     toggleAutorotate() {
@@ -212,6 +254,8 @@ export class Model {
         for (const m of this.sets[id].meshes) {
             this.scene.add(m);
         }
+        // let mesh = this.occlusionCulling();
+        // this.scene.add(mesh);
     }
 
     updateUserColour(id, colour) {
@@ -266,8 +310,9 @@ export class Model {
                 this.scene.add(m);
             }
         }
+        
         this.getRender_Object_number();
-        this.occlusionCulling();
+        
     }
 
     /* LOD FUNCTIONS */
@@ -293,17 +338,19 @@ export class Model {
     /* CAMERA AND PROJECTION FUNCTIONS */
 
     updateDimensions() {
+        
         this.height = (window.innerHeight - 56);
 
         if (this.sidebarExpanded) {
             this.width = window.innerWidth - 356;
+            console.log('sidebar')
         } else {
             this.width = window.innerWidth - 56;
         }
         this.renderer.setSize(this.width, this.height);
     }
 
-    setCamera(type,starting) {
+    setCamera(type) {
         console.log('set camera called')
         if(this.camera){
             this.camera='';
@@ -318,16 +365,9 @@ export class Model {
         if (this.cameraPosition != null) {
             this.camera.position.set(...this.cameraPosition);
         }
-        
-      
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-       
-        // else{
-        //     this.controls.update();
-        // }
-        
         this.controls.target = this.lookAt;
-        this.update();
+        // this.update();
         
         
     }
@@ -563,14 +603,26 @@ export class Model {
         }
         else{
             this.renderer.localClippingEnabled = false;
+            // if (this.sets){
+            //     console.log('called')
+            //     this.updateSets(id, [id], (id) => {
+            //         this.sets[id].elements =[];
+            //         this.sets[id].meshes = [];
+            //         this.sets[id].setBackFace(false);
+            //         this.sets[id].genElements();
+            //         this.sets[id].setElements();
+            //         this.sets[id].genMeshes();
+            //     });
+            // }
+            
         }
         
       
     }
 
-    disableClipping(){
-        this.renderer.localClippingEnabled = false;
-    }
+    // disableClipping(){
+    //     this.renderer.localClippingEnabled = false;
+    // }
 
     initClippers() {
         this.clippingIntersections = false;

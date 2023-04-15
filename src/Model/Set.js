@@ -65,7 +65,6 @@ export class Set {
             this.name = this.shapeType;
         }
         this.genSet();
-        
     }
 
     isFoldedTest(){
@@ -97,7 +96,7 @@ export class Set {
         this.genElements();
         this.setElements();
         this.genMeshes();
-        this.genListBoundingBox();
+        // this.genListBoundingBox();
     }
 
     
@@ -207,43 +206,105 @@ export class Set {
     setBackFace(bool){
         this.renderBackFace =bool;
     }
-    genMeshes() {
-        let m;
-        let c;
-        let mat;
-        let gutsMaterial;
-        let v;
-
-        for (let elem of this.elements) {
+    genMeshes(){
+        let num = this.elements.length;
+        console.log(this.elements.length);
+        let c = this.userColour;
+        let mat =new MeshPhongMaterial({
+            side : THREE.FrontSide,
+            clipShadows: true,
+            clippingPlanes:this.clippingPlanes,
+            wireframe : this.wireframe
+        });
+        let gut = new THREE.MeshBasicMaterial( { side: THREE.BackSide,clipShadows: true, clippingPlanes:this.clippingPlanes,
+            wireframe :this.wireframe} );
+ 
+        let Intsancemesh1 = new THREE.InstancedMesh( this.elements[0].geometries[0], mat, num);
+        let Instancemesh2= new THREE.InstancedMesh( this.elements[0].geometries[1], mat, num);
+        let Instancemesh3 =new THREE.InstancedMesh( this.elements[0].geometries[2], mat, num);
+        for ( let i = 0; i < num; i ++ ) {
             if (this.colourByDirector) {
-                let rgb = colourMap.values[elem.colourIndex];
+                let rgb = colourMap.values[this.elements[i].colourIndex];
                 c = new Color(Model.rgbToHex(...rgb));
-            } else {
-                c = this.userColour;
-            }
-        
-            mat =new MeshPhongMaterial({
-                color: c,
-                clippingPlanes: this.clippingPlanes,
-                clipIntersection: false,
-                side : THREE.FrontSide,
-                clipShadows: true
-            });
-            mat.wireframe = this.wireframe;
-            if (this.renderBackFace){
-                gutsMaterial = new THREE.MeshBasicMaterial( {color: c, side: THREE.BackSide, clippingPlanes: this.clippingPlanes, clipShadows: true} );
-            }
-            for (let g of elem.geometries) {
-                m = new Mesh(g, mat);
-                this.meshes.push(m);
-                if (this.renderBackFace){
-                    v = new Mesh(g,gutsMaterial);
-                    this.meshes.push(v);
-                }
-                
-            }
+            } 
+            let matrix2 = new THREE.Matrix4();
+            const position = new THREE.Vector3();
+            position.x = this.elements[i].position[0];
+            position.y = this.elements[i].position[1];
+            position.z = this.elements[i].position[2];
+            // var ori = this.elements[i].quaternion
+            const scale = new THREE.Vector3();
+            scale.x = scale.y = scale.z = Math.random() * 1;
+            let ori =this.getRotations(this.orientationType, this.orientations[i]);
+            matrix2.compose(position,ori,new THREE.Vector3(0.5,0.5,0.5));
+            Intsancemesh1.setMatrixAt( i,matrix2);
+            Instancemesh2.setMatrixAt(i,matrix2);
+            Instancemesh3.setMatrixAt(i,matrix2);
+            Intsancemesh1.setColorAt( i, c );
+            Instancemesh2.setColorAt( i,c );
+            Instancemesh3.setColorAt( i, c);
         }
+        this.meshes.push(Intsancemesh1,Instancemesh2,Instancemesh3);
+        if (this.renderBackFace){
+            console.log('back called')
+            let Intsancemeshback1 = new THREE.InstancedMesh( this.elements[0].geometries[0], gut, num);
+            let Instancemeshback2= new THREE.InstancedMesh( this.elements[0].geometries[1], gut, num);
+            let Instancemeshback3 =new THREE.InstancedMesh( this.elements[0].geometries[2], gut, num);
+            for ( let i = 0; i < num; i ++ ) {
+                if (this.colourByDirector) {
+                    let rgb = colourMap.values[this.elements[i].colourIndex];
+                    c = new Color(Model.rgbToHex(...rgb));
+                } 
+                let matrix2 = new THREE.Matrix4();
+                const position = new THREE.Vector3();
+                position.x = this.elements[i].position[0];
+                position.y = this.elements[i].position[1];
+                position.z = this.elements[i].position[2];
+                const scale = new THREE.Vector3();
+                scale.x = scale.y = scale.z = Math.random() * 1;
+                let ori =this.getRotations(this.orientationType, this.orientations[i]);
+                matrix2.compose(position,ori,new THREE.Vector3(0.5,0.5,0.5));
+                Intsancemeshback1.setMatrixAt( i,matrix2);
+                Instancemeshback2.setMatrixAt(i,matrix2);
+                Instancemeshback3.setMatrixAt(i,matrix2);
+                Intsancemeshback1.setColorAt( i, c );
+                Instancemeshback2.setColorAt( i,c );
+                Instancemeshback3.setColorAt( i, c);
+            }
+        this.meshes.push(Intsancemeshback1,Instancemeshback2,Instancemeshback3);
+        }
+    
     }
+    // genMeshes() {
+    //     let m;
+    //     let c;
+    //     let v;
+    //     let count =0
+    //     for (let elem of this.elements) {
+    //         if (this.colourByDirector) {
+    //             let rgb = colourMap.values[elem.colourIndex];
+    //             c = new Color(Model.rgbToHex(...rgb));
+    //         } else {
+    //             c = this.userColour;
+    //         }
+    //         let mat = this.mat.clone()
+    //         mat.color =c;
+    //         mat.clippingPlanes= this.clippingPlanes;
+    //         let gut = this.gutsMaterial.clone();
+    //         gut.clippingPlanes=this.clippingPlanes;
+    //         mat.wireframe = this.wireframe;
+    //         gut.color =c;
+    //         for (let g of elem.geometries) {
+    //             m = new Mesh(g, mat);
+    //             this.meshes.push(m);
+    //             if (this.renderBackFace){
+    //                 v = new Mesh(g,gut);
+    //                 this.meshes.push(v);
+    //             }
+                
+    //         }
+    //     }
+    // }
     genListBoundingBox(){
         // Bounding Box for each molecule
         let BoundingBoxs =[]
@@ -273,33 +334,11 @@ export class Set {
                 geoms.push(this.shape.fanGeometries[0].clone());
                 geoms.push(this.shape.fanGeometries[1].clone());
             }
-
-            this.rotate(elem.euler, geoms);
-            this.translate(elem.position, geoms);
-            
+            // this.rotate(elem.euler, geoms);
+            // this.translate(elem.position, geoms);
             elem.setGeometries(geoms);
-
             geoms = [];
         }
-    }
-    setPositions(lst1,lst2){
-        // let pos =[];
-        // let x = this.unitBox[0];
-        // let y = this.unitBox[1];
-        // let z = this.unitBox[2];
-
-        // for (let i = 0; i < this.positions.length; i++){
-        //     let rnd1 = (Math.random() * (2) -1) 
-        //     let rnd2 = (Math.random() * (2) -1)
-        //     let rnd3 = (Math.random() * (2) -1)
-        //     pos.push([this.positions[i][0]+rnd1*x ,this.positions[i][1]+rnd2*y,this.positions[i][2]+rnd3*z])
-        // }
-        // this.positions = pos;
-        const pos = lst1;
-        const ori = lst2;
-        this.positions =pos;
-        this.orientations =ori;
-          
     }
 
     genElements() {
@@ -345,6 +384,7 @@ export class Set {
 
         this.shape.LOD = this.lod;
         this.shape.generate();
+        console.log(this.shape)
     }
 
     translate(pos, geoms) {
@@ -517,14 +557,15 @@ export class Set {
         position;
         colourIndex;
         euler;
+        quaternion;
 
         constructor(p, q) {
             this.position = p;
             this.orientation = this.quaternionToUnitVector(q);
-
             this.euler = new Euler();
             this.euler.setFromQuaternion(q);
             this.colourIndex = 0;
+            this.quaternion =q
         }
 
         quaternionToUnitVector(q){

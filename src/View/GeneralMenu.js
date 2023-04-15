@@ -54,14 +54,7 @@ class LibraryDropdown extends React.Component {
         this.model = props.model;
         this.state = { active: 2 };
         this.f = props.f;
-
-        this.updateKey = this.updateKey.bind(this);
-    }
-
-    updateKey(key) {
-        this.setState({
-            active: key
-        });
+        this.toggler = props.toggler;
     }
 
     render() {
@@ -74,7 +67,6 @@ class LibraryDropdown extends React.Component {
                 appearance='subtle'
                 onSelect={(eventKey) => {
                     this.f(eventKey);
-
                 }}>
 
                 <Dropdown.Menu title="Samples">
@@ -118,7 +110,6 @@ class PerformanceDropdown extends React.Component {
         super(props);
         this.model = props.model;
         this.state = { val: props.model.lod + 1 };
-
         this.updateVal = this.updateVal.bind(this);
     }
 

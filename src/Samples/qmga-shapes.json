@@ -156,6 +156,7 @@
             "zoom": 31.512470486230455
         },
         "slicing": {
+            "slicing_enabled":false,
             "clipIntersection": false,
             "helpers": [
                 false,

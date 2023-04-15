@@ -85,7 +85,6 @@ export class View {
         if(!state.ambientLight.darkBackGround){
             this.model.updateBg('#FFFFFF');
         }
-        
         this.model.updateLight(0, state.ambientLight.ambientLightColour);
         this.model.updateLight(1, directionalLightColour);
         this.model.updateLight(2, pointLightColour);
@@ -97,9 +96,7 @@ export class View {
             this.model.setCamera(state.camera.type,false);
             this.model.updateCameraPosition(state.camera.position);
         }
-        
         this.model.updateLookAt(state.camera.lookAt);
-        
         this.model.updateCameraZoom(state.camera.zoom);
     }
 

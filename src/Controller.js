@@ -155,7 +155,7 @@ class Controller {
         this.chronometer.model = this.model;
 
         this.generate(sample2,true,false); 
-        
+        // this.model.occlusionCulling();
         this.addListeners();
         this.notify('info', `Welcome to WebMGA`,
             (<div>
@@ -317,8 +317,13 @@ class Controller {
                 Alert.error('Error: File does not exist');
                 return;
         }
+        this.externalToggle.closeSidemenu();
+    
         this.generate(sample, false,false);
+        
+        
         Alert.success('File loaded successfully.');
+        
     }
 
     convertQMGA = () => {

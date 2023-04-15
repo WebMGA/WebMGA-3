@@ -10332,6 +10332,7 @@
          "zoom": 25
       },
       "slicing": {
+         "slicing_enabled":false,
          "clipIntersection": false,
          "helpers": [
             false,
