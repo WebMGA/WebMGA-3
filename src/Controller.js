@@ -86,7 +86,6 @@ class Controller {
         logPerformance = () => {
             this.rawPerformanceData.push(this.fps);
             if (this.counter === this.tick) {
-
                 this.avgPerformanceData.push(mean(this.rawPerformanceData));
                 this.stdPerformanceData.push(std(this.rawPerformanceData));
                 this.rawPerformanceData = [];
@@ -105,7 +104,6 @@ class Controller {
                 if (this.model.addRandomParticles(this.step)) {
                     this.testing = false;
                     this.model.deleteAllMeshes();
-
                     console.log('Average FPS');
                     console.log(this.avgPerformanceData);
                     console.log('Std FPS');

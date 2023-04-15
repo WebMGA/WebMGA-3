@@ -694,15 +694,13 @@ export class Model {
         this.setCamera('orthographic',false);
         this.updateCameraZoom(8);
         this.updateLightPosition(2, { x: 50, y: 0, z: 50 });
-
         this.deleteAllMeshes();
-
         this.testMaterial = new MeshLambertMaterial();
         this.testShape = new SHAPE.Preset('Torus', Parameters.Torus.vals);
         this.testShape.LOD = 2;
         this.testShape.generate();
-        this.testTotal = 50000;
-        this.testLimit = 1000000;
+        this.testTotal = 0;
+        this.testLimit = 1000001;
 
         this.notify('info', 'Initialising Performance Test',
             (<p style={{ width: 320 }} >
@@ -784,7 +782,7 @@ export class Model {
                 Intsancemesh1.setColorAt( i, color.setHex( 0xffffff * Math.random() ) );
         }
         this.scene.add(Intsancemesh1);
-        this.renderer.render(this.scene,this.camera)
+        // this.renderer.render(this.scene,this.camera);
         geoms = [];
     
 
