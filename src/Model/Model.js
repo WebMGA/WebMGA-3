@@ -92,46 +92,14 @@ export class Model {
 
         for (let l of this.lighting) {
             this.scene.add(l.light);
-            // this.occlusion_scene.add(l.light)
         }
         this.scene.add(this.camera);
-        // this.occlusion_scene.add(this.camera)
         this.lod = 2;
     }
   
-
     update() {
         console.log('update called');
-        const gl = this.renderer.getContext();
-        var count =0;
-       
-    //     this.scene.traverse( function(child) {
-    //        if ( child.isMesh){
-    //         if (count<100){
-    //             child.visible = true;
-    //             console.log(child)
-    //         }
-    //         else{
-    //             child.visible = false;
-    //         }
-    //            count = count+1;
-    //        };
-    //    } );
-          
-        // gl.enable(gl.DEPTH_TEST);
-        // var query = gl.createQuery();
-        // gl.beginQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE,query)
         this.renderer.render(this.scene, this.camera);
-        // gl.endQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE,query);
-        // setTimeout(()=>{
-        //     console.log(gl.getQueryParameter(query, gl.QUERY_RESULT_AVAILABLE),query)
-        // if(gl.getQueryParameter(query, gl.QUERY_RESULT_AVAILABLE)) {
-        //     var result = gl.getQueryParameter(query,gl.QUERY_RESULT);
-        //     console.log(Number(result));
-        // }
-        
-        // },5000)
-        
         if (!this.rotating) {
             this.chronometer.click();
         }
@@ -199,7 +167,7 @@ export class Model {
 
     toggleSidebar() {
         this.sidebarExpanded = !this.sidebarExpanded;
-        // this.updateDimensions();
+        this.updateDimensions();
         this.updateCamera();
         console.log(this.sidebarExpanded)
     }
@@ -699,7 +667,8 @@ export class Model {
             (<div>
             <p style={{ width: 320 }} >
                 Now Select Your Video Viewing configuration!
-                We recommend showing bounding box!
+                You can show unit box, apply slicing , periodic boundary conditions etc.
+                Please Do not change screen size while generating Video e.g dont click on size bar
             </p>
             </div>
             ));

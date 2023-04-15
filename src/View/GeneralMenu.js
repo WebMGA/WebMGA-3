@@ -245,15 +245,9 @@ class GeneralMenu extends React.Component {
                                 <ButtonToolbar>
                                 
                                     <Nav.Item active>fps: {fps}</Nav.Item>
-                                    <Nav.Item active>Molecules rendered: {num}</Nav.Item>
+                                    <Nav.Item active>Draw call maded: {num}</Nav.Item>
                                     <Nav.Item onClick={this.runPerformanceTest} appearance="active" icon={<Icon icon="dashboard" />}>Run Performance Test</Nav.Item>
-                                    {/* <Whisper placement="bottom" trigger="hover" speaker={
-                                        <Tooltip>
-                                            The performance test was included for completeness and will be removed after submission.
-                                        </Tooltip>
-                                    }>
-                                        <Icon style={{marginTop: 18}}icon="question-circle" size="lg" />
-                                    </Whisper> */}
+                                   
                                     <Nav.Item active={rotating} onClick={this.toggleAutorotate} appearance="subtle" icon={<Icon icon="refresh" spin={rotating} />}>Autorotate</Nav.Item>
                                 
                                     

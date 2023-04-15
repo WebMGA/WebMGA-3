@@ -132,12 +132,7 @@ export class Set {
         this.clippingPlanes[2 * i + 1].constant = vals[1];
         this.clippingPlanes[2 * i].constant = -vals[0];
     }
-    // updateSlicedset(){
-    //     clippingPlanes = this.clippingPlanes;
-    //     for(let mesh of this.meshes){
-    //         mesh.material.geometries
-    //     }
-    // }
+    
     toggleClipIntersection(toggle) {
         this.clipIntersection = toggle;
         for (let mesh of this.meshes) {
@@ -209,7 +204,7 @@ export class Set {
     genMeshes(){
         let num = this.elements.length;
         console.log(this.elements.length);
-        let c = this.userColour;
+        let c = '#FFFFFF'
         let mat =new MeshPhongMaterial({
             side : THREE.FrontSide,
             clipShadows: true,
@@ -226,7 +221,9 @@ export class Set {
             if (this.colourByDirector) {
                 let rgb = colourMap.values[this.elements[i].colourIndex];
                 c = new Color(Model.rgbToHex(...rgb));
-            } 
+            } else{
+                c = this.userColour;
+            }
             let matrix2 = new THREE.Matrix4();
             const position = new THREE.Vector3();
             position.x = this.elements[i].position[0];
@@ -287,10 +284,18 @@ export class Set {
     //         } else {
     //             c = this.userColour;
     //         }
-    //         let mat = this.mat.clone()
+    //         let mat =new MeshPhongMaterial({
+    //                     side : THREE.FrontSide,
+    //                     clipShadows: true,
+    //                     clippingPlanes:this.clippingPlanes,
+    //                     wireframe : this.wireframe
+    //                 });
+    //         let gut = new THREE.MeshBasicMaterial( { side: THREE.BackSide,clipShadows: true, clippingPlanes:this.clippingPlanes,
+    //                     wireframe :this.wireframe} );
+             
     //         mat.color =c;
     //         mat.clippingPlanes= this.clippingPlanes;
-    //         let gut = this.gutsMaterial.clone();
+          
     //         gut.clippingPlanes=this.clippingPlanes;
     //         mat.wireframe = this.wireframe;
     //         gut.color =c;

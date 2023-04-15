@@ -59,7 +59,7 @@ export class ReferenceTools {
         switch (type) {
             case 'box':
                     let box = new Box3();
-                    box.setFromCenterAndSize(new Vector3(0,0,0),new Vector3(b[0]*2,b[1]*2,b[2]*2));
+                    box.setFromCenterAndSize(new Vector3(0,0,0),new Vector3(b[0],b[1],b[2]));
                     this.boundingShape = new Box3Helper(box, this.colour);
                     
                 break;

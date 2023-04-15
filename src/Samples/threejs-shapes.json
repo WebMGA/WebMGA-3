@@ -136,7 +136,7 @@
                 "y": "0.45",
                 "z": "-3"
             },
-            "zoom": 50
+            "zoom": 100
         },
         "slicing": {
             "clipIntersection": false,

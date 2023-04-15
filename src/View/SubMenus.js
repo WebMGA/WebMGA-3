@@ -227,7 +227,6 @@ export class VideoOptions extends React.Component{
         })
         View.state.reference.loadVideoState =!View.state.reference.loadVideoState;  
     }
-    
     VideoToggle(){
         console.log(this.state.video);
         let toggle = !this.state.video;
@@ -235,15 +234,16 @@ export class VideoOptions extends React.Component{
             video:toggle
         })
         this.state.video = toggle;
-        console.log(this.state.video);
-        if(this.state.video ===true){
+        console.log(toggle)
+        if(toggle ===true){
             this.toggler.closeSidemenu();
             const samples = this.model.retrieveVideoSample();
             const max_iter = samples.length;
             var capturer = new ccapture( { format: 'webm',framerate:this.state.fps,quality:100});
-            setTimeout(() => {
-                this.RealTimeVideo(0,samples,max_iter,capturer,this.state.vidstate ,this.state.filename);
-            }, 2000);
+            
+            this.RealTimeVideo(0,samples,max_iter,capturer,this.state.vidstate ,this.state.filename);
+            
+           
         }
         View.state.reference.video = !View.state.reference.video
     }
