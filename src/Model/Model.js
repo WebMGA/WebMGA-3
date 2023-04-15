@@ -8,9 +8,13 @@ import {
     Plane,
     MeshLambertMaterial,
     Mesh,
+    Quaternion,
     MeshBasicMaterial,
-    Color,
+    InstancedMesh,
     BoxGeometry,
+    Euler,
+    Matrix4,
+    Color
   
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -20,6 +24,7 @@ import ReferenceTools from './ReferenceTools.js'
 import { Alert } from 'rsuite'
 import * as SHAPE from './Shapes.js';
 import Parameters from './Parameters';
+import { forEach } from 'mathjs';
 
 
 
@@ -113,9 +118,8 @@ export class Model {
             };
         } );
        
-        this.numOfObject = (num-6)/3;
-        // this.numOfObject =this.renderer.info.render;
-        console.log(this.renderer.info.render)
+        this.numOfObject = (num-6);
+        console.log(this.numOfObject)
     }
     occlusionCulling(){
          
@@ -217,6 +221,7 @@ export class Model {
             this.scene.remove(m);
             m.geometry.dispose();
             m.material.dispose(); 
+            m.dispose();
         }
         f(...params);
         for (const m of this.sets[id].meshes) {
@@ -267,6 +272,7 @@ export class Model {
                 this.scene.remove(m);
                 m.geometry.dispose ();
                 m.material.dispose ();
+                m.dispose();
             }
         }
         this.sets = [];
@@ -278,7 +284,6 @@ export class Model {
                 this.scene.add(m);
             }
         }
-        
         this.getRender_Object_number();
         
     }
@@ -696,9 +701,8 @@ export class Model {
         this.testShape = new SHAPE.Preset('Torus', Parameters.Torus.vals);
         this.testShape.LOD = 2;
         this.testShape.generate();
-        this.testTotal = 0;
-        this.testLimit = 3001;
-
+        this.testTotal = 50000;
+        this.testLimit = 1000000;
 
         this.notify('info', 'Initialising Performance Test',
             (<p style={{ width: 320 }} >
@@ -719,10 +723,17 @@ export class Model {
     }
 
     deleteAllMeshes() {
-        for (let i = this.scene.children.length - 1; i >= 0; i--) {
-            if (this.scene.children[i].type === "Mesh")
-                this.scene.remove(this.scene.children[i]);
+        for( const set of this.sets){
+            console.log(set)
+            for (const m of set.meshes) {
+                this.scene.remove(m);
+                m.geometry.dispose();
+                m.material.dispose(); 
+                m.dispose();
+            }
+
         }
+       
     }
 
     addRandomParticles(n) {
@@ -735,26 +746,47 @@ export class Model {
 
         let geoms = [];
         let m;
-        for (let i = 0; i < n; i++) {
+        
 
-            if (this.testShape.isPreset) {
-                geoms.push(this.testShape.presetGeometry.clone());
-            }
-            else {
-                geoms.push(this.testShape.stripGeometry.clone());
-                geoms.push(this.testShape.fanGeometries[0].clone());
-                geoms.push(this.testShape.fanGeometries[1].clone());
-            }
-
-
-            this.translate([Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50], geoms);
-            for (let g of geoms) {
-                m = new Mesh(g, this.testMaterial);
-                this.scene.add(m);
-            }
-
-            geoms = [];
+        if (this.testShape.isPreset) {
+            geoms.push(this.testShape.presetGeometry.clone());
         }
+        else {
+            geoms.push(this.testShape.stripGeometry.clone());
+            geoms.push(this.testShape.fanGeometries[0].clone());
+            geoms.push(this.testShape.fanGeometries[1].clone());
+        }
+
+        this.translate([Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50], geoms);
+        
+        let Intsancemesh1 = new InstancedMesh( geoms[0], this.testMaterial, n);
+        for ( let i = 0; i < n; i ++ ) {
+                const matrix = new Matrix4();
+                const position = new Vector3();
+                const rotation = new Euler();
+                const quaternion = new Quaternion();
+                const scale = new Vector3();
+                const color = new Color();
+				position.x = Math.random() * 40 - 20;
+				position.y = Math.random() * 40 - 20;
+				position.z = Math.random() * 40 - 20;
+
+				rotation.x = Math.random() * 2 * Math.PI;
+				rotation.y = Math.random() * 2 * Math.PI;
+				rotation.z = Math.random() * 2 * Math.PI;
+
+				quaternion.setFromEuler( rotation );
+
+				scale.x = scale.y = scale.z = Math.random() * 1;
+
+				matrix.compose( position, quaternion, scale );
+                Intsancemesh1.setMatrixAt( i, matrix );
+                Intsancemesh1.setColorAt( i, color.setHex( 0xffffff * Math.random() ) );
+        }
+        this.scene.add(Intsancemesh1);
+        this.renderer.render(this.scene,this.camera)
+        geoms = [];
+    
 
 
         return false;

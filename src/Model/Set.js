@@ -230,8 +230,6 @@ export class Set {
             position.y = this.elements[i].position[1];
             position.z = this.elements[i].position[2];
             // var ori = this.elements[i].quaternion
-            const scale = new THREE.Vector3();
-            scale.x = scale.y = scale.z = Math.random() * 1;
             let ori =this.getRotations(this.orientationType, this.orientations[i]);
             matrix2.compose(position,ori,new THREE.Vector3(0.5,0.5,0.5));
             Intsancemesh1.setMatrixAt( i,matrix2);

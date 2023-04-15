@@ -23,6 +23,7 @@ export class ModelsOptions extends React.Component {
         super();
         this.state = View.state.model;
         this.model = props.model;
+        this.model.deleteAllMeshes();
         this.selectShape = this.selectShape.bind(this);
         this.selectSet = this.selectSet.bind(this);
         this.updateParameter = this.updateParameter.bind(this);

@@ -66,7 +66,7 @@ class Controller {
             this.notify = notify;
             this.externalToggle = externalToggle;
 
-            this.step = 200;
+            this.step = 50000;
             this.tick = 12;
             this.testing = false;
             this.counter = 0;
