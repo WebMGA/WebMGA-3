@@ -151,7 +151,7 @@ class Controller {
 
     start = () => {
         this.chronometer.model = this.model;
-
+        console.log(1.3%1);
         this.generate(sample2,true,false); 
         // this.model.occlusionCulling();
         this.addListeners();

@@ -172,18 +172,18 @@ export class Set {
             return
         }
         let pos =[];
-        let lx = this.unitBox[0]/2;
-        let ly = this.unitBox[1]/2;
-        let lz = this.unitBox[2]/2;
+        let lx = this.unitBox[0];
+        let ly = this.unitBox[1];
+        let lz = this.unitBox[2];
 
         for (let i = 0; i < this.positions.length; i++){
             let rx = this.positions[i][0];
             let ry = this.positions[i][1];
             let rz = this.positions[i][2];
             
-            rx = rx%lx;
-            ry = ry%ly;
-            rz = rz%lz;
+            rx = rx-lx*Math.round(rx/lx);
+            ry = ry-ly*Math.round(ry/ly);
+            rz = rz-lz*Math.round(rz/lz);
            
             pos.push([rx,ry,rz])
         }
@@ -270,44 +270,7 @@ export class Set {
         }
     
     }
-    // genMeshes() {
-    //     let m;
-    //     let c;
-    //     let v;
-    //     let count =0
-    //     for (let elem of this.elements) {
-    //         if (this.colourByDirector) {
-    //             let rgb = colourMap.values[elem.colourIndex];
-    //             c = new Color(Model.rgbToHex(...rgb));
-    //         } else {
-    //             c = this.userColour;
-    //         }
-    //         let mat =new MeshPhongMaterial({
-    //                     side : THREE.FrontSide,
-    //                     clipShadows: true,
-    //                     clippingPlanes:this.clippingPlanes,
-    //                     wireframe : this.wireframe
-    //                 });
-    //         let gut = new THREE.MeshBasicMaterial( { side: THREE.BackSide,clipShadows: true, clippingPlanes:this.clippingPlanes,
-    //                     wireframe :this.wireframe} );
-             
-    //         mat.color =c;
-    //         mat.clippingPlanes= this.clippingPlanes;
-          
-    //         gut.clippingPlanes=this.clippingPlanes;
-    //         mat.wireframe = this.wireframe;
-    //         gut.color =c;
-    //         for (let g of elem.geometries) {
-    //             m = new Mesh(g, mat);
-    //             this.meshes.push(m);
-    //             if (this.renderBackFace){
-    //                 v = new Mesh(g,gut);
-    //                 this.meshes.push(v);
-    //             }
-                
-    //         }
-    //     }
-    // }
+
     genListBoundingBox(){
         // Bounding Box for each molecule
         let BoundingBoxs =[]

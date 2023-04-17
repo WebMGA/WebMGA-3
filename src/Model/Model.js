@@ -213,7 +213,7 @@ export class Model {
             this.scene.remove(m);
             m.geometry.dispose();
             m.material.dispose(); 
-            // m.dispose();
+            m.dispose();
         }
         f(...params);
         for (const m of this.sets[id].meshes) {
@@ -692,7 +692,7 @@ export class Model {
         this.testShape.LOD = 2;
         this.testShape.generate();
         this.testTotal = 0;
-        this.testLimit = 1000001;
+        this.testLimit = 500001;
 
         this.notify('info', 'Initialising Performance Test',
             (<p style={{ width: 320 }} >
