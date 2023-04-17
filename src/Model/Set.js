@@ -71,7 +71,7 @@ export class Set {
         let x = this.unitBox[0]/2;
         let y = this.unitBox[1]/2;
         let z = this.unitBox[2]/2;
-        console.log(this.positions.length,x,y,z)
+        
         for (let i = 0; i < this.positions.length; i++){
             let a = this.positions[i][0];
             let b = this.positions[i][1];
@@ -85,7 +85,7 @@ export class Set {
             if(c>=z || c<=-z){
                return false
             }
-            console.log(i,a,b,c);    
+               
     }
     return true;
 }
@@ -203,7 +203,7 @@ export class Set {
     }
     genMeshes(){
         let num = this.elements.length;
-        console.log(this.elements.length);
+        
         let c = '#FFFFFF'
         let mat =new MeshPhongMaterial({
             side : THREE.FrontSide,
@@ -220,7 +220,6 @@ export class Set {
         for ( let i = 0; i < num; i ++ ) {
             if (this.colourByDirector) {
                 let rgb = colourMap.values[this.elements[i].colourIndex];
-                console.log(this.elements[i],'colour index:',this.elements[i].colourIndex,'value',rgb)
                 c = new Color(Model.rgbToHex(...rgb));
             } else{
                 c = this.userColour;
@@ -241,7 +240,7 @@ export class Set {
         }
         this.meshes.push(Intsancemesh1,Instancemesh2,Instancemesh3);
         if (this.renderBackFace){
-            console.log('back called')
+           
             let Intsancemeshback1 = new THREE.InstancedMesh( this.elements[0].geometries[0], gut, num);
             let Instancemeshback2= new THREE.InstancedMesh( this.elements[0].geometries[1], gut, num);
             let Instancemeshback3 =new THREE.InstancedMesh( this.elements[0].geometries[2], gut, num);
@@ -350,7 +349,7 @@ export class Set {
 
         this.shape.LOD = this.lod;
         this.shape.generate();
-        console.log(this.shape)
+        
     }
 
     translate(pos, geoms) {

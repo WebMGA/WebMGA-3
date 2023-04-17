@@ -151,7 +151,6 @@ class Controller {
 
     start = () => {
         this.chronometer.model = this.model;
-        console.log(1.3%1);
         this.generate(sample2,true,false); 
         // this.model.occlusionCulling();
         this.addListeners();
@@ -236,6 +235,7 @@ class Controller {
         const read = () => {
             var data = JSON.parse(fileReader.result);
             try {
+            this.externalToggle.closeSidemenu();
             this.generate(data,false,vidstate);
             if(VIDEO === false){
                 Alert.success('File loaded successfully.');
