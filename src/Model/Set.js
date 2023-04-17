@@ -220,6 +220,7 @@ export class Set {
         for ( let i = 0; i < num; i ++ ) {
             if (this.colourByDirector) {
                 let rgb = colourMap.values[this.elements[i].colourIndex];
+                console.log(this.elements[i],'colour index:',this.elements[i].colourIndex,'value',rgb)
                 c = new Color(Model.rgbToHex(...rgb));
             } else{
                 c = this.userColour;
@@ -229,8 +230,7 @@ export class Set {
             position.x = this.elements[i].position[0];
             position.y = this.elements[i].position[1];
             position.z = this.elements[i].position[2];
-            // var ori = this.elements[i].quaternion
-            let ori =this.getRotations(this.orientationType, this.orientations[i]);
+            var ori = this.elements[i].quaternion
             matrix2.compose(position,ori,new THREE.Vector3(0.5,0.5,0.5));
             Intsancemesh1.setMatrixAt( i,matrix2);
             Instancemesh2.setMatrixAt(i,matrix2);
@@ -257,7 +257,7 @@ export class Set {
                 position.z = this.elements[i].position[2];
                 const scale = new THREE.Vector3();
                 scale.x = scale.y = scale.z = Math.random() * 1;
-                let ori =this.getRotations(this.orientationType, this.orientations[i]);
+                var ori = this.elements[i].quaternion;
                 matrix2.compose(position,ori,new THREE.Vector3(0.5,0.5,0.5));
                 Intsancemeshback1.setMatrixAt( i,matrix2);
                 Instancemeshback2.setMatrixAt(i,matrix2);
@@ -412,7 +412,7 @@ export class Set {
             case 'v':
                 let orientationVector = new Vector3(rot[0], rot[1], rot[2])
                 orientationVector.normalize();
-                q.setFromUnitVectors(new Vector3(0, 0, 1), orientationVector);
+                q.setFromUnitVectors(new Vector3(0, 0,1), orientationVector);
                 break;
             case 'q':
                 q.set(rot[1], rot[2], rot[3], rot[0]);
@@ -512,7 +512,11 @@ export class Set {
         let scalarProduct = Math.abs(element.orientation[0] * this.director[0]
             + element.orientation[1] * this.director[1]
             + element.orientation[2] * this.director[2]);
-
+        if (this.orientationType ==='v'){
+            scalarProduct = Math.abs(element.orientation[1] * this.director[0]
+                + element.orientation[0] * this.director[1]
+                + element.orientation[2] * this.director[2]);
+        }
         if (scalarProduct > 1){scalarProduct = 1;}
 
         return Math.round(Math.acos( scalarProduct )/Math.PI*2*( n ));;

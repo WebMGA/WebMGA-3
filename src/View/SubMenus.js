@@ -241,10 +241,8 @@ export class VideoOptions extends React.Component{
             const samples = this.model.retrieveVideoSample();
             const max_iter = samples.length;
             var capturer = new ccapture( { format: 'webm',framerate:this.state.fps,quality:100});
-            
             this.RealTimeVideo(0,samples,max_iter,capturer,this.state.vidstate ,this.state.filename);
             
-           
         }
         View.state.reference.video = !View.state.reference.video
     }
@@ -259,7 +257,6 @@ export class VideoOptions extends React.Component{
             console.log('start render')
             this.functions[1].bind(this)(samples[i],i,vidState);
             capturer.capture( this.model.renderer.domElement )
-            
             console.log('running animation',i)
             if(this.state.video === true ){
                 requestAnimationFrame( ()=> this.RealTimeVideo(i+1,samples,max_iter,capturer,vidState,filename));

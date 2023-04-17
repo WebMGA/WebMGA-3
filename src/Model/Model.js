@@ -121,36 +121,27 @@ export class Model {
         this.numOfObject = (num-6);
         console.log(this.numOfObject)
     }
-    occlusionCulling(){
+    // occlusionCulling(){
          
-    const renderer = new WebGLRenderer();
-    const gl = renderer.getContext();
-    console.log(gl)
-    const scene = new Scene();
-    const mesh1 = new Mesh(new BoxGeometry( 1, 1, 1 ), new MeshBasicMaterial( {color: 0x00ff00}));
-    const mesh2 = new Mesh(new BoxGeometry( 1, 1, 1 ), new MeshBasicMaterial( {color: 0x00ff00}));
-    scene.add(mesh1, mesh2);
-    var query = gl.createQuery();
-    const camera = this.camera = new PerspectiveCamera(50, this.width / this.height, 0.1, 1000);
+    // const renderer = new WebGLRenderer();
+    // const gl = renderer.getContext();
+    // console.log(gl)
+    // const scene = new Scene();
+    // const mesh1 = new Mesh(new BoxGeometry( 1, 1, 1 ), new MeshBasicMaterial( {color: 0x00ff00}));
+    // const mesh2 = new Mesh(new BoxGeometry( 1, 1, 1 ), new MeshBasicMaterial( {color: 0x00ff00}));
+    // scene.add(mesh1, mesh2);
+    // var query = gl.createQuery();
+    // const camera = this.camera = new PerspectiveCamera(50, this.width / this.height, 0.1, 1000);
       
-    camera.position.z = 5;
-    for (let l of this.lighting) {
-        scene.add(l.light);}
-    gl.beginQuery(gl.ANY_SAMPLES_PASSED,query);
-    renderer.render(scene, camera);
-    gl.endQuery(gl.ANY_SAMPLES_PASSED,query);
-    var result = gl.getQueryParameter(query,gl.QUERY_RESULT);
-    console.log(Number(result));
-    console.log(result)
-
-
-
-
-
-
-    
-      
-    }
+    // camera.position.z = 5;
+    // for (let l of this.lighting) {
+    //     scene.add(l.light);}
+    // gl.beginQuery(gl.ANY_SAMPLES_PASSED,query);
+    // renderer.render(scene, camera);
+    // gl.endQuery(gl.ANY_SAMPLES_PASSED,query);
+    // var result = gl.getQueryParameter(query,gl.QUERY_RESULT);
+    // console.log(Number(result));
+    // console.log(result)
 
     getData() {
         // To save config to download
@@ -190,6 +181,7 @@ export class Model {
             var hex = c.toString(16);
             return hex.length === 1 ? "0" + hex : hex;
         }
+        console.log("#" + componentToHex(r) + componentToHex(g) + componentToHex(b))
         return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
     }
 
@@ -221,7 +213,7 @@ export class Model {
             this.scene.remove(m);
             m.geometry.dispose();
             m.material.dispose(); 
-            m.dispose();
+            // m.dispose();
         }
         f(...params);
         for (const m of this.sets[id].meshes) {
