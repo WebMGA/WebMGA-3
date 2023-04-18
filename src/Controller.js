@@ -315,7 +315,6 @@ class Controller {
                 Alert.error('Error: File does not exist');
                 return;
         }
-        this.externalToggle.closeSidemenu();
     
         this.generate(sample, false,false);
         

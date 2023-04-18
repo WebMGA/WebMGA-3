@@ -270,22 +270,6 @@ export class Set {
     
     }
 
-    genListBoundingBox(){
-        // Bounding Box for each molecule
-        let BoundingBoxs =[]
-        const color2 = new THREE.Color( '0xff0000')
-        for (let elem of this.elements){
-            let geo = BufferGeometryUtils.mergeBufferGeometries(elem.geometries);
-            let box = new Box3();
-            geo.computeBoundingBox();
-            box.copy(geo.boundingBox);
-            let boundingBox= new Box3Helper(box,color2);
-            boundingBox.material.colorWrite=true;
-            // boundingBox.material.depthWrite=false;
-            BoundingBoxs.push(boundingBox)
-        }
-        this.moleculeBoundingBox = BoundingBoxs;
-    }
 
     setElements() {
         let geoms = [];
