@@ -144,7 +144,7 @@ export class View {
         clipIntersection: false,
         slicing_enabled:false,
         helpers: [false, false, false],
-        x: [-180, 80],
+        x: [-80, 80],
         y: [-80, 80],
         z: [-80, 80]
     }

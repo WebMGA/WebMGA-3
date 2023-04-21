@@ -146,7 +146,7 @@ export class Set {
     }
     
     genUnfoldPosition(){
-    
+    // Place holder function to generate Psedo unfolded configuration
         if(this.isFoldedTest()=== false){
             Alert.info('Model is already unfolded');
             return
@@ -239,6 +239,7 @@ export class Set {
             Instancemesh3.setColorAt( i, c);
         }
         this.meshes.push(Intsancemesh1,Instancemesh2,Instancemesh3);
+        console.log(Intsancemesh1)
         if (this.renderBackFace){
            
             let Intsancemeshback1 = new THREE.InstancedMesh( this.elements[0].geometries[0], gut, num);
@@ -266,6 +267,7 @@ export class Set {
                 Instancemeshback3.setColorAt( i, c);
             }
         this.meshes.push(Intsancemeshback1,Instancemeshback2,Instancemeshback3);
+        
         }
     
     }
@@ -283,7 +285,7 @@ export class Set {
                 geoms.push(this.shape.fanGeometries[0].clone());
                 geoms.push(this.shape.fanGeometries[1].clone());
             }
-            // this.rotate(elem.euler, geoms);
+            // this.(elem.euler, geoms);
             // this.translate(elem.position, geoms);
             elem.setGeometries(geoms);
             geoms = [];
@@ -308,6 +310,7 @@ export class Set {
         switch (this.shapeType) {
             case 'Ellipsoid':
                 this.shape = new SHAPE.Ellipsoid(...this.parameters);
+                console.log(this.parameters)
                 break;
             case 'Spherocylinder':
                 this.shape = new SHAPE.Spherocylinder(...this.parameters);

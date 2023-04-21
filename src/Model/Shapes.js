@@ -123,10 +123,11 @@ export class Ellipsoid extends Shape {
         let actComplexity = [],
             piece = [],
             scale = this.parameters,
+            
             vertices = [],
             normals = [],
             temp = [];
-
+            console.log(scale)
         //renders ellipsoid body vertices and normals
         for (let currLevel = 0; currLevel < this.levels; ++currLevel) {
             //calculates complexity of current render

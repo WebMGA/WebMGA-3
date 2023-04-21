@@ -66,7 +66,7 @@ class Controller {
             this.notify = notify;
             this.externalToggle = externalToggle;
 
-            this.step = 50000;
+            this.step = 5000;
             this.tick = 12;
             this.testing = false;
             this.counter = 0;
@@ -108,9 +108,7 @@ class Controller {
                     console.log(this.avgPerformanceData);
                     console.log('Std FPS');
                     console.log(this.stdPerformanceData);
-
                     this.externalToggle.autorotate();
-
                     this.notify('success', 'Test Completed Succesfully',
                         (<p style={{ width: 320 }} >
                             All molecules deleted. Please see console output for a list of average FPS and standard deviations.
@@ -228,6 +226,7 @@ class Controller {
             this.view.setState(data.state,false);
         }
         this.model.update();
+        this.externalToggle.closeSidemenu();
     }
 
     load = (file,VIDEO,vidstate) => {
@@ -235,7 +234,6 @@ class Controller {
         const read = () => {
             var data = JSON.parse(fileReader.result);
             try {
-            this.externalToggle.closeSidemenu();
             this.generate(data,false,vidstate);
             if(VIDEO === false){
                 Alert.success('File loaded successfully.');

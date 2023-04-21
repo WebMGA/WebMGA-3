@@ -1,7 +1,7 @@
 export var Parameters = {
     Ellipsoid: {
         names: ['X', 'Y', 'Z'],
-        vals: [0.2, 0.4, 0.8]
+        vals: [1.0, 1.0, 0.2]
     },
     Spherocylinder:{
         names: ['Radius', 'Length'],

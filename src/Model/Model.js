@@ -14,7 +14,8 @@ import {
     BoxGeometry,
     Euler,
     Matrix4,
-    Color
+    Color,
+    MeshPhongMaterial
   
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -108,7 +109,10 @@ export class Model {
         if (!this.rotating) {
             this.chronometer.click();
         }
-    }
+    
+}
+        
+    
     getRender_Object_number(){
         let num =0;
         this.scene.traverse( function(child) {
@@ -181,7 +185,6 @@ export class Model {
             var hex = c.toString(16);
             return hex.length === 1 ? "0" + hex : hex;
         }
-        console.log("#" + componentToHex(r) + componentToHex(g) + componentToHex(b))
         return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
     }
 
@@ -687,18 +690,35 @@ export class Model {
         this.updateCameraZoom(8);
         this.updateLightPosition(2, { x: 50, y: 0, z: 50 });
         this.deleteAllMeshes();
-        this.testMaterial = new MeshLambertMaterial();
-        this.testShape = new SHAPE.Preset('Torus', Parameters.Torus.vals);
+        this.testMaterial = new MeshPhongMaterial({wireframe:false});
+        // this.testShape = new SHAPE.Preset('Sphere', ...Parameters.Sphere.vals);
+        this.testShape = new SHAPE.Spheroplatelet(
+           0.3,0.2
+        );
+        console.log('this.genshape');
         this.testShape.LOD = 2;
         this.testShape.generate();
         this.testTotal = 0;
-        this.testLimit = 500001;
+        this.testLimit = 140001;
+        
+        let geoms = [];
+        if (this.testShape.isPreset) {
+            geoms.push(this.testShape.presetGeometry.clone());
+        }
+        else {
+            geoms.push(this.testShape.stripGeometry.clone());
+            geoms.push(this.testShape.fanGeometries[0].clone());
+            geoms.push(this.testShape.fanGeometries[1].clone());
+        }
+        this.testGeo = geoms;
+
+        this.translate([Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50], geoms);
 
         this.notify('info', 'Initialising Performance Test',
             (<p style={{ width: 320 }} >
                 Test Size: {this.testLimit.toString()} <br />
             Step: {step.toString()} <br />
-            Shape: Torus (Default Parameters) <br />
+            Shape: Ellipsoid (1,1,0.2) <br />
             Level of Detail: {(this.testShape.LOD + 1).toString()} <br />
             Material: MeshPhongMaterial
                 <br/> <br/>
@@ -708,7 +728,7 @@ export class Model {
         console.log('Material: MeshLambertMaterial')
         console.log('Shape: Ellipsoid (Default Parameters)')
         console.log('LOD: ' + (this.testShape.LOD + 1).toString())
-        console.log('Test Size: ' + this.testLimit.toString)
+        console.log('Test Size: ' + this.testLimit.toString())
         console.log('Test Step: ' + step.toString());
     }
 
@@ -727,30 +747,26 @@ export class Model {
     }
 
     addRandomParticles(n) {
-
+        this.deleteAllMeshes();
+        console.log('add called')
         this.testTotal += n;
 
         if (this.testTotal >= this.testLimit) {
             return true;
         }
+        // let m;
+        // for (let i = 0; i < n; i++) {
+        //     for (let g of this.testGeo) {
+        //          m = new Mesh(g, this.testMaterial);
+        //         this.scene.add(m);
+        //     }}
 
-        let geoms = [];
-        let m;
-        
-
-        if (this.testShape.isPreset) {
-            geoms.push(this.testShape.presetGeometry.clone());
-        }
-        else {
-            geoms.push(this.testShape.stripGeometry.clone());
-            geoms.push(this.testShape.fanGeometries[0].clone());
-            geoms.push(this.testShape.fanGeometries[1].clone());
-        }
-
-        this.translate([Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50], geoms);
-        
-        let Intsancemesh1 = new InstancedMesh( geoms[0], this.testMaterial, n);
+        let Intsancemesh1 = new InstancedMesh(this.testGeo[0], this.testMaterial, n);
+        let Intsancemesh2 = new InstancedMesh( this.testGeo[1], this.testMaterial, n);
+        let Intsancemesh3 = new InstancedMesh( this.testGeo[2], this.testMaterial, n);
+        console.log(Intsancemesh1);
         for ( let i = 0; i < n; i ++ ) {
+            console.log('called')
                 const matrix = new Matrix4();
                 const position = new Vector3();
                 const rotation = new Euler();
@@ -771,14 +787,14 @@ export class Model {
 
 				matrix.compose( position, quaternion, scale );
                 Intsancemesh1.setMatrixAt( i, matrix );
-                Intsancemesh1.setColorAt( i, color.setHex( 0xffffff * Math.random() ) );
+                Intsancemesh2.setMatrixAt( i, matrix );
+                Intsancemesh3.setMatrixAt( i, matrix );
+                Intsancemesh1.setColorAt( i, color.setHex( 0xffffff*Math.random()) );
+                Intsancemesh2.setColorAt( i, color.setHex( 0xffffff*Math.random()) );
+                Intsancemesh3.setColorAt( i, color.setHex( 0xffffff*Math.random()) );
         }
-        this.scene.add(Intsancemesh1);
-        // this.renderer.render(this.scene,this.camera);
-        geoms = [];
-    
-
-
+        this.scene.add(Intsancemesh1,Intsancemesh2,Intsancemesh3);
+        this.update();
         return false;
     }
 
