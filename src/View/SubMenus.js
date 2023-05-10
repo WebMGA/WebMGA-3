@@ -600,7 +600,7 @@ export class SlicingOptions extends React.Component {
                         x:val
                     }
                 );
-                // this.state.x = val;
+                View.state.slicing.x = val;
                 break;
             case 1:
                 this.setState(
@@ -608,7 +608,7 @@ export class SlicingOptions extends React.Component {
                         y:val
                     }
                 );
-                // this.state.y = val;
+                View.state.slicing.ty = val;
                 break;
             case 2:
                 this.setState(
@@ -616,7 +616,7 @@ export class SlicingOptions extends React.Component {
                         z:val
                     }
                 );
-                // this.state.z = val;
+                View.state.slicing.z = val;
                 break;
             default:
                 Alert.error('Error: Unexpected Slicing Identifier');

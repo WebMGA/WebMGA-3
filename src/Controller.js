@@ -234,6 +234,7 @@ class Controller {
         const read = () => {
             var data = JSON.parse(fileReader.result);
             try {
+            console.log(vidstate);
             this.generate(data,false,vidstate);
             if(VIDEO === false){
                 Alert.success('File loaded successfully.');

@@ -560,28 +560,20 @@ export class Model {
     enableClipping(toggle,id){
         if (toggle === true){
             this.renderer.localClippingEnabled = true;
-            this.updateSets(id, [id], (id) => {
-                this.sets[id].elements =[];
-                this.sets[id].meshes = [];
-                this.sets[id].setBackFace(true);
-                this.sets[id].genElements();
-                this.sets[id].setElements();
-                this.sets[id].genMeshes();
-            });
+            for (let x =0; x< this.sets.length;x++){
+                this.updateSets(x, [x], (x) => {
+                    this.sets[x].elements =[];
+                    this.sets[x].meshes = [];
+                    this.sets[x].setBackFace(true);
+                    this.sets[x].genElements();
+                    this.sets[x].setElements();
+                    this.sets[x].genMeshes();
+                });
+            }
+            
         }
         else{
             this.renderer.localClippingEnabled = false;
-            // if (this.sets){
-            //     console.log('called')
-            //     this.updateSets(id, [id], (id) => {
-            //         this.sets[id].elements =[];
-            //         this.sets[id].meshes = [];
-            //         this.sets[id].setBackFace(false);
-            //         this.sets[id].genElements();
-            //         this.sets[id].setElements();
-            //         this.sets[id].genMeshes();
-            //     });
-            // }
             
         }
         
@@ -718,7 +710,7 @@ export class Model {
             (<p style={{ width: 320 }} >
                 Test Size: {this.testLimit.toString()} <br />
             Step: {step.toString()} <br />
-            Shape: Ellipsoid (1,1,0.2) <br />
+            Shape: Spheroplatelet(0.3,0.2) <br />
             Level of Detail: {(this.testShape.LOD + 1).toString()} <br />
             Material: MeshPhongMaterial
                 <br/> <br/>
@@ -726,7 +718,7 @@ export class Model {
             </p>));
 
         console.log('Material: MeshLambertMaterial')
-        console.log('Shape: Ellipsoid (Default Parameters)')
+        console.log('Shape: Spheroplatelet (Default Parameters)')
         console.log('LOD: ' + (this.testShape.LOD + 1).toString())
         console.log('Test Size: ' + this.testLimit.toString())
         console.log('Test Step: ' + step.toString());
