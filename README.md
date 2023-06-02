@@ -1,7 +1,3 @@
-RUN: 
-npm update //to download dependencies 
-
-
-npm start
+WebMGA 2.0 is deployed at https://hiiamyue.github.io/WebMGA-2/
 
 
