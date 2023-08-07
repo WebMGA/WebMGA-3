@@ -249,22 +249,18 @@ export class VideoOptions extends React.Component{
     
     RealTimeVideo(i,samples,max_iter,capturer,vidState,filename){
         if(i ===0){
-            console.log('does this work?')
             capturer.start();
             capturer.capture(this.model.renderer.domElement);
         }
         if(i<max_iter){
-            console.log('start render')
             this.functions[1].bind(this)(samples[i],i,vidState);
             capturer.capture( this.model.renderer.domElement )
             console.log('running animation',i)
             if(this.state.video === true ){
                 requestAnimationFrame( ()=> this.RealTimeVideo(i+1,samples,max_iter,capturer,vidState,filename));
-                console.log('sending request',i+1)
             };
         }
         if (i === max_iter){
-                console.log('max')
                 capturer.stop();
                 capturer.save(function( blob ) {
                     console.log(blob);
