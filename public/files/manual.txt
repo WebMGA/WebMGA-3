@@ -4,7 +4,7 @@
                | |/ |/ /  __/ /_/ / /  / / /_/ / ___ |
                |__/|__/\___/_.___/_/  /_/\____/_/  |_|
                                        
-                        by Eduardo Battistini and Yue He               
+                        by Eduardo Battistini, Yue He, and Joe Down
                                        
 ====================================================================
                            USER MANUAL
@@ -20,7 +20,7 @@ library.
                              LICENSE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Copyright 2023. Carlos Eduardo Battistini Parra and Yue He.
+Copyright 2023. Carlos Eduardo Battistini Parra, Yue He, Joe Down.
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation files
@@ -52,10 +52,10 @@ publication, please cite with a text like:
 “The pictures were produced with WebMGA [1], an evolution of QMGA
 based on WebGL [2].”
 
-[1] Yue He and Eduardo Battistini, “WebMGA, a WebGL Molecular Graphics
+[1] Eduardo Battistini, Yue He, and Joe Down “WebMGA, a WebGL Molecular Graphics
 Application for the Interactive Rendering of Coarse-Grained Liquid
-Crystal Models”, BSc Thesis in Computer Science, UCL, 2021,2023
-https://astromarx.github.io/WebMGA,https://hiiamyue.github.io/WebMGA-2/
+Crystal Models”, BSc/MEng Thesis in Computer Science, UCL, 2021, 2023, 2024
+https://astromarx.github.io/WebMGA, https://hiiamyue.github.io/WebMGA-2/, https://joe-down.github.io/WebMGA-3/
 
 [2] Adrian T. Gabriel, Timm Meyer, Guido Germano, "Molecular
 graphics of convex-body fluids", Journal of Chemical Theory and

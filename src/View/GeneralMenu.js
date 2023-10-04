@@ -294,7 +294,7 @@ class GeneralMenu extends React.Component {
                             <Button color="cyan" href="http://students.cs.ucl.ac.uk/2019/group3/WebMGA/diss.pdf" target="_blank" rel="noopener noreferrer">
                                 <Icon icon="book" /> Dissertation
                         </Button>
-                            <Button color="cyan" href="https://github.com/astromarx/WebMGA" target="_blank" rel="noopener noreferrer">
+                            <Button color="cyan" href="https://github.com/joe-down/WebMGA-3" target="_blank" rel="noopener noreferrer">
                                 <Icon icon="github" /> Github
                         </Button>
                         </ButtonToolbar>
