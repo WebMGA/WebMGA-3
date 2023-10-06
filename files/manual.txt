@@ -4,7 +4,7 @@
                | |/ |/ /  __/ /_/ / /  / / /_/ / ___ |
                |__/|__/\___/_.___/_/  /_/\____/_/  |_|
                                        
-                        by Eduardo Battistini               
+                        by Eduardo Battistini, Yue He, and Joe Down
                                        
 ====================================================================
                            USER MANUAL
@@ -20,7 +20,7 @@ library.
                              LICENSE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Copyright 2021. Carlos Eduardo Battistini Parra.
+Copyright 2023. Carlos Eduardo Battistini Parra, Yue He, Joe Down.
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation files
@@ -52,10 +52,10 @@ publication, please cite with a text like:
 “The pictures were produced with WebMGA [1], an evolution of QMGA
 based on WebGL [2].”
 
-[1] Eduardo Battistini, “WebMGA, a WebGL Molecular Graphics
+[1] Eduardo Battistini, Yue He, and Joe Down “WebMGA, a WebGL Molecular Graphics
 Application for the Interactive Rendering of Coarse-Grained Liquid
-Crystal Models”, BSc Thesis in Computer Science, UCL, 2021,
-https://astromarx.github.io/WebMGA.
+Crystal Models”, BSc/MEng Thesis in Computer Science, UCL, 2021, 2023, 2024
+https://astromarx.github.io/WebMGA, https://hiiamyue.github.io/WebMGA-2/, https://joe-down.github.io/WebMGA-3/
 
 [2] Adrian T. Gabriel, Timm Meyer, Guido Germano, "Molecular
 graphics of convex-body fluids", Journal of Chemical Theory and
@@ -76,6 +76,9 @@ following format and upload it.
             { 
                 "name": "Set A", 
                 "orientationType": "v", 
+                "unitBox":[
+                    [0,0,0]
+                ],
                 "positions": [ 
                     [0,0,0] 
                 ], 
@@ -166,16 +169,23 @@ For clipping the system in X, Y, or Z dimensions. Also includes
 
 Reference:
 
-For including a grid, axes (which may be multi-coloured), and a
-bounding shape. The size and colour of the grid and axes may be 
-specified.
+For including axes (which may be multi-coloured), and a
+bounding box. The size and colour of the axes may be 
+specified. Also toggle fold to fold model into its bounding box.
+
+Video:
+
+For generating video visualisation of molecular motion.
+Toggle load to load configuration files at once. 
+Select desired enviromental set ups then toggle set enviroment to apply to video.
+Also choose frame rate and file name before creating video.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                              CONTACT
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For help, queries, suggestions or anything else, please contact
-zceeceb@ucl.ac.uk
+zceeceb@ucl.ac.uk, zcabyhe@ucl.ac.uk
 
 ====================================================================
                     THANK YOU FOR USING WEBMGA!
