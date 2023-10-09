@@ -1,158 +1,158 @@
 {
-    "model": {
-        "sets": [
-            {
-                "name": "Set A",
-                "orientationType": "v",
-                "unitBox":[
-                    10,
-                    10,
-                    10
-                ],
-                "positions": [
-                    [
-                        0,
-                        0,
-                        0
-                    ]
-                ],
-                "orientations": [
-                    [
-                        0,
-                        1,
-                        0
-                    ]
-                ]
-            }
+  "model": {
+    "sets": [
+      {
+        "name": "Set A",
+        "orientationType": "v",
+        "unitBox": [
+          10,
+          10,
+          10
+        ],
+        "positions": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "orientations": [
+          [
+            0,
+            1,
+            0
+          ]
         ]
+      }
+    ]
+  },
+  "state": {
+    "reference": {
+      "boundingShapeEnabled": false,
+      "activeShape": "box",
+      "showAxes": false,
+      "showGrid": false,
+      "multicolour": true,
+      "gridColour": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "size": 50,
+      "uploaded": false,
+      "fps": 24,
+      "video": false,
+      "loadVideoState": false
     },
-    "state": {
-        "reference": {
-            "boundingShapeEnabled": false,
-            "activeShape": "box",
-            "showAxes": false,
-            "showGrid": false,
-            "multicolour": true,
-            "gridColour": {
-                "r": 255,
-                "g": 255,
-                "b": 255
-            },
-            "size": 50,
-            "uploaded":false,
-            "fps":24,
-            "video":false,
-            "loadVideoState":false
-        },
-        "ambientLight": {
-            "ambientLightColour": {
-                "r": 255,
-                "g": 255,
-                "b": 255,
-                "i": 40
-            },
-            "darkBackGround":true
-        },
-        "pointLight": {
-            "reset": 0,
-            "active": "point",
-            "enabled": true,
-            "helper": false,
-            "colour": {
-                "r": 255,
-                "g": 255,
-                "b": 255,
-                "i": 60
-            },
-            "position": {
-                "x": 5,
-                "y": 0,
-                "z": 5
-            }
-        },
-        "directionalLight": {
-            "reset": 0,
-            "active": "directional",
-            "enabled": true,
-            "helper": false,
-            "colour": {
-                "r": 255,
-                "g": 255,
-                "b": 255,
-                "i": 50
-            },
-            "position": {
-                "x": -5,
-                "y": 0,
-                "z": -5
-            }
-        },
-        "camera": {
-            "type": "perspective",
-            "lookAt": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "position": {
-                "x": "-25",
-                "y": "0",
-                "z": "-5"
-            },
-            "zoom": 20
-        },
-        "slicing": {
-            "slicing_enabled":false,
-            "clipIntersection": false,
-            "helpers": [
-                false,
-                false,
-                false
+    "ambientLight": {
+      "ambientLightColour": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "i": 40
+      },
+      "darkBackGround": true
+    },
+    "pointLight": {
+      "reset": 0,
+      "active": "point",
+      "enabled": true,
+      "helper": false,
+      "colour": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "i": 60
+      },
+      "position": {
+        "x": 5,
+        "y": 0,
+        "z": 5
+      }
+    },
+    "directionalLight": {
+      "reset": 0,
+      "active": "directional",
+      "enabled": true,
+      "helper": false,
+      "colour": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "i": 50
+      },
+      "position": {
+        "x": -5,
+        "y": 0,
+        "z": -5
+      }
+    },
+    "camera": {
+      "type": "perspective",
+      "lookAt": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "position": {
+        "x": "-25",
+        "y": "0",
+        "z": "-5"
+      },
+      "zoom": 20
+    },
+    "slicing": {
+      "slicing_enabled": false,
+      "clipIntersection": false,
+      "helpers": [
+        false,
+        false,
+        false
+      ],
+      "x": [
+        -50,
+        50
+      ],
+      "y": [
+        -50,
+        50
+      ],
+      "z": [
+        -50,
+        50
+      ]
+    },
+    "model": {
+      "active": 0,
+      "reset": 0,
+      "sets": [
+        "Set A"
+      ],
+      "configurations": [
+        {
+          "title": "Set A",
+          "shape": "Ellipsoid",
+          "parameters": {
+            "names": [
+              "X",
+              "Y",
+              "Z"
             ],
-            "x": [
-                -50,
-                50
-            ],
-            "y": [
-                -50,
-                50
-            ],
-            "z": [
-                -50,
-                50
+            "vals": [
+              0.2,
+              0.4,
+              0.8
             ]
-        },
-        "model": {
-            "active": 0,
-            "reset": 0,
-            "sets": [
-                "Set A"
-            ],
-            "configurations": [
-                {
-                    "title": "Set A",
-                    "shape": "Ellipsoid",
-                    "parameters": {
-                        "names": [
-                            "X",
-                            "Y",
-                            "Z"
-                        ],
-                        "vals": [
-                            0.2,
-                            0.4,
-                            0.8
-                        ]
-                    },
-                    "colour": {
-                        "r": 255,
-                        "g": 255,
-                        "b": 255
-                    },
-                    "colourFromDirector": true,
-                    "displayAsWireframe": false
-                }
-            ]
+          },
+          "colour": {
+            "r": 255,
+            "g": 255,
+            "b": 255
+          },
+          "colourFromDirector": true,
+          "displayAsWireframe": false
         }
+      ]
     }
+  }
 }

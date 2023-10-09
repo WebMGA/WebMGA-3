@@ -1,13 +1,13 @@
 import {
-    BufferGeometry,
     BufferAttribute,
-    TriangleFanDrawMode,
-    TriangleStripDrawMode,
-    SphereBufferGeometry,
+    BufferGeometry,
     CylinderBufferGeometry,
-    TorusBufferGeometry
+    SphereBufferGeometry,
+    TorusBufferGeometry,
+    TriangleFanDrawMode,
+    TriangleStripDrawMode
 } from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import {Alert} from 'rsuite';
 
 export class Shape {
@@ -32,13 +32,7 @@ export class Shape {
         this.parameters = arguments[0];
         this.isPreset = false;
         this.LOD = 2;
-        this.complexity = [6,10,14,20,26];
-    }
-
-    clear(){
-        this.presetGeometry = [];
-        this.stripGeometries = [];
-        this.fanGeometries = [];
+        this.complexity = [6, 10, 14, 20, 26];
     }
 
     static normalize(vec, scale) {
@@ -55,6 +49,11 @@ export class Shape {
         return vec;
     }
 
+    clear() {
+        this.presetGeometry = [];
+        this.stripGeometries = [];
+        this.fanGeometries = [];
+    }
 
     addGeometry(vertices, normals, type) {
         let g = new BufferGeometry();
@@ -88,7 +87,7 @@ export class Preset extends Shape {
         this.parameters = parameters;
     }
 
-    generate(){
+    generate() {
         this.clear();
 
         switch (this.type) {
@@ -99,7 +98,7 @@ export class Preset extends Shape {
                 this.presetGeometry = new CylinderBufferGeometry(...this.parameters, this.complexity[this.LOD]);
                 break;
             case 'Torus':
-                this.presetGeometry = new TorusBufferGeometry(...this.parameters, 2*this.complexity[this.LOD]);
+                this.presetGeometry = new TorusBufferGeometry(...this.parameters, 2 * this.complexity[this.LOD]);
                 break;
             default:
                 Alert.error('Error: Unknown shape identifier');
@@ -113,21 +112,17 @@ export class Ellipsoid extends Shape {
         super(arguments);
     }
 
-    generate(){
+    generate() {
         this.clear();
         this.genGeometries();
         this.mergeGeometries();
     }
 
     genGeometries() {
-        let actComplexity = [],
-            piece = [],
-            scale = this.parameters,
-            
-            vertices = [],
-            normals = [],
-            temp = [];
-            console.log(scale)
+        let actComplexity = [], piece = [], scale = this.parameters,
+
+            vertices = [], normals = [], temp = [];
+        console.log(scale)
         //renders ellipsoid body vertices and normals
         for (let currLevel = 0; currLevel < this.levels; ++currLevel) {
             //calculates complexity of current render
@@ -142,8 +137,7 @@ export class Ellipsoid extends Shape {
                     if (j === 0 || j === actComplexity[0]) {
                         temp.push(-scale[0] * Math.sin((i + 1) * piece[1]));
                         temp.push(0.0);
-                    }
-                    else {
+                    } else {
                         temp.push(-Math.cos(j * piece[0]) * scale[0] * Math.sin((i + 1) * piece[1]));
                         temp.push(-Math.sin(j * piece[0]) * scale[1] * Math.sin((i + 1) * piece[1]));
                     }
@@ -157,8 +151,7 @@ export class Ellipsoid extends Shape {
                     if (j === 0 || j === actComplexity[0]) {
                         temp.push(-scale[0] * Math.sin((i + 2) * piece[1]));
                         temp.push(0.0);
-                    }
-                    else {
+                    } else {
                         temp.push(-Math.cos(j * piece[0]) * scale[0] * Math.sin((i + 2) * piece[1]));
                         temp.push(-Math.sin(j * piece[0]) * scale[1] * Math.sin((i + 2) * piece[1]));
 
@@ -192,8 +185,7 @@ export class Ellipsoid extends Shape {
             if (j === 0 || j === actComplexity[0]) {
                 temp.push(-scale[0] * Math.sin(piece[1]));
                 temp.push(0.0);
-            }
-            else {
+            } else {
                 temp.push(-Math.cos(j * piece[0]) * scale[0] * Math.sin(piece[1]));
                 temp.push(-Math.sin(j * piece[0]) * scale[1] * Math.sin(piece[1]));
             }
@@ -221,8 +213,7 @@ export class Ellipsoid extends Shape {
             if (j === 0 || j === actComplexity[0]) {
                 temp.push(-scale[0] * Math.sin(piece[1]));
                 temp.push(0.0);
-            }
-            else {
+            } else {
                 temp.push(-Math.cos(j * piece[0]) * scale[0] * Math.sin(piece[1]));
                 temp.push(-Math.sin(j * piece[0]) * scale[1] * Math.sin(piece[1]));
             }
@@ -245,24 +236,19 @@ export class Spherocylinder extends Shape {
         super(arguments);
     }
 
-    generate(){
+    generate() {
         this.clear();
         this.genGeometries();
         this.mergeGeometries();
     }
 
     genGeometries() {
-        let actComplexity = [],
-            piece = [],
-            radius = this.parameters[0],
-            length = this.parameters[1],
-            vertices,
-            normals,
+        let actComplexity = [], piece = [], radius = this.parameters[0], length = this.parameters[1], vertices, normals,
             temp = [];
 
         for (let currLevel = 0; currLevel < this.levels; ++currLevel) {
             //calculates complexity of current render
-            actComplexity.push(this.complexity[this.LOD] + currLevel * (- this.complexity[this.LOD]) / (this.levels - 1.0));
+            actComplexity.push(this.complexity[this.LOD] + currLevel * (-this.complexity[this.LOD]) / (this.levels - 1.0));
             actComplexity.push(actComplexity[0] / 4);
 
             piece.push(2 * Math.PI / actComplexity[0]);
@@ -277,8 +263,7 @@ export class Spherocylinder extends Shape {
                     if (x === 0 || x === actComplexity[0]) {
                         temp.push(-Math.sin((y + 1) * piece[1]) * radius);
                         temp.push(0);
-                    }
-                    else {
+                    } else {
                         temp.push(-Math.cos(x * piece[0]) * Math.sin((y + 1) * piece[1]) * radius);
                         temp.push(-Math.sin(x * piece[0]) * Math.sin((y + 1) * piece[1]) * radius);
                     }
@@ -292,8 +277,7 @@ export class Spherocylinder extends Shape {
                     if (x === 0 || x === actComplexity[0]) {
                         temp.push(-Math.sin((y + 2) * piece[1]) * radius);
                         temp.push(0);
-                    }
-                    else {
+                    } else {
                         temp.push(-Math.cos(x * piece[0]) * Math.sin((y + 2) * piece[1]) * radius);
                         temp.push(-Math.sin(x * piece[0]) * Math.sin((y + 2) * piece[1]) * radius);
                     }
@@ -317,8 +301,7 @@ export class Spherocylinder extends Shape {
                     if (x === 0 || x === actComplexity[0]) {
                         temp.push(-Math.sin((y + 1) * piece[1]) * radius);
                         temp.push(0);
-                    }
-                    else {
+                    } else {
                         temp.push(-Math.cos(x * piece[0]) * Math.sin((y + 1) * piece[1]) * radius);
                         temp.push(-Math.sin(x * piece[0]) * Math.sin((y + 1) * piece[1]) * radius);
                     }
@@ -332,8 +315,7 @@ export class Spherocylinder extends Shape {
                     if (x === 0 || x === actComplexity[0]) {
                         temp.push(-1 * Math.sin((y + 2) * piece[1]) * radius);
                         temp.push(0);
-                    }
-                    else {
+                    } else {
                         temp.push(-Math.cos(x * piece[0]) * Math.sin((y + 2) * piece[1]) * radius);
                         temp.push(-Math.sin(x * piece[0]) * Math.sin((y + 2) * piece[1]) * radius);
                     }
@@ -356,8 +338,7 @@ export class Spherocylinder extends Shape {
                 if (x === 0 || x === actComplexity[0]) {
                     temp.push(-radius);
                     temp.push(0);
-                }
-                else {
+                } else {
                     temp.push(-Math.cos(x * piece[0]) * radius);
                     temp.push(-Math.sin(x * piece[0]) * radius);
                 }
@@ -391,8 +372,7 @@ export class Spherocylinder extends Shape {
                 if (j === 0 || j === actComplexity[0]) {
                     temp.push(-Math.sin(piece[1]) * radius);
                     temp.push(0);
-                }
-                else {
+                } else {
                     temp.push(-Math.cos(j * piece[0]) * Math.sin(piece[1]) * radius);
                     temp.push(-Math.sin(j * piece[0]) * Math.sin(piece[1]) * radius);
                 }
@@ -421,8 +401,7 @@ export class Spherocylinder extends Shape {
                 if (j === 0 || j === actComplexity[0]) {
                     temp.push(-Math.sin(piece[1]) * radius);
                     temp.push(0);
-                }
-                else {
+                } else {
                     temp.push(-Math.cos(j * piece[0]) * Math.sin(piece[1]) * radius);
                     temp.push(-Math.sin(j * piece[0]) * Math.sin(piece[1]) * radius);
                 }
@@ -447,23 +426,15 @@ export class Spheroplatelet extends Shape {
         super(arguments);
     }
 
-    generate(){
+    generate() {
         this.clear();
         this.genGeometries();
         this.mergeGeometries();
     }
 
     genGeometries() {
-        let radSphere = this.parameters[0],
-            radCircle = this.parameters[1],
-            plusZ = [0, 0, 1],
-            minusZ = [0, 0, -1],
-            projectionUp = 0,
-            projectionDown = 0,
-            actComplexity = [],
-            piece = [],
-            vertices = [],
-            normals = [],
+        let radSphere = this.parameters[0], radCircle = this.parameters[1], plusZ = [0, 0, 1], minusZ = [0, 0, -1],
+            projectionUp = 0, projectionDown = 0, actComplexity = [], piece = [], vertices = [], normals = [],
             temp = [];
 
         for (let currLevel = 0; currLevel < this.levels; ++currLevel) {
@@ -483,8 +454,7 @@ export class Spheroplatelet extends Shape {
                     if (j === 0 || j === actComplexity[0]) {
                         temp.push(-projectionUp);
                         temp.push(0);
-                    }
-                    else {
+                    } else {
                         temp.push(-projectionUp * Math.cos(j * piece[0]));
                         temp.push(-projectionUp * Math.sin(j * piece[0]));
                     }
@@ -494,8 +464,7 @@ export class Spheroplatelet extends Shape {
 
                     if (j === 0 || j === actComplexity[0]) {
                         temp[0] -= radCircle;
-                    }
-                    else {
+                    } else {
                         temp[0] -= radCircle * Math.cos(j * piece[0]);
                         temp[1] -= radCircle * Math.sin(j * piece[0]);
                     }
@@ -507,8 +476,7 @@ export class Spheroplatelet extends Shape {
                     if (j === 0 || j === actComplexity[0]) {
                         temp.push(-projectionDown);
                         temp.push(0);
-                    }
-                    else {
+                    } else {
                         temp.push(-projectionDown * Math.cos(j * piece[0]));
                         temp.push(-projectionDown * Math.sin(j * piece[0]));
                     }
@@ -518,8 +486,7 @@ export class Spheroplatelet extends Shape {
 
                     if (j === 0 || j === actComplexity[0]) {
                         temp[0] -= radCircle;
-                    }
-                    else {
+                    } else {
                         temp[0] -= radCircle * Math.cos(j * piece[0]);
                         temp[1] -= radCircle * Math.sin(j * piece[0]);
                     }
@@ -549,8 +516,7 @@ export class Spheroplatelet extends Shape {
                 if (j === 0 || j === actComplexity[0]) {
                     temp.push(-radCircle);
                     temp.push(0);
-                }
-                else {
+                } else {
                     temp.push(-Math.cos(j * piece[0]) * radCircle);
                     temp.push(-Math.sin(j * piece[0]) * radCircle);
                 }
@@ -578,8 +544,7 @@ export class Spheroplatelet extends Shape {
                 if (j === 0 || j === actComplexity[0]) {
                     temp.push(-radCircle);
                     temp.push(0);
-                }
-                else {
+                } else {
                     temp.push(-Math.cos(j * piece[0]) * radCircle);
                     temp.push(-Math.sin(j * piece[0]) * radCircle);
                 }
@@ -604,24 +569,16 @@ export class CutSphere extends Shape {
         super(arguments);
     }
 
-    generate(){
+    generate() {
         this.clear();
         this.genGeometries();
         this.mergeGeometries();
     }
 
     genGeometries() {
-        let radius = this.parameters[0],
-            zCut = this.parameters[1],
-            plusZ = [0, 0, 1],
-            minusZ = [0, 0, -1],
-            angle = Math.acos(zCut / radius),
-            radiusFan = radius * Math.sin(angle),
-            actComplexity = [],
-            piece = [],
-            vertices = [],
-            normals = [],
-            temp = [];
+        let radius = this.parameters[0], zCut = this.parameters[1], plusZ = [0, 0, 1], minusZ = [0, 0, -1],
+            angle = Math.acos(zCut / radius), radiusFan = radius * Math.sin(angle), actComplexity = [], piece = [],
+            vertices = [], normals = [], temp = [];
 
         for (let currLevel = 0; currLevel < this.levels; ++currLevel) {
             //calculates complexity of current render
@@ -637,8 +594,7 @@ export class CutSphere extends Shape {
                     if (j === 0 || j === actComplexity[0]) {
                         temp.push(-radius * Math.sin(angle + i * piece[1]));
                         temp.push(0);
-                    }
-                    else {
+                    } else {
                         temp.push(-Math.cos(j * piece[0]) * radius * Math.sin(angle + i * piece[1]));
                         temp.push(-Math.sin(j * piece[0]) * radius * Math.sin(angle + i * piece[1]));
                     }
@@ -652,8 +608,7 @@ export class CutSphere extends Shape {
                     if (j === 0 || j === actComplexity[0]) {
                         temp.push(-radius * Math.sin(angle + (i + 1) * piece[1]));
                         temp.push(0);
-                    }
-                    else {
+                    } else {
                         temp.push(-Math.cos(j * piece[0]) * radius * Math.sin(angle + (i + 1) * piece[1]));
                         temp.push(-Math.sin(j * piece[0]) * radius * Math.sin(angle + (i + 1) * piece[1]));
                     }
@@ -684,8 +639,7 @@ export class CutSphere extends Shape {
                 if (j === 0 || j === actComplexity[0]) {
                     temp.push(-radiusFan);
                     temp.push(0);
-                }
-                else {
+                } else {
                     temp.push(-Math.cos(j * piece[0]) * radiusFan);
                     temp.push(-Math.sin(j * piece[0]) * radiusFan);
                 }
@@ -701,7 +655,6 @@ export class CutSphere extends Shape {
             normals = [];
 
 
-
             // lower plane
             temp.push(0);
             temp.push(0);
@@ -715,8 +668,7 @@ export class CutSphere extends Shape {
                 if (j === 0 || j === actComplexity[0]) {
                     temp.push(-radiusFan);
                     temp.push(0);
-                }
-                else {
+                } else {
                     temp.push(-Math.cos(j * piece[0]) * radiusFan);
                     temp.push(-Math.sin(j * piece[0]) * radiusFan);
                 }

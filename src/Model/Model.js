@@ -1,32 +1,24 @@
 import {
-    Scene,
-    WebGLRenderer,
-    PerspectiveCamera,
-    OrthographicCamera,
-    Vector3,
-    PlaneHelper,
-    Plane,
-    MeshLambertMaterial,
-    Mesh,
-    Quaternion,
-    MeshBasicMaterial,
-    InstancedMesh,
-    BoxGeometry,
-    Euler,
-    Matrix4,
     Color,
-    MeshPhongMaterial
-  
+    Euler,
+    InstancedMesh,
+    Matrix4,
+    MeshPhongMaterial,
+    OrthographicCamera,
+    PerspectiveCamera,
+    Plane,
+    PlaneHelper,
+    Quaternion,
+    Scene,
+    Vector3,
+    WebGLRenderer
 } from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import Set from './Set.js'
 import Light from './Light.js'
 import ReferenceTools from './ReferenceTools.js'
-import { Alert } from 'rsuite'
+import {Alert} from 'rsuite'
 import * as SHAPE from './Shapes.js';
-import Parameters from './Parameters';
-import { forEach } from 'mathjs';
-
 
 
 export class Model {
@@ -46,8 +38,8 @@ export class Model {
 
     gridEnabled = false;
     axesEnabled = false;
-    
-    
+
+
     sidebarExpanded = false;
 
     cameraType = 'perspective';
@@ -66,31 +58,39 @@ export class Model {
         this.chronometer = chronometer;
         this.setDefault();
         this.notify = notify;
-       
+
     }
 
     /* GENERAL FUNCTIONS */
 
+    static rgbToHex(r, g, b) {
+        function componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+        }
+
+        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    }
+
     setDefault() {
-        
-        this.renderer = new WebGLRenderer({ antialias: false,powerPreference: "high-performance",preserveDrawingBuffer:true});
+
+        this.renderer = new WebGLRenderer({
+            antialias: false, powerPreference: "high-performance", preserveDrawingBuffer: true
+        });
         this.renderer.setPixelRatio(window.devicePixelRatio);
 
-        this.videoFileloaded =true;
+        this.videoFileloaded = true;
         this.rotating = false;
         this.cameraPostion = null;
         this.lightHelperWarningGiven = false;
         this.selectedSet = 0;
-        this.Video_sample_list=[];
+        this.Video_sample_list = [];
         this.clock = null;
         this.initClippers();
         this.lookAt = new Vector3(0, 0, 0);
         this.updateDimensions();
-        this.setCamera(this.cameraType,true); 
-        this.lighting = [
-            new Light('ambient'),
-            new Light('directional'),
-            new Light('point')];
+        this.setCamera(this.cameraType, true);
+        this.lighting = [new Light('ambient'), new Light('directional'), new Light('point')];
 
         this.tools = new ReferenceTools(50, 0xffffff);
         this.bgColour = "#000000";
@@ -102,31 +102,18 @@ export class Model {
         this.scene.add(this.camera);
         this.lod = 2;
     }
-  
+
     update() {
         console.log('update called');
         this.renderer.render(this.scene, this.camera);
         if (!this.rotating) {
             this.chronometer.click();
         }
-    
-}
-        
-    
-    getRender_Object_number(){
-        let num =0;
-        this.scene.traverse( function(child) {
-             //@ts-ignore
-            if ( child.isMesh){
-                num = num+1;
-            };
-        } );
-       
-        this.numOfObject = (num-6);
-        console.log(this.numOfObject)
+
     }
+
     // occlusionCulling(){
-         
+
     // const renderer = new WebGLRenderer();
     // const gl = renderer.getContext();
     // console.log(gl)
@@ -136,7 +123,7 @@ export class Model {
     // scene.add(mesh1, mesh2);
     // var query = gl.createQuery();
     // const camera = this.camera = new PerspectiveCamera(50, this.width / this.height, 0.1, 1000);
-      
+
     // camera.position.z = 5;
     // for (let l of this.lighting) {
     //     scene.add(l.light);}
@@ -146,6 +133,20 @@ export class Model {
     // var result = gl.getQueryParameter(query,gl.QUERY_RESULT);
     // console.log(Number(result));
     // console.log(result)
+
+    getRender_Object_number() {
+        let num = 0;
+        this.scene.traverse(function (child) {
+            //@ts-ignore
+            if (child.isMesh) {
+                num = num + 1;
+            }
+
+        });
+
+        this.numOfObject = (num - 6);
+        console.log(this.numOfObject)
+    }
 
     getData() {
         // To save config to download
@@ -180,14 +181,6 @@ export class Model {
         return Set.getParameters(val);
     }
 
-    static rgbToHex(r, g, b) {
-        function componentToHex(c) {
-            var hex = c.toString(16);
-            return hex.length === 1 ? "0" + hex : hex;
-        }
-        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-    }
-
     loadDeprecated(data) {
         // placeholder FILE IO used for initial development
         let particleSets = data.split("$");
@@ -195,8 +188,7 @@ export class Model {
         for (let particleSet of particleSets) {
             if (particleSet === "") {
                 return;
-            }
-            else {
+            } else {
                 setData = particleSet.split("\n");
                 ps = new Set(setData[0], setData[1], setData.slice(2), this.clippingPlanes, this.clippingIntersections);
                 this.sets.push(ps);
@@ -215,7 +207,7 @@ export class Model {
         for (const m of this.sets[id].meshes) {
             this.scene.remove(m);
             m.geometry.dispose();
-            m.material.dispose(); 
+            m.material.dispose();
             m.dispose();
         }
         f(...params);
@@ -265,8 +257,8 @@ export class Model {
         for (let set of this.sets) {
             for (const m of set.meshes) {
                 this.scene.remove(m);
-                m.geometry.dispose ();
-                m.material.dispose ();
+                m.geometry.dispose();
+                m.material.dispose();
                 m.dispose();
             }
         }
@@ -280,7 +272,7 @@ export class Model {
             }
         }
         this.getRender_Object_number();
-        
+
     }
 
     /* LOD FUNCTIONS */
@@ -306,7 +298,7 @@ export class Model {
     /* CAMERA AND PROJECTION FUNCTIONS */
 
     updateDimensions() {
-        
+
         this.height = (window.innerHeight - 56);
 
         if (this.sidebarExpanded) {
@@ -320,8 +312,8 @@ export class Model {
 
     setCamera(type) {
         console.log('set camera called')
-        if(this.camera){
-            this.camera='';
+        if (this.camera) {
+            this.camera = '';
         }
         this.cameraType = type;
         if (type === 'perspective') {
@@ -336,18 +328,18 @@ export class Model {
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.target = this.lookAt;
         // this.update();
-        
-        
+
+
     }
 
     updateCamera() {
         if (this.cameraType === 'perspective') {
             this.camera.aspect = this.width / this.height;
         } else {
-            this.camera.left = this.width / - 2;
+            this.camera.left = this.width / -2;
             this.camera.right = this.width / 2;
             this.camera.top = this.height / 2;
-            this.camera.bottom = this.height / - 2;
+            this.camera.bottom = this.height / -2;
         }
         this.camera.updateProjectionMatrix();
         this.update();
@@ -406,29 +398,31 @@ export class Model {
         this.lighting[type].updatePosition(pos.x, pos.y, pos.z);
         this.lighting[type].helper.update();
     }
+
     /* PERIODIC BOUNDING TOOL FUNCTIONS */
 
-    toggleFoldState(id,toggle){
-        if(toggle===true){
+    toggleFoldState(id, toggle) {
+        if (toggle === true) {
             this.updateSets(id, [id], (id) => {
-                this.sets[id].elements =[];
+                this.sets[id].elements = [];
                 this.sets[id].meshes = [];
                 this.sets[id].genFoldedPositionFromUnfold();
                 this.sets[id].genElements();
                 this.sets[id].setElements();
                 this.sets[id].genMeshes();
-            });}
-        else if(toggle === false){
+            });
+        } else if (toggle === false) {
             this.updateSets(id, [id], (id) => {
-                this.sets[id].elements =[];
+                this.sets[id].elements = [];
                 this.sets[id].meshes = [];
-                this.sets[id].Folded_position =[];
+                this.sets[id].Folded_position = [];
                 this.sets[id].genElements();
                 this.sets[id].setElements();
                 this.sets[id].genMeshes();
             });
         }
     }
+
     // toggleUnfoldState(id,toggle){
     //     if(toggle){
     //         this.updateSets(id, [id], (id) => {
@@ -451,7 +445,6 @@ export class Model {
     //         });
     //     }
     //}
-
 
 
     /* REFERENCE TOOLS FUNCTIONS */
@@ -553,16 +546,14 @@ export class Model {
         }
     }
 
-    
-    
 
     /* SLICING FUNCTIONS */
-    enableClipping(toggle,id){
-        if (toggle === true){
+    enableClipping(toggle, id) {
+        if (toggle === true) {
             this.renderer.localClippingEnabled = true;
-            for (let x =0; x< this.sets.length;x++){
+            for (let x = 0; x < this.sets.length; x++) {
                 this.updateSets(x, [x], (x) => {
-                    this.sets[x].elements =[];
+                    this.sets[x].elements = [];
                     this.sets[x].meshes = [];
                     this.sets[x].setBackFace(true);
                     this.sets[x].genElements();
@@ -570,14 +561,13 @@ export class Model {
                     this.sets[x].genMeshes();
                 });
             }
-            
-        }
-        else{
+
+        } else {
             this.renderer.localClippingEnabled = false;
-            
+
         }
-        
-      
+
+
     }
 
     // disableClipping(){
@@ -586,35 +576,21 @@ export class Model {
 
     initClippers() {
         this.clippingIntersections = false;
-        
-   
-        this.clippingPlanes = [
-            new Plane(new Vector3(1, 0, 0), 180),
-            new Plane(new Vector3(-1, 0, 0), 180),
-            new Plane(new Vector3(0, 1, 0), 180),
-            new Plane(new Vector3(0, -1, 0), 180),
-            new Plane(new Vector3(0, 0, 1), 180),
-            new Plane(new Vector3(0, 0, -1), 180)
-        ];
-       
-       this.clippingHelpers = [
-        new PlaneHelper(this.clippingPlanes[0], 100, 0xff0000),
-        new PlaneHelper(this.clippingPlanes[1], 100, 0xff0000),
-        new PlaneHelper(this.clippingPlanes[2], 100, 0x00ff00),
-        new PlaneHelper(this.clippingPlanes[3], 100, 0x00ff00),
-        new PlaneHelper(this.clippingPlanes[4], 100, 0x0000ff),
-        new PlaneHelper(this.clippingPlanes[5], 100, 0x0000ff)];
+
+
+        this.clippingPlanes = [new Plane(new Vector3(1, 0, 0), 180), new Plane(new Vector3(-1, 0, 0), 180), new Plane(new Vector3(0, 1, 0), 180), new Plane(new Vector3(0, -1, 0), 180), new Plane(new Vector3(0, 0, 1), 180), new Plane(new Vector3(0, 0, -1), 180)];
+
+        this.clippingHelpers = [new PlaneHelper(this.clippingPlanes[0], 100, 0xff0000), new PlaneHelper(this.clippingPlanes[1], 100, 0xff0000), new PlaneHelper(this.clippingPlanes[2], 100, 0x00ff00), new PlaneHelper(this.clippingPlanes[3], 100, 0x00ff00), new PlaneHelper(this.clippingPlanes[4], 100, 0x0000ff), new PlaneHelper(this.clippingPlanes[5], 100, 0x0000ff)];
 
         for (let helper of this.clippingHelpers) {
             helper.visible = false;
             this.scene.add(helper);
         }
 
-        
+
     }
 
 
-    
     // }
     toggleClipIntersection(toggle) {
         for (let set of this.sets) {
@@ -632,72 +608,71 @@ export class Model {
             set.updateSlicers(i, vals);
         }
     }
+
     /* Video SUITE */
-    setloaded(toggle){
+    setloaded(toggle) {
         console.log(toggle);
     }
+
     uploadConfig() {
         return new Promise(async (resolve, reject) => {
-          let fileHandle = [];
-          let lst = [];
-          try {
-            fileHandle = await window.showOpenFilePicker({ multiple: true });
-            for (let i = 0; i < fileHandle.length; i++) {
-              const file = await fileHandle[i].getFile();
-              lst.push(file);
+            let fileHandle = [];
+            let lst = [];
+            try {
+                fileHandle = await window.showOpenFilePicker({multiple: true});
+                for (let i = 0; i < fileHandle.length; i++) {
+                    const file = await fileHandle[i].getFile();
+                    lst.push(file);
+                }
+                this.Video_sample_list = lst;
+                resolve(lst);
+            } catch (error) {
+                reject(error);
             }
-            this.Video_sample_list = lst;
-            resolve(lst);
-          } catch (error) {
-            reject(error);
-          }
         });
     }
 
-    notifyFinishUpload(){
-        this.notify('info', `Files loaded successfully`,
-            (<div>
-            <p style={{ width: 320 }} >
+    notifyFinishUpload() {
+        this.notify('info', `Files loaded successfully`, (<div>
+            <p style={{width: 320}}>
                 Now Select Your Video Viewing configuration!
                 You can show unit box, apply slicing , periodic boundary conditions etc.
                 Please Do not change screen size while generating Video e.g dont click on size bar
             </p>
-            </div>
-            ));
-            }
-    
+        </div>));
+    }
 
-    retrieveVideoSample(){
+
+    retrieveVideoSample() {
         return this.Video_sample_list;
     }
-   removeVideoSample(){
-    delete this.Video_sample_list;
-   }
+
+    removeVideoSample() {
+        delete this.Video_sample_list;
+    }
+
     /* PERFORMANCE TEST SUITE */
 
 
     initTesting(step) {
         // set desirable testing view
-        this.setCamera('orthographic',false);
+        this.setCamera('orthographic', false);
         this.updateCameraZoom(8);
-        this.updateLightPosition(2, { x: 50, y: 0, z: 50 });
+        this.updateLightPosition(2, {x: 50, y: 0, z: 50});
         this.deleteAllMeshes();
-        this.testMaterial = new MeshPhongMaterial({wireframe:false});
+        this.testMaterial = new MeshPhongMaterial({wireframe: false});
         // this.testShape = new SHAPE.Preset('Sphere', ...Parameters.Sphere.vals);
-        this.testShape = new SHAPE.Spheroplatelet(
-           0.3,0.2
-        );
+        this.testShape = new SHAPE.Spheroplatelet(0.3, 0.2);
         console.log('this.genshape');
         this.testShape.LOD = 2;
         this.testShape.generate();
         this.testTotal = 0;
         this.testLimit = 140001;
-        
+
         let geoms = [];
         if (this.testShape.isPreset) {
             geoms.push(this.testShape.presetGeometry.clone());
-        }
-        else {
+        } else {
             geoms.push(this.testShape.stripGeometry.clone());
             geoms.push(this.testShape.fanGeometries[0].clone());
             geoms.push(this.testShape.fanGeometries[1].clone());
@@ -706,16 +681,15 @@ export class Model {
 
         this.translate([Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50], geoms);
 
-        this.notify('info', 'Initialising Performance Test',
-            (<p style={{ width: 320 }} >
-                Test Size: {this.testLimit.toString()} <br />
-            Step: {step.toString()} <br />
-            Shape: Spheroplatelet(0.3,0.2) <br />
-            Level of Detail: {(this.testShape.LOD + 1).toString()} <br />
+        this.notify('info', 'Initialising Performance Test', (<p style={{width: 320}}>
+            Test Size: {this.testLimit.toString()} <br/>
+            Step: {step.toString()} <br/>
+            Shape: Spheroplatelet(0.3,0.2) <br/>
+            Level of Detail: {(this.testShape.LOD + 1).toString()} <br/>
             Material: MeshPhongMaterial
-                <br/> <br/>
+            <br/> <br/>
             <b>Please do not change any settings while the performance test is running!</b>
-            </p>));
+        </p>));
 
         console.log('Material: MeshLambertMaterial')
         console.log('Shape: Spheroplatelet (Default Parameters)')
@@ -725,17 +699,17 @@ export class Model {
     }
 
     deleteAllMeshes() {
-        for( const set of this.sets){
+        for (const set of this.sets) {
             console.log(set)
             for (const m of set.meshes) {
                 this.scene.remove(m);
                 m.geometry.dispose();
-                m.material.dispose(); 
+                m.material.dispose();
                 m.dispose();
             }
 
         }
-       
+
     }
 
     addRandomParticles(n) {
@@ -754,38 +728,38 @@ export class Model {
         //     }}
 
         let Intsancemesh1 = new InstancedMesh(this.testGeo[0], this.testMaterial, n);
-        let Intsancemesh2 = new InstancedMesh( this.testGeo[1], this.testMaterial, n);
-        let Intsancemesh3 = new InstancedMesh( this.testGeo[2], this.testMaterial, n);
+        let Intsancemesh2 = new InstancedMesh(this.testGeo[1], this.testMaterial, n);
+        let Intsancemesh3 = new InstancedMesh(this.testGeo[2], this.testMaterial, n);
         console.log(Intsancemesh1);
-        for ( let i = 0; i < n; i ++ ) {
+        for (let i = 0; i < n; i++) {
             console.log('called')
-                const matrix = new Matrix4();
-                const position = new Vector3();
-                const rotation = new Euler();
-                const quaternion = new Quaternion();
-                const scale = new Vector3();
-                const color = new Color();
-				position.x = Math.random() * 40 - 20;
-				position.y = Math.random() * 40 - 20;
-				position.z = Math.random() * 40 - 20;
+            const matrix = new Matrix4();
+            const position = new Vector3();
+            const rotation = new Euler();
+            const quaternion = new Quaternion();
+            const scale = new Vector3();
+            const color = new Color();
+            position.x = Math.random() * 40 - 20;
+            position.y = Math.random() * 40 - 20;
+            position.z = Math.random() * 40 - 20;
 
-				rotation.x = Math.random() * 2 * Math.PI;
-				rotation.y = Math.random() * 2 * Math.PI;
-				rotation.z = Math.random() * 2 * Math.PI;
+            rotation.x = Math.random() * 2 * Math.PI;
+            rotation.y = Math.random() * 2 * Math.PI;
+            rotation.z = Math.random() * 2 * Math.PI;
 
-				quaternion.setFromEuler( rotation );
+            quaternion.setFromEuler(rotation);
 
-				scale.x = scale.y = scale.z = Math.random() * 1;
+            scale.x = scale.y = scale.z = Math.random() * 1;
 
-				matrix.compose( position, quaternion, scale );
-                Intsancemesh1.setMatrixAt( i, matrix );
-                Intsancemesh2.setMatrixAt( i, matrix );
-                Intsancemesh3.setMatrixAt( i, matrix );
-                Intsancemesh1.setColorAt( i, color.setHex( 0xffffff*Math.random()) );
-                Intsancemesh2.setColorAt( i, color.setHex( 0xffffff*Math.random()) );
-                Intsancemesh3.setColorAt( i, color.setHex( 0xffffff*Math.random()) );
+            matrix.compose(position, quaternion, scale);
+            Intsancemesh1.setMatrixAt(i, matrix);
+            Intsancemesh2.setMatrixAt(i, matrix);
+            Intsancemesh3.setMatrixAt(i, matrix);
+            Intsancemesh1.setColorAt(i, color.setHex(0xffffff * Math.random()));
+            Intsancemesh2.setColorAt(i, color.setHex(0xffffff * Math.random()));
+            Intsancemesh3.setColorAt(i, color.setHex(0xffffff * Math.random()));
         }
-        this.scene.add(Intsancemesh1,Intsancemesh2,Intsancemesh3);
+        this.scene.add(Intsancemesh1, Intsancemesh2, Intsancemesh3);
         this.update();
         return false;
     }

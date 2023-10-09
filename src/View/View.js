@@ -1,32 +1,88 @@
 import React from "react";
 import GeneralMenu from './GeneralMenu';
 import VisualisationMenu from './VisualisationMenu';
+
 export class View {
+    static state;
     header;
     sidebar;
     model;
     expanded;
     submenu;
+    ModelDefaultState = {
+        active: 0, reset: 0, sets: [], configurations: [],
+    }
+    SlicingDefaultState = {
+        clipIntersection: false,
+        slicing_enabled: false,
+        helpers: [false, false, false],
+        x: [-80, 80],
+        y: [-80, 80],
+        z: [-80, 80]
+    }
+    ConfigurationDefaultState = {
+        title: '', shape: 'Ellipsoid', parameters: {
+            names: ['X', 'Y', 'Z'], vals: [1, 1, 0.2]
+        }, colour: {
+            r: 255, g: 255, b: 255
+        }, colourFromDirector: true, displayAsWireframe: false
+    }
+    CameraDefaultState = {
+        type: 'orthographic', lookAt: {
+            x: 0, y: 0, z: 0
+        }, position: {
+            x: 0, y: 0, z: -15
+        }, zoom: 50
+    }
+    PointLightDefaultState = {
+        reset: 0, active: 'point', enabled: true, helper: false, colour: {
+            r: 255, g: 255, b: 255, i: 60
+        }, position: {
+            x: 5, y: 0, z: 5
+        }
+    }
+    DirectionalLightDefaultState = {
+        reset: 0, active: 'directional', enabled: true, helper: false, colour: {
+            r: 255, g: 255, b: 255, i: 50
+        }, position: {
+            x: -5, y: 0, z: -5
+        }
 
-    static state;
+    }
+    ReferenceDefaultState = {
+        boundingShapeEnabled: false,
+        activeShape: 'box',
+        showAxes: false,
+        multicolour: true,
+        size: 50,
+        fps: 24,
+        uploaded: true,
+        video: false,
+        loadVideoState: false
+    }
+    AmbientLightDefaultState = {
+        ambientLightColour: {
+            r: 255, g: 255, b: 255, i: 40
+        }, darkBackGround: true
+    }
 
     constructor(m, io, chrono, toggler) {
-        View.state = {
-        }
+        View.state = {}
         this.expanded = false;
         this.model = m;
-        this.header = <GeneralMenu chronometer={chrono} functions={io} model={this.model} toggler ={toggler}/>;
-        this.sidebar = <VisualisationMenu model={this.model} functions={io} sidebarExpanded={this.expanded} toggler={toggler}/>;
+        this.header = <GeneralMenu chronometer={chrono} functions={io} model={this.model} toggler={toggler}/>;
+        this.sidebar =
+            <VisualisationMenu model={this.model} functions={io} sidebarExpanded={this.expanded} toggler={toggler}/>;
     }
-    
+
     getData() {
         return View.state;
     }
 
-    setState(state,vid) {
+    setState(state, vid) {
         View.state = state;
-        if(!vid){
-            this.loadLightingAndCamera(state,vid);
+        if (!vid) {
+            this.loadLightingAndCamera(state, vid);
         }
         this.loadReferenceAndSlicing(state);
         this.loadModel(state);
@@ -39,25 +95,24 @@ export class View {
             this.model.updateUserColour(i, substate.colour);
             this.model.toggleUserColour(i, substate.colourFromDirector);
             this.model.toggleWireframe(i, substate.displayAsWireframe);
-            this.model.toggleFoldState(i,substate.displayFoldState);
+            this.model.toggleFoldState(i, substate.displayFoldState);
             this.model.updateShape(i, substate.shape, substate.parameters);
         }
     }
 
-    loadState(state,vid){
-        if(!vid){
-            this.loadLightingAndCamera(state,vid);
+    loadState(state, vid) {
+        if (!vid) {
+            this.loadLightingAndCamera(state, vid);
         }
         this.loadReferenceAndSlicing(state);
-        
+
     }
- 
 
     loadReferenceAndSlicing(state) {
         if (this.xor(this.model.axesEnabled, state.reference.showAxes)) {
             this.model.toggleAxes();
         }
-        this.model.toggleFoldState(0,state.boundingShapeEnabled);
+        this.model.toggleFoldState(0, state.boundingShapeEnabled);
         this.model.enableClipping(state.slicing.slicing_enabled);
         this.model.toggleHelper(0, state.slicing.helpers[0]);
         this.model.toggleHelper(1, state.slicing.helpers[1]);
@@ -68,7 +123,7 @@ export class View {
 
     }
 
-    loadLightingAndCamera(state,vid) {
+    loadLightingAndCamera(state, vid) {
         console.log('called load light')
         let directionalLightColour = JSON.parse(JSON.stringify(state.directionalLight.colour));
         let pointLightColour = JSON.parse(JSON.stringify(state.pointLight.colour));
@@ -79,10 +134,10 @@ export class View {
         if (!state.pointLight.enabled) {
             pointLightColour.i = 0;
         }
-        if(state.ambientLight.darkBackGround){
+        if (state.ambientLight.darkBackGround) {
             this.model.updateBg("#000000");
         }
-        if(!state.ambientLight.darkBackGround){
+        if (!state.ambientLight.darkBackGround) {
             this.model.updateBg('#FFFFFF');
         }
         this.model.updateLight(0, state.ambientLight.ambientLightColour);
@@ -92,16 +147,15 @@ export class View {
         this.model.updateLightPosition(2, state.pointLight.position);
         this.model.toggleLightHelper(1, state.directionalLight.helper);
         this.model.toggleLightHelper(2, state.pointLight.helper);
-        if(!vid){
-            this.model.setCamera(state.camera.type,false);
+        if (!vid) {
+            this.model.setCamera(state.camera.type, false);
             this.model.updateCameraPosition(state.camera.position);
         }
         this.model.updateLookAt(state.camera.lookAt);
         this.model.updateCameraZoom(state.camera.zoom);
     }
 
-
-    setDefaultState(init,vid) {
+    setDefaultState(init, vid) {
         View.state = {};
         View.state.reference = this.ReferenceDefaultState;
         View.state.ambientLight = this.AmbientLightDefaultState;
@@ -119,123 +173,16 @@ export class View {
             View.state.model.sets.push(set.title);
             View.state.model.configurations.push(set);
         }
-    
-        this.loadState(View.state,vid);
+
+        this.loadState(View.state, vid);
 
         if (!init) {
             this.loadModel(View.state);
         }
     }
 
-
     xor(a, b) {
         return (a && !b) || (!a && b);
-    }
-  
-
-    ModelDefaultState = {
-        active: 0,
-        reset: 0,
-        sets: [],
-        configurations: [],
-    }
-
-    SlicingDefaultState = {
-        clipIntersection: false,
-        slicing_enabled:false,
-        helpers: [false, false, false],
-        x: [-80, 80],
-        y: [-80, 80],
-        z: [-80, 80]
-    }
-
-    ConfigurationDefaultState = {
-        title: '',
-        shape: 'Ellipsoid',
-        parameters: {
-            names: ['X', 'Y', 'Z'],
-            vals: [1, 1, 0.2]
-        },
-        colour: {
-            r: 255,
-            g: 255,
-            b: 255
-        },
-        colourFromDirector: true,
-        displayAsWireframe: false
-    }
-
-    CameraDefaultState = {
-        type: 'orthographic',
-        lookAt: {
-            x: 0,
-            y: 0,
-            z: 0
-        },
-        position: {
-            x: 0,
-            y: 0,
-            z: -15
-        },
-        zoom: 50
-    }
-
-    PointLightDefaultState = {
-        reset: 0,
-        active: 'point',
-        enabled: true,
-        helper: false,
-        colour: {
-            r: 255,
-            g: 255,
-            b: 255,
-            i: 60
-        },
-        position: {
-            x: 5,
-            y: 0,
-            z: 5
-        }
-    }
-
-    DirectionalLightDefaultState = {
-        reset: 0,
-        active: 'directional',
-        enabled: true,
-        helper: false,
-        colour: {
-            r: 255,
-            g: 255,
-            b: 255,
-            i: 50
-        },
-        position: {
-            x: -5,
-            y: 0,
-            z: -5
-        }
-
-    }
-    ReferenceDefaultState = {
-        boundingShapeEnabled: false,
-        activeShape: 'box',
-        showAxes: false,
-        multicolour: true,
-        size: 50,
-        fps :24,
-        uploaded :true,
-        video:false,
-        loadVideoState:false
-    }
-
-    AmbientLightDefaultState = {
-        ambientLightColour: {
-            r: 255,
-            g: 255,
-            b: 255,
-            i: 40
-        },
-        darkBackGround:true
     }
 
 }

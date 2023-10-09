@@ -1,29 +1,22 @@
-import { Alert } from 'rsuite';
-import {
-    AmbientLight,
-    DirectionalLight,
-    PointLight,
-    DirectionalLightHelper,
-    PointLightHelper
-} from 'three';
+import {Alert} from 'rsuite';
+import {AmbientLight, DirectionalLight, DirectionalLightHelper, PointLight, PointLightHelper} from 'three';
 
 export class Light {
-    light;
-    helper;
-
     static AMBIENT = 0;
     static DIRECTIONAL = 1;
     static POINT = 2;
+    light;
+    helper;
 
     constructor(lightType) {
         this.setDefaultLights(lightType);
     }
 
-    updatePosition(x, y, z){
+    updatePosition(x, y, z) {
         this.light.position.set(x, y, z);
     }
 
-    updateColour(c, i){
+    updateColour(c, i) {
         this.light.color.setHex(parseInt(c.substring(1), 16));
         this.light.intensity = i * 0.01;
     }

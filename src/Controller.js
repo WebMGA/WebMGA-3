@@ -1,9 +1,9 @@
 import Model from "./Model/Model";
 import View from "./View/View"
 import 'rsuite/dist/styles/rsuite-dark.css';
-import { std, mean } from 'mathjs';
-import unfolded_sample1 from'./Samples/UnfoldedSC4.json';
-import unforded_sample2 from'./Samples/UnfoldedE3.json';
+import {mean, std} from 'mathjs';
+import unfolded_sample1 from './Samples/UnfoldedSC4.json';
+import unfolded_sample2 from './Samples/UnfoldedE3.json';
 import sample1 from './Samples/dummy-vector.json';
 import sample2 from './Samples/dummy-quaternion.json';
 import sample3 from './Samples/sc4-isotropic.json';
@@ -21,40 +21,23 @@ import sample14 from './Samples/single.json'
 import sample15 from './Samples/qmga-shapes.json'
 import sample16 from './Samples/threejs-shapes.json'
 
-import { Alert, Notification } from 'rsuite'
+import {Alert, Notification} from 'rsuite'
 
 
 class Controller {
     model;
     view;
     io;
-
-    constructor() {
-        
-        this.io = [this.save, this.load, this.export, this.loadSample, this.toggleAutorotate,this.saveVideoState];
-        this.externalToggle = new this.ExternalToggle();
-        this.chronometer = new this.Chronometer(this.notify, this.externalToggle);
-
-        this.model = new Model(this.chronometer, this.notify);
-        this.view = new View(this.model, this.io, this.chronometer, this.externalToggle);
-
-        Alert.config(
-            ({
-                top: 70,
-                duration: 8000
-            })
-        );
-
-    }
-
     ExternalToggle = class ExternalToggle {
         // these functions are defined within their respective React components
-        closeSidemenu = () => { }
-        autorotate = () => { }
-        updateCamera = () => { }
+        closeSidemenu = () => {
+        }
+        autorotate = () => {
+        }
+        updateCamera = () => {
+        }
 
     }
-
     Chronometer = class Chronometer {
 
         constructor(notify, externalToggle) {
@@ -91,15 +74,15 @@ class Controller {
                 this.rawPerformanceData = [];
                 this.counter = 0;
 
-                this.notify('info', ' Test Update (' + this.model.testTotal.toString() + ' Molecules)',
-                    (<p style={{ width: 320 }} >
-                        <b>FPS</b> <br />
-                        Average: {this.avgPerformanceData[this.avgPerformanceData.length - 1].toString()} <br />
-                        Standard Deviation: {this.stdPerformanceData[this.stdPerformanceData.length - 1].toString()} <br />
+                this.notify('info', ' Test Update (' + this.model.testTotal.toString() + ' Molecules)', (
+                    <p style={{width: 320}}>
+                        <b>FPS</b> <br/>
+                        Average: {this.avgPerformanceData[this.avgPerformanceData.length - 1].toString()} <br/>
+                        Standard Deviation: {this.stdPerformanceData[this.stdPerformanceData.length - 1].toString()}
+                        <br/>
                     </p>));
 
-                console.log('# of Molecules: ' + this.model.testTotal.toString() + ' FPS - Avg:  ' + this.avgPerformanceData[this.avgPerformanceData.length - 1].toString()
-                    + 'Std: ' + this.stdPerformanceData[this.stdPerformanceData.length - 1].toString())
+                console.log('# of Molecules: ' + this.model.testTotal.toString() + ' FPS - Avg:  ' + this.avgPerformanceData[this.avgPerformanceData.length - 1].toString() + 'Std: ' + this.stdPerformanceData[this.stdPerformanceData.length - 1].toString())
 
                 if (this.model.addRandomParticles(this.step)) {
                     this.testing = false;
@@ -109,10 +92,10 @@ class Controller {
                     console.log('Std FPS');
                     console.log(this.stdPerformanceData);
                     this.externalToggle.autorotate();
-                    this.notify('success', 'Test Completed Succesfully',
-                        (<p style={{ width: 320 }} >
-                            All molecules deleted. Please see console output for a list of average FPS and standard deviations.
-                        </p>));
+                    this.notify('success', 'Test Completed Succesfully', (<p style={{width: 320}}>
+                        All molecules deleted. Please see console output for a list of average FPS and standard
+                        deviations.
+                    </p>));
 
                 }
             }
@@ -146,45 +129,51 @@ class Controller {
         }
     };
 
+    constructor() {
+
+        this.io = [this.save, this.load, this.export, this.loadSample, this.toggleAutorotate, this.saveVideoState];
+        this.externalToggle = new this.ExternalToggle();
+        this.chronometer = new this.Chronometer(this.notify, this.externalToggle);
+
+        this.model = new Model(this.chronometer, this.notify);
+        this.view = new View(this.model, this.io, this.chronometer, this.externalToggle);
+
+        Alert.config(({
+            top: 70, duration: 8000
+        }));
+
+    }
 
     start = () => {
         this.chronometer.model = this.model;
-        this.generate(sample2,true,false); 
+        this.generate(sample2, true, false);
         // this.model.occlusionCulling();
         this.addListeners();
-        this.notify('info', `Welcome to WebMGA`,
-            (<div>
-            <p style={{ width: 320 }} >
-                Check out the liquid crystal configurations in the Library, and head to the About section to learn more!
-                
-            </p>
-            <p style={{ width: 320 }} >
-                This application works best on the Chrome browser.
-             </p></div>
-            )
+        this.notify('info', `Welcome to WebMGA`, (<div>
+            <p style={{width: 320}}>
+                Check out the liquid crystal configurations in the Library, and head to the About section to
+                learn more!
 
-        );
+            </p>
+            <p style={{width: 320}}>
+                This application works best on the Chrome browser.
+            </p></div>));
         // this.loadVideoSample();
     }
-    
+
 
     notify(type, title, description) {
         Notification[type]({
-            title: title,
-            placement: 'bottomEnd',
-            duration: 7000,
-            description: description
+            title: title, placement: 'bottomEnd', duration: 7000, description: description
         });
     }
 
     //from stackoverflow
     download = (data, filename, type) => {
-        var file = new Blob([data], { type: type });
+        var file = new Blob([data], {type: type});
         if (window.navigator.msSaveOrOpenBlob) // IE10+
-            window.navigator.msSaveOrOpenBlob(file, filename);
-        else { // Others
-            var a = document.createElement("a"),
-                url = URL.createObjectURL(file);
+            window.navigator.msSaveOrOpenBlob(file, filename); else { // Others
+            var a = document.createElement("a"), url = URL.createObjectURL(file);
             a.href = url;
             a.download = filename;
             document.body.appendChild(a);
@@ -203,58 +192,52 @@ class Controller {
         this.download(JSON.stringify(data), 'visualisation.webmga', 'application/json');
     }
 
-    saveVideoState=()=>{
+    saveVideoState = () => {
         let data = {};
         data.state = this.view.getData();
-        console.log( 'get state');
+        console.log('get state');
         return JSON.stringify(data);
-        
+
     }
 
-    generate = (data, starting,vidstate) => {
+    generate = (data, starting, vidstate) => {
         this.model.genSets(data.model.sets);
-        if (data.state == null) { 
-            if(vidstate){
-                this.view.setState((JSON.parse(vidstate)).state,true);
-            }
-            else{
-                this.view.setDefaultState(starting,false);
+        if (data.state == null) {
+            if (vidstate) {
+                this.view.setState((JSON.parse(vidstate)).state, true);
+            } else {
+                this.view.setDefaultState(starting, false);
                 Alert.info("Setting default viewing state.");
             }
-        }
-        else {
-            this.view.setState(data.state,false);
+        } else {
+            this.view.setState(data.state, false);
         }
         this.model.update();
         this.externalToggle.closeSidemenu();
     }
 
-    load = (file,VIDEO,vidstate) => {
+    load = (file, VIDEO, vidstate) => {
         let fileReader = new FileReader();
         const read = () => {
-            var data = JSON.parse(fileReader.result);
+            const data = JSON.parse(fileReader.result);
             try {
-            console.log(vidstate);
-            this.generate(data,false,vidstate);
-            if(VIDEO === false){
-                Alert.success('File loaded successfully.');
-            }
+                console.log(vidstate);
+                this.generate(data, false, vidstate);
+                if (VIDEO === false) {
+                    Alert.success('File loaded successfully.');
+                }
             } catch {
                 Alert.error('Error: Please review uploaded file. See manual for help.');
-                return;
             }
         }
         fileReader.onloadend = read;
         fileReader.readAsText(file);
-        
     }
-   
 
-   
-   
+
     loadSample = (id) => {
         let sample;
-       
+
         switch (id) {
             case 1:
                 sample = sample1;
@@ -305,21 +288,21 @@ class Controller {
                 sample = sample16;
                 break;
             case 17:
-                sample =unfolded_sample1;
+                sample = unfolded_sample1;
                 break;
             case 18:
-                sample =unforded_sample2 ;
+                sample = unfolded_sample2;
                 break;
             default:
                 Alert.error('Error: File does not exist');
                 return;
         }
-    
-        this.generate(sample, false,false);
-        
-        
+
+        this.generate(sample, false, false);
+
+
         Alert.success('File loaded successfully.');
-        
+
     }
 
     convertQMGA = () => {
@@ -332,7 +315,7 @@ class Controller {
         //     });
     }
 
-    export = (height, width,resolution) => {
+    export = (height, width, resolution) => {
         // fix orthographic projection
         this.model.height = height;
         this.model.width = width;
@@ -342,7 +325,7 @@ class Controller {
 
         this.model.renderer.render(this.model.scene, this.model.camera);
 
-        const dataURL = this.model.renderer.domElement.toDataURL("image/jpeg",resolution/10);
+        const dataURL = this.model.renderer.domElement.toDataURL("image/jpeg", resolution / 10);
 
         var link = document.createElement('a');
         link.download = "WebMGA Visualisation.jpeg";
@@ -353,11 +336,9 @@ class Controller {
         this.model.updateCamera();
 
 
-        this.notify('success', `Thank you!`, (
-            <div>
-                Image exported successfully.
-            </div>
-        ));
+        this.notify('success', `Thank you!`, (<div>
+            Image exported successfully.
+        </div>));
     }
 
     getHeader = () => {
@@ -433,11 +414,6 @@ class Controller {
             // }
         }
     }
-
-
 }
 
-
-
 export default Controller;
-
