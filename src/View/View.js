@@ -98,6 +98,7 @@ export class View {
             this.model.toggleFoldState(i, substate.displayFoldState);
             this.model.updateShape(i, substate.shape, substate.parameters);
         }
+        this.model.updateBoundingShape(state.reference.activeShape, state.reference.boundingShapeEnabled)
     }
 
     loadState(state, vid) {
