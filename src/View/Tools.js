@@ -3,7 +3,7 @@ import React, {useState} from "react";
 
 
 export const ParameterSet = (props) => {
-    var set = [];
+    let set = [];
 
     for (let i = 0; i < props.titles.length; i++) {
         set.push(<ParameterInput title={props.titles[i]} values={props.values[i]} numerical f={props.f} index={i}
@@ -40,16 +40,16 @@ export class ParameterInput extends React.Component {
     }
 
     render() {
-        var InputBox;
+        let InputBox;
         if (this.numerical) {
-            var defaultVal = this.values;
+            let defaultVal = this.values;
             InputBox = (<div style={this.styling[0]}>
                 <InputNumber defaultValue={defaultVal} step={this.step} onChange={this.changeValue} min={this.min}/>
             </div>);
         } else {
-            var vals = this.values;
-            var active = this.active;
-            var listItems = [];
+            let vals = this.values;
+            let active = this.active;
+            let listItems = [];
             let act;
 
             for (let val of vals) {
@@ -150,9 +150,9 @@ export const SliceSlider = (props) => {
 }
 
 export const CustomSlider = (props) => {
-    var f = props.f;
-    var [value, setValue] = useState(props.val);
-    var type;
+    let f = props.f;
+    let [value, setValue] = useState(props.val);
+    let type;
     let disabled = props.disabled;
     const [min, max] = props.boundaries;
 

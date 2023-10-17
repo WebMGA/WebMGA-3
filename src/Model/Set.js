@@ -19,7 +19,6 @@ export class Set {
     lod;
     clippingPlanes;
     clipIntersection;
-    colourMap;
     unitBox;
 
 
@@ -28,9 +27,7 @@ export class Set {
     orientations = [];
     elements = [];
     meshes = [];
-    moleculeBoundingBox = [];
-
-    // materials =[];
+// materials =[];
     Element = class Element {
         geometries;
         orientation;
@@ -58,11 +55,6 @@ export class Set {
         setColourIndex(i) {
             this.colourIndex = i;
         }
-
-        getColour() {
-            return Model.rgbToHex(this.colour[0], this.colour[1], this.colour[2]);
-        }
-
         setGeometries(geoms) {
             this.geometries = geoms;
         }
@@ -156,7 +148,7 @@ export class Set {
     }
 
     validateData() {
-        if (this.positions.length != this.orientations.length) {
+        if (this.positions.length !== this.orientations.length) {
             throw new Error('Error: Position data does not correspond to orientation data. \n Total positions: ' + this.positions.length + '\n Total rotations: ' + this.orientations.length);
         }
 
@@ -167,7 +159,7 @@ export class Set {
         }
 
         let defaultParameters = Set.getParameters(this.shapeType);
-        if (this.parameters.length != defaultParameters.vals.length) {
+        if (this.parameters.length !== defaultParameters.vals.length) {
             throw new Error('Error: Wrong number of parameters specified for ' + this.name + '. \n Required: ' + defaultParameters.names);
         }
     }
@@ -186,14 +178,6 @@ export class Set {
         this.clippingPlanes[2 * i + 1].constant = vals[1];
         this.clippingPlanes[2 * i].constant = -vals[0];
     }
-
-    toggleClipIntersection(toggle) {
-        this.clipIntersection = toggle;
-        for (let mesh of this.meshes) {
-            mesh.material.clipIntersection = toggle;
-        }
-    }
-
     genUnitBox() {
         // This is the user input unit box of whole
         return this.unitBox;
@@ -245,15 +229,6 @@ export class Set {
         this.Folded_position = pos;
 
     }
-
-    inRange(target, min, max) {
-        if (min <= target <= max) {
-            return true
-        } else {
-            return false
-        }
-    }
-
     setBackFace(bool) {
         this.renderBackFace = bool;
     }
@@ -284,7 +259,7 @@ export class Set {
             position.x = this.elements[i].position[0];
             position.y = this.elements[i].position[1];
             position.z = this.elements[i].position[2];
-            var ori = this.elements[i].quaternion
+            let ori = this.elements[i].quaternion
             matrix2.compose(position, ori, new THREE.Vector3(0.5, 0.5, 0.5));
             Intsancemesh1.setMatrixAt(i, matrix2);
             Instancemesh2.setMatrixAt(i, matrix2);
@@ -311,8 +286,8 @@ export class Set {
                 position.y = this.elements[i].position[1];
                 position.z = this.elements[i].position[2];
                 const scale = new THREE.Vector3();
-                scale.x = scale.y = scale.z = Math.random() * 1;
-                var ori = this.elements[i].quaternion;
+                scale.x = scale.y = scale.z = Math.random();
+                let ori = this.elements[i].quaternion;
                 matrix2.compose(position, ori, new THREE.Vector3(0.5, 0.5, 0.5));
                 Intsancemeshback1.setMatrixAt(i, matrix2);
                 Instancemeshback2.setMatrixAt(i, matrix2);
@@ -397,17 +372,6 @@ export class Set {
             g.translate(2 * pos[0], 2 * pos[1], 2 * pos[2]);
         }
     }
-
-    rotate(e, geoms) {
-        for (let g of geoms) {
-            g.rotateZ(e.z);
-            g.rotateY(e.y);
-            g.rotateX(e.x);
-
-
-        }
-    }
-
     getRotations(type, rot) {
         let q = new Quaternion();
         switch (type) {
@@ -436,17 +400,6 @@ export class Set {
         return q;
 
     }
-
-    colourFromOrientation(euler) {
-        let colour = [];
-
-        colour.push(Math.round((euler._x + Math.PI) / (2 * Math.PI) * (255)));
-        colour.push(Math.round((euler._y + Math.PI) / (2 * Math.PI) * (255)));
-        colour.push(Math.round((euler._z + Math.PI) / (2 * Math.PI) * (255)));
-
-        return colour;
-    }
-
     calculateDirector() {
         let n = this.elements.length;
 

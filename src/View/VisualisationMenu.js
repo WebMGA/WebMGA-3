@@ -28,7 +28,7 @@ const NavToggle = ({expand, onChange}) => {
 
 const navItemStyle = {margin: 6.5};
 
-var sidebarHeight = window.innerHeight - 56;
+let sidebarHeight = window.innerHeight - 56;
 
 const CustomNav = ({active, onSelect, ...props}) => {
     return (<div>
@@ -65,7 +65,7 @@ const CustomNav = ({active, onSelect, ...props}) => {
 
 const MenuContent = ({active, expand, onChange, model, toggler, functions}) => {
 
-    var menuContent = [];
+    let menuContent = [];
 
     if (!expand) {
         menuContent.push(<NavToggle expand={expand} onChange={onChange}/>);

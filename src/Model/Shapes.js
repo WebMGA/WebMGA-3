@@ -132,8 +132,8 @@ export class Ellipsoid extends Shape {
             piece.push(2 * Math.PI / actComplexity[0]);
             piece.push(Math.PI / ((actComplexity[1] + 1) * 2));
 
-            for (var i = 0; i < actComplexity[1] * 2; ++i) {
-                for (var j = 0; j < actComplexity[0] + 1; ++j) {
+            for (let i = 0; i < actComplexity[1] * 2; ++i) {
+                for (let j = 0; j < actComplexity[0] + 1; ++j) {
                     if (j === 0 || j === actComplexity[0]) {
                         temp.push(-scale[0] * Math.sin((i + 1) * piece[1]));
                         temp.push(0.0);
@@ -181,7 +181,7 @@ export class Ellipsoid extends Shape {
         normals.push(...Shape.normalize(temp, scale));
         temp = [];
 
-        for (j = 0; j < actComplexity[0] + 1; ++j) {
+        for (let j = 0; j < actComplexity[0] + 1; ++j) {
             if (j === 0 || j === actComplexity[0]) {
                 temp.push(-scale[0] * Math.sin(piece[1]));
                 temp.push(0.0);
@@ -209,7 +209,7 @@ export class Ellipsoid extends Shape {
         normals.push(...Shape.normalize(temp, scale))
         temp = []
 
-        for (j = actComplexity[0]; j >= 0; --j) {
+        for (let j = actComplexity[0]; j >= 0; --j) {
             if (j === 0 || j === actComplexity[0]) {
                 temp.push(-scale[0] * Math.sin(piece[1]));
                 temp.push(0.0);

@@ -8,7 +8,6 @@ export class View {
     sidebar;
     model;
     expanded;
-    submenu;
     ModelDefaultState = {
         active: 0, reset: 0, sets: [], configurations: [],
     }

@@ -110,7 +110,7 @@ class Controller {
                 this.prevTime = Date.now();
             }
 
-            var time = Date.now();
+            let time = Date.now();
 
 
             if (time > this.prevTime + 1000) {
@@ -170,10 +170,10 @@ class Controller {
 
     //from stackoverflow
     download = (data, filename, type) => {
-        var file = new Blob([data], {type: type});
+        let file = new Blob([data], {type: type});
         if (window.navigator.msSaveOrOpenBlob) // IE10+
             window.navigator.msSaveOrOpenBlob(file, filename); else { // Others
-            var a = document.createElement("a"), url = URL.createObjectURL(file);
+            let a = document.createElement("a"), url = URL.createObjectURL(file);
             a.href = url;
             a.download = filename;
             document.body.appendChild(a);
@@ -218,7 +218,7 @@ class Controller {
 
     load = (file, VIDEO, vidstate) => {
         let fileReader = new FileReader();
-        const read = () => {
+        fileReader.onloadend = () => {
             const data = JSON.parse(fileReader.result);
             try {
                 console.log(vidstate);
@@ -229,8 +229,7 @@ class Controller {
             } catch {
                 Alert.error('Error: Please review uploaded file. See manual for help.');
             }
-        }
-        fileReader.onloadend = read;
+        };
         fileReader.readAsText(file);
     }
 
@@ -304,17 +303,6 @@ class Controller {
         Alert.success('File loaded successfully.');
 
     }
-
-    convertQMGA = () => {
-        // fetch(sample2)
-        //     .then(res => res.text())
-        //     .then(configData => {
-        //         this.model.load(configData);
-        //         this.view.setDefaultStates();
-        //         console.log(this.model.sets);
-        //     });
-    }
-
     export = (height, width, resolution) => {
         // fix orthographic projection
         this.model.height = height;
@@ -327,7 +315,7 @@ class Controller {
 
         const dataURL = this.model.renderer.domElement.toDataURL("image/jpeg", resolution / 10);
 
-        var link = document.createElement('a');
+        let link = document.createElement('a');
         link.download = "WebMGA Visualisation.jpeg";
         link.href = dataURL;
         link.click();
@@ -391,18 +379,16 @@ class Controller {
 
 
         document.body.onkeydown = (e) => {
-            var key = e.keyCode;
+            let key = e.code;
             //TODO
-            //spacebar
-            if (key === 32) {
+            if (key === 'Space') {
                 this.externalToggle.autorotate();
 
                 if (this.chronometer.testing) {
                     this.chronometer.testing = false;
                 }
             }
-            // //a
-            if (key === 65) {
+            if (key === 'KeyA') {
                 console.log(this.model.camera.position);
             }
             // //g

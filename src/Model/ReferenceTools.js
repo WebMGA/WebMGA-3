@@ -37,7 +37,7 @@ export class ReferenceTools {
 
     genBoundingShape(type, sets) {
         this.boundingShapeType = type;
-        let b;
+        let b = null;
         this.boundingShape = null;
 
         for (let set of sets) {
@@ -77,17 +77,6 @@ export class ReferenceTools {
         }
         this.genSubgrid();
     }
-
-    updateSize(size) {
-        this.size = size;
-        if (this.multicolour) {
-            this.genMulticolourAxes();
-        } else {
-            this.genAxes();
-        }
-        this.genSubgrid();
-    }
-
     genSubgrid() {
         this.subGrid = new GridHelper(this.size, this.size, this.colour, this.colour);
     }

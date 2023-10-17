@@ -35,8 +35,6 @@ export class Model {
 
     height;
     width;
-
-    gridEnabled = false;
     axesEnabled = false;
 
 
@@ -46,11 +44,8 @@ export class Model {
     cameraPosition;
 
     selectedSet;
-
-    planeConstants;
     clippingPlanes;
     clippingHelpers;
-    clipIntersections;
     numOfObject;
 
     constructor(chronometer, notify) {
@@ -65,7 +60,7 @@ export class Model {
 
     static rgbToHex(r, g, b) {
         function componentToHex(c) {
-            var hex = c.toString(16);
+            let hex = c.toString(16);
             return hex.length === 1 ? "0" + hex : hex;
         }
 
@@ -78,14 +73,10 @@ export class Model {
             antialias: false, powerPreference: "high-performance", preserveDrawingBuffer: true
         });
         this.renderer.setPixelRatio(window.devicePixelRatio);
-
-        this.videoFileloaded = true;
         this.rotating = false;
-        this.cameraPostion = null;
         this.lightHelperWarningGiven = false;
         this.selectedSet = 0;
         this.Video_sample_list = [];
-        this.clock = null;
         this.initClippers();
         this.lookAt = new Vector3(0, 0, 0);
         this.updateDimensions();
@@ -180,27 +171,6 @@ export class Model {
     getParameters(val) {
         return Set.getParameters(val);
     }
-
-    loadDeprecated(data) {
-        // placeholder FILE IO used for initial development
-        let particleSets = data.split("$");
-        let setData, ps;
-        for (let particleSet of particleSets) {
-            if (particleSet === "") {
-                return;
-            } else {
-                setData = particleSet.split("\n");
-                ps = new Set(setData[0], setData[1], setData.slice(2), this.clippingPlanes, this.clippingIntersections);
-                this.sets.push(ps);
-            }
-        }
-        for (let set of this.sets) {
-            for (const m of set.meshes) {
-                this.scene.add(m);
-            }
-        }
-    }
-
     /* UPDATING SETS FUNCTIONS */
 
     updateSets(id, params, f) {
@@ -276,11 +246,6 @@ export class Model {
     }
 
     /* LOD FUNCTIONS */
-
-    getLOD() {
-        return this.lod;
-    }
-
     updateLOD(val) {
         this.lod = val;
         for (let i = 0; i < this.sets.length; i++) {
@@ -369,14 +334,9 @@ export class Model {
         this.bgColour = colour;
         this.renderer.setClearColor(this.bgColour);
     }
-
-    toggleLight(type, enabled) {
-        this.lighting[type].visible = enabled;
-    }
-
     updateLight(type, colour) {
         this.lighting[type].updateColour(Model.rgbToHex(colour.r, colour.g, colour.b), colour.i);
-        if (type != 0) {
+        if (type !== 0) {
             this.lighting[type].helper.update();
         }
     }
@@ -448,17 +408,6 @@ export class Model {
 
 
     /* REFERENCE TOOLS FUNCTIONS */
-
-    toggleGrid() {
-        this.gridEnabled = !this.gridEnabled;
-
-        if (this.gridEnabled) {
-            this.scene.add(this.tools.subGrid);
-        } else {
-            this.scene.remove(this.tools.subGrid);
-        }
-    }
-
     toggleAxes() {
         this.axesEnabled = !this.axesEnabled;
 
@@ -474,36 +423,6 @@ export class Model {
 
 
     }
-
-    updateReferenceColour(rgb) {
-        let passGrid = false;
-        let passAxes = false;
-        let passShape = false;
-        if (this.gridEnabled) {
-            this.toggleGrid();
-            passGrid = true;
-        }
-        if (this.axesEnabled && !this.tools.multicolour) {
-            this.toggleAxes();
-            passAxes = true;
-        }
-        if (this.boundingShapeEnabled) {
-            this.updateBoundingShape('', false);
-            passShape = true;
-        }
-        this.tools.updateColour(Model.rgbToHex(rgb.r, rgb.g, rgb.b));
-        if (passGrid) {
-            this.toggleGrid();
-        }
-        if (passAxes) {
-            this.toggleAxes();
-        }
-        if (passShape) {
-            this.updateBoundingShape(this.tools.boundingShapeType, true);
-            passShape = true;
-        }
-    }
-
     toggleAxesMulticolour() {
         let passAxes = false;
         if (this.axesEnabled) {
@@ -515,29 +434,6 @@ export class Model {
             this.toggleAxes();
         }
     }
-
-    updateGridSize(size) {
-        let passGrid = false;
-        let passAxes = false;
-        if (this.gridEnabled) {
-            this.toggleGrid();
-            passGrid = true;
-        }
-        if (this.axesEnabled) {
-            this.toggleAxes();
-            passAxes = true;
-        }
-
-        this.tools.updateSize(size);
-
-        if (passGrid) {
-            this.toggleGrid();
-        }
-        if (passAxes) {
-            this.toggleAxes();
-        }
-    }
-
     updateBoundingShape(type, enabled) {
         this.boundingShapeEnabled = enabled;
         this.scene.remove(this.tools.boundingShape);
@@ -592,12 +488,6 @@ export class Model {
 
 
     // }
-    toggleClipIntersection(toggle) {
-        for (let set of this.sets) {
-            set.toggleClipIntersection(toggle);
-        }
-    }
-
     toggleHelper(i, toggle) {
         this.clippingHelpers[2 * i].visible = toggle;
         this.clippingHelpers[2 * i + 1].visible = toggle;
@@ -610,10 +500,6 @@ export class Model {
     }
 
     /* Video SUITE */
-    setloaded(toggle) {
-        console.log(toggle);
-    }
-
     uploadConfig() {
         return new Promise(async (resolve, reject) => {
             let fileHandle = [];
@@ -646,11 +532,6 @@ export class Model {
     retrieveVideoSample() {
         return this.Video_sample_list;
     }
-
-    removeVideoSample() {
-        delete this.Video_sample_list;
-    }
-
     /* PERFORMANCE TEST SUITE */
 
 
@@ -727,10 +608,10 @@ export class Model {
         //         this.scene.add(m);
         //     }}
 
-        let Intsancemesh1 = new InstancedMesh(this.testGeo[0], this.testMaterial, n);
-        let Intsancemesh2 = new InstancedMesh(this.testGeo[1], this.testMaterial, n);
-        let Intsancemesh3 = new InstancedMesh(this.testGeo[2], this.testMaterial, n);
-        console.log(Intsancemesh1);
+        let InstancedMesh1 = new InstancedMesh(this.testGeo[0], this.testMaterial, n);
+        let InstancedMesh2 = new InstancedMesh(this.testGeo[1], this.testMaterial, n);
+        let InstancedMesh3 = new InstancedMesh(this.testGeo[2], this.testMaterial, n);
+        console.log(InstancedMesh1);
         for (let i = 0; i < n; i++) {
             console.log('called')
             const matrix = new Matrix4();
@@ -749,17 +630,17 @@ export class Model {
 
             quaternion.setFromEuler(rotation);
 
-            scale.x = scale.y = scale.z = Math.random() * 1;
+            scale.x = scale.y = scale.z = Math.random();
 
             matrix.compose(position, quaternion, scale);
-            Intsancemesh1.setMatrixAt(i, matrix);
-            Intsancemesh2.setMatrixAt(i, matrix);
-            Intsancemesh3.setMatrixAt(i, matrix);
-            Intsancemesh1.setColorAt(i, color.setHex(0xffffff * Math.random()));
-            Intsancemesh2.setColorAt(i, color.setHex(0xffffff * Math.random()));
-            Intsancemesh3.setColorAt(i, color.setHex(0xffffff * Math.random()));
+            InstancedMesh1.setMatrixAt(i, matrix);
+            InstancedMesh2.setMatrixAt(i, matrix);
+            InstancedMesh3.setMatrixAt(i, matrix);
+            InstancedMesh1.setColorAt(i, color.setHex(0xffffff * Math.random()));
+            InstancedMesh2.setColorAt(i, color.setHex(0xffffff * Math.random()));
+            InstancedMesh3.setColorAt(i, color.setHex(0xffffff * Math.random()));
         }
-        this.scene.add(Intsancemesh1, Intsancemesh2, Intsancemesh3);
+        this.scene.add(InstancedMesh1, InstancedMesh2, InstancedMesh3);
         this.update();
         return false;
     }
