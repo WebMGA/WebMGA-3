@@ -379,18 +379,18 @@ class Controller {
 
 
         document.body.onkeydown = (e) => {
-            let key = e.code;
-            //TODO
-            if (key === 'Space') {
-                this.externalToggle.autorotate();
+            switch (e.code) {
+                case 'Space':
+                    this.externalToggle.autorotate();
+                    if (this.chronometer.testing) {
+                        this.chronometer.testing = false;
+                    }
+                    break;
+                case  'KeyA':
+                    console.log(this.model.camera.position);
+                    break;
+            }
 
-                if (this.chronometer.testing) {
-                    this.chronometer.testing = false;
-                }
-            }
-            if (key === 'KeyA') {
-                console.log(this.model.camera.position);
-            }
             // //g
             // if (key == 71) {
             //     this.model.toggleGrid();
