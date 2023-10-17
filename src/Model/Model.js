@@ -15,7 +15,7 @@ import {
 } from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import Set from './Set.js'
-import Light from './Light.js'
+import LightNew from './Light'
 import ReferenceTools from './ReferenceTools.js'
 import {Alert} from 'rsuite'
 import * as SHAPE from './Shapes.js';
@@ -81,7 +81,7 @@ export class Model {
         this.lookAt = new Vector3(0, 0, 0);
         this.updateDimensions();
         this.setCamera(this.cameraType, true);
-        this.lighting = [new Light('ambient'), new Light('directional'), new Light('point')];
+        this.lighting = [new LightNew(LightNew.light_types.AMBIENT), new LightNew(LightNew.light_types.DIRECTIONAL), new LightNew(LightNew.light_types.POINT)];
 
         this.tools = new ReferenceTools(50, 0xffffff);
         this.bgColour = "#000000";
