@@ -55,6 +55,7 @@ export class Set {
         setColourIndex(i) {
             this.colourIndex = i;
         }
+
         setGeometries(geoms) {
             this.geometries = geoms;
         }
@@ -178,6 +179,7 @@ export class Set {
         this.clippingPlanes[2 * i + 1].constant = vals[1];
         this.clippingPlanes[2 * i].constant = -vals[0];
     }
+
     genUnitBox() {
         // This is the user input unit box of whole
         return this.unitBox;
@@ -229,6 +231,7 @@ export class Set {
         this.Folded_position = pos;
 
     }
+
     setBackFace(bool) {
         this.renderBackFace = bool;
     }
@@ -372,6 +375,7 @@ export class Set {
             g.translate(2 * pos[0], 2 * pos[1], 2 * pos[2]);
         }
     }
+
     getRotations(type, rot) {
         let q = new Quaternion();
         switch (type) {
@@ -400,6 +404,7 @@ export class Set {
         return q;
 
     }
+
     calculateDirector() {
         let n = this.elements.length;
 
