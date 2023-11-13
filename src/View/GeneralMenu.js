@@ -247,7 +247,7 @@ class GeneralMenu extends React.Component {
                             <ButtonToolbar>
 
                                 <Nav.Item active>fps: {fps}</Nav.Item>
-                                <Nav.Item active>Draw call maded: {num}</Nav.Item>
+                                <Nav.Item active>Draw calls made: {num}</Nav.Item>
                                 <Nav.Item onClick={this.runPerformanceTest} appearance="active"
                                           icon={<Icon icon="dashboard"/>}>Run Performance Test</Nav.Item>
 
