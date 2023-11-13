@@ -301,9 +301,13 @@ class GeneralMenu extends React.Component {
                                 rel="noopener noreferrer">
                             <Icon icon="info-circle"/> User Manual
                         </Button>
-                        <Button color="cyan" href="http://students.cs.ucl.ac.uk/2019/group3/WebMGA/diss.pdf"
+                        <Button color="cyan" href="dissertations/2021.pdf"
                                 target="_blank" rel="noopener noreferrer">
-                            <Icon icon="book"/> Dissertation
+                            <Icon icon="book"/> Dissertation 2021
+                        </Button>
+                        <Button color="cyan" href="dissertations/2023.pdf"
+                                target="_blank" rel="noopener noreferrer">
+                            <Icon icon="book"/> Dissertation 2023
                         </Button>
                         <Button color="cyan" href="https://github.com/joe-down/WebMGA-3" target="_blank"
                                 rel="noopener noreferrer">
