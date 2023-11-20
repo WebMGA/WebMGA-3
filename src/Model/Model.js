@@ -429,7 +429,7 @@ export class Model {
             this.toggleAxes();
             passAxes = true;
         }
-        this.tools.toggleMulticolour();
+        this.tools.toggleMulticolour(this.sets[0].director);
         if (passAxes) {
             this.toggleAxes();
         }

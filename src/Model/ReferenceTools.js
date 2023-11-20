@@ -67,25 +67,28 @@ export class ReferenceTools {
     }
 
 
-    updateColour(colour) {
+    updateColour(colour, director) {
         this.colour = colour;
         this.material = new LineBasicMaterial({
             color: this.colour, linewidth: 5
         });
         if (!this.multicolour) {
-            this.genAxes();
+            this.genAxes(director);
         }
         this.genSubgrid();
     }
+
     genSubgrid() {
         this.subGrid = new GridHelper(this.size, this.size, this.colour, this.colour);
     }
 
-    genAxes() {
+    genAxes(director) {
         this.axes = [];
         let axesSize = this.size / 2;
         this.axes.push(new Line(new BufferGeometry().setFromPoints([new Vector3(-axesSize, 0, 0), new Vector3(axesSize, 0, 0)]), this.material));
         this.axes.push(new Line(new BufferGeometry().setFromPoints([new Vector3(0, -axesSize, 0), new Vector3(0, axesSize, 0)]), this.material));
+        let director_vector = new Vector3(director[0], director[1], director[2])
+        this.axes.push(new Line(new BufferGeometry().setFromPoints([director_vector.clone().multiplyScalar(-axesSize), director_vector.clone().multiplyScalar(axesSize)]), this.material));
         this.axes.push(new Line(new BufferGeometry().setFromPoints([new Vector3(0, 0, -axesSize), new Vector3(0, 0, axesSize)]), this.material));
     }
 
@@ -107,13 +110,13 @@ export class ReferenceTools {
         this.axes.push(new Line(new BufferGeometry().setFromPoints([new Vector3(0, 0, -axesSize), new Vector3(0, 0, axesSize)]), mat3));
     }
 
-    toggleMulticolour() {
+    toggleMulticolour(director) {
         this.multicolour = !this.multicolour;
         if (this.multicolour) {
             this.genMulticolourAxes();
         } else {
-            this.updateColour(this.colour);
-            this.genAxes();
+            this.updateColour(this.colour, director);
+            this.genAxes(director);
         }
     }
 
