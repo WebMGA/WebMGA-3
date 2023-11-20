@@ -7,13 +7,13 @@ import {
     TriangleFanDrawMode,
     TriangleStripDrawMode
 } from 'three';
-import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils';
 import {Alert} from 'rsuite';
 
 export class Shape {
 
     //complexity attributes
-    levels = 2;
+    levels;
     LOD;
     complexity;
 
@@ -21,21 +21,26 @@ export class Shape {
     parameters;
 
     //graphics components
-    stripGeometries = [];
-    fanGeometries = [];
-    stripGeometry;
-    presetGeometry;
+    stripGeometries: BufferGeometry[];
+    fanGeometries: BufferGeometry[];
+    stripGeometry?: BufferGeometry;
+    presetGeometry?: BufferGeometry;
 
     isPreset;
 
     constructor() {
         this.parameters = arguments[0];
         this.isPreset = false;
+        this.levels = 2
         this.LOD = 2;
         this.complexity = [6, 10, 14, 20, 26];
+        this.stripGeometries = [];
+        this.fanGeometries = [];
+        this.stripGeometry = undefined;
+        this.presetGeometry = undefined;
     }
 
-    static normalize(vec, scale) {
+    static normalize(vec: number[], scale: number[] | undefined = undefined) {
 
         if (scale !== undefined) {
             vec[0] /= Math.pow(scale[0], 2.0);
@@ -44,18 +49,18 @@ export class Shape {
         }
 
         let length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
-        vec = vec.map(x => x / length);
+        vec = vec.map((x: number) => x / length);
 
         return vec;
     }
 
     clear() {
-        this.presetGeometry = [];
+        this.presetGeometry = undefined;
         this.stripGeometries = [];
         this.fanGeometries = [];
     }
 
-    addGeometry(vertices, normals, type) {
+    addGeometry(vertices: number[], normals: number[], type: string) {
         let g = new BufferGeometry();
 
         g.setAttribute('position', new BufferAttribute(Float32Array.from(vertices), 3));
@@ -79,8 +84,9 @@ export class Shape {
 }
 
 export class Preset extends Shape {
+    type;
 
-    constructor(type, parameters) {
+    constructor(type: string, parameters: number[]) {
         super();
         this.isPreset = true;
         this.type = type;
@@ -481,7 +487,7 @@ export class Spheroplatelet extends Shape {
                         temp.push(-projectionDown * Math.sin(j * piece[0]));
                     }
                     temp.push(Math.cos((i + 1) * piece[1]) * radSphere);
-
+                    console.log(temp)
                     normals.push(...Shape.normalize(temp));
 
                     if (j === 0 || j === actComplexity[0]) {
@@ -576,9 +582,17 @@ export class CutSphere extends Shape {
     }
 
     genGeometries() {
-        let radius = this.parameters[0], zCut = this.parameters[1], plusZ = [0, 0, 1], minusZ = [0, 0, -1],
-            angle = Math.acos(zCut / radius), radiusFan = radius * Math.sin(angle), actComplexity = [], piece = [],
-            vertices = [], normals = [], temp = [];
+        let radius = this.parameters[0];
+        let zCut = this.parameters[1];
+        let plusZ = [0, 0, 1]
+        let minusZ = [0, 0, -1];
+        let angle = Math.acos(zCut / radius);
+        let radiusFan = radius * Math.sin(angle);
+        let actComplexity = [];
+        let piece = [];
+        let vertices = [];
+        let normals = [];
+        let temp = [];
 
         for (let currLevel = 0; currLevel < this.levels; ++currLevel) {
             //calculates complexity of current render

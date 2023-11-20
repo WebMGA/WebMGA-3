@@ -2,7 +2,7 @@
 import { Nav, Divider, Checkbox, FormGroup, RadioGroup, Radio, Grid, Row, Col, Alert, Whisper, Tooltip, Icon,Input } from 'rsuite';
 import React from "react";
 import { SliceSlider, ParameterInput, ParameterSet, CustomSlider } from './Tools'
-import {View} from './View.js'
+import {View} from './View'
 
 import ccapture from "ccapture.js-npmfixed";
 import { Scrollbars } from 'rc-scrollbars';

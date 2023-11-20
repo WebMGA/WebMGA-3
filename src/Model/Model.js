@@ -13,12 +13,12 @@ import {
     Vector3,
     WebGLRenderer
 } from 'three';
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
-import Set from './Set.js'
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import Set from './Set'
 import LightNew from './Light'
-import ReferenceTools from './ReferenceTools.js'
+import ReferenceTools from './ReferenceTools'
 import {Alert} from 'rsuite'
-import * as SHAPE from './Shapes.js';
+import * as SHAPE from './Shapes';
 
 
 export class Model {

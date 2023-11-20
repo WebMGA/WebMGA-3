@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {Color, Euler, MeshPhongMaterial, Quaternion, Vector3} from 'three';
 import {eigs} from 'mathjs';
-import * as SHAPE from './Shapes.js';
+import * as SHAPE from './Shapes';
 import Model from './Model';
 import Parameters from './Parameters';
 import {Alert} from 'rsuite';
