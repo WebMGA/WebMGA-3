@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import {Color, Euler, MeshPhongMaterial, Quaternion, Vector3} from 'three';
-import {eigs} from 'mathjs';
+import * as math from 'mathjs';
 import * as SHAPE from './Shapes.js';
 import Model from './Model';
 import Parameters from './Parameters';
 import {Alert} from 'rsuite';
 import colourMap from './ColourMap.json';
+import * as tfjs from '@tensorflow/tfjs'
 
 export class Set {
     name;
@@ -331,7 +332,7 @@ export class Set {
         for (let i = 0; i < pos.length; i++) {
             this.elements.push(new this.Element(pos[i], this.getRotations(this.orientationType, this.orientations[i])));
         }
-        this.calculateDirector();
+        this.director = this.calculateDirector();
         for (let elem of this.elements) {
             elem.setColourIndex(this.calculateColourIndex(elem));
         }
@@ -406,81 +407,43 @@ export class Set {
     }
 
     calculateDirector() {
-        let n = this.elements.length;
-
         if (this.elements.length === 0) {
             Alert.error('Error: No elements in set, director calculation failed.');
             return;
         }
-
-        let orderTensor = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-        //let eigenvectorsInColumns = new Matrix3();
-
-        let factor = 3 / (2 * n);
-        let constant = 0.5;
-
-        let orientation;
-
-        // loop over all molecules and calculate order tensor
-        for (let i = 0; i < n; ++i) {
-            orientation = this.elements[i].orientation;
-            orderTensor[0][0] += orientation[0] ** 2;
-            orderTensor[0][1] += orientation[0] * orientation[1];
-            orderTensor[0][2] += orientation[0] * orientation[2];
-            orderTensor[1][1] += orientation[1] ** 2;
-            orderTensor[1][2] += orientation[1] * orientation[2];
-            orderTensor[2][2] += orientation[2] ** 2;
+        //TODO sort out libraries?
+        let summed_products = tfjs.zeros([3, 3]);
+        for (let molecule_orientation of this.elements.map(molecule => tfjs.tensor1d(molecule.orientation))) {
+            summed_products = summed_products.add(tfjs.outerProduct(molecule_orientation, molecule_orientation));
         }
-
-        // multiply each tensor value with "factor" and afterwards subtract "subtract" from diagonal elements
-        orderTensor[0][0] *= factor;
-        orderTensor[0][0] -= constant;
-        orderTensor[0][1] *= factor;
-        orderTensor[0][2] *= factor;
-        orderTensor[1][1] *= factor;
-        orderTensor[1][1] -= constant;
-        orderTensor[1][2] *= factor;
-        orderTensor[2][2] *= factor;
-        orderTensor[2][2] -= constant;
-
-        // mirror matrix to make it symmetric
-        orderTensor[1][0] = orderTensor[0][1];
-        orderTensor[2][0] = orderTensor[0][2];
-        orderTensor[2][1] = orderTensor[1][2];
-
-        let eigen = eigs(orderTensor);
-
-        //returns index of max eigenvalue
-        //this line of code is a bit dodgy
-        let index = eigen.values.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
-
-        this.director = eigen.vectors[index];
-
-        let norm = Math.sqrt(this.director[0] ** 2 + this.director[1] ** 2 + this.director[2] ** 2);
-
-        if (norm === 0 || norm === isNaN || norm === undefined) {
-            this.director = [0, 0, 1];
-        } else {
-            this.director[0] /= norm;
-            this.director[1] /= norm;
-            this.director[2] /= norm;
-        }
-
-        // TEST!
+        let half_identity = tfjs.eye(3).div(2);
+        let order_tensor = summed_products.mul(3 / (2 * this.elements.length)).sub(half_identity);
+        // let sums = math.zeros([3, 3])
+        // for (let molecule_orientation of this.elements.map(molecule => math.reshape(math.matrix(molecule.orientation), [3, 1]))) {
+        //     sums = math.add(sums, math.multiply(molecule_orientation, math.transpose(molecule_orientation)))
+        // }
+        // const half_identity = math.divide(math.identity(3), 2)
+        // let order_tensor = math.subtract(math.multiply(sums, 3 / (2 * this.elements.length)), half_identity)
+        let eigen = math.eigs(order_tensor.arraySync());
+        let un_normalised_director = tfjs.tensor(eigen.vectors[tfjs.argMax(eigen.values).dataSync()]);
+        return un_normalised_director.div(un_normalised_director.norm())
     }
 
     calculateColourIndex(element) {
-        let n = colourMap.values.length - 1;
-
-        let scalarProduct = Math.abs(element.orientation[0] * this.director[0] + element.orientation[1] * this.director[1] + element.orientation[2] * this.director[2]);
+        // TODO I DO NOT LIKE THIS BIT but inherited from older code
+        let temp_orientation = element.orientation;
         if (this.orientationType === 'v') {
-            scalarProduct = Math.abs(element.orientation[1] * this.director[0] + element.orientation[0] * this.director[1] + element.orientation[2] * this.director[2]);
-        }
-        if (scalarProduct > 1) {
-            scalarProduct = 1;
+            let temp = temp_orientation[0];
+            temp_orientation[0] = temp_orientation[1];
+            temp_orientation[1] = temp;
         }
 
-        return Math.round(Math.acos(scalarProduct) / Math.PI * 2 * (n));
+        let orientation = tfjs.tensor1d(temp_orientation)
+        orientation = orientation.div(orientation.norm())
+        let scalar_product = tfjs.dot(orientation, this.director).abs()
+
+        let n = colourMap.values.length - 1;
+        return Math.round(scalar_product.acos().mul(2 * n / Math.PI).dataSync());
 
     }
 
