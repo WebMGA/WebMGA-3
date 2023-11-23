@@ -13,6 +13,7 @@ export class ReferenceTools {
     R;
     G;
     B;
+    director_colour;
 
     constructor(s, c) {
         this.size = s;
@@ -23,12 +24,13 @@ export class ReferenceTools {
         });
 
         this.multicolour = true;
-        this.genMulticolourAxes();
+        this.genMulticolourAxes(undefined);
         this.genSubgrid();
 
         this.R = new Color("rgb(255, 0, 0)");
         this.G = new Color("rgb(0, 255, 0)");
         this.B = new Color("rgb(0, 0, 255)");
+        this.director_colour = new Color("rgb(255, 0, 255)");
 
         this.boundingShapeType = 'box';
         this.setsGeometry = null;
@@ -83,37 +85,45 @@ export class ReferenceTools {
     }
 
     genAxes(director) {
+        console.log("director", director)
         this.axes = [];
         let axesSize = this.size / 2;
-        this.axes.push(new Line(new BufferGeometry().setFromPoints([new Vector3(-axesSize, 0, 0), new Vector3(axesSize, 0, 0)]), this.material));
-        this.axes.push(new Line(new BufferGeometry().setFromPoints([new Vector3(0, -axesSize, 0), new Vector3(0, axesSize, 0)]), this.material));
-        let director_vector = new Vector3(director[0], director[1], director[2])
-        this.axes.push(new Line(new BufferGeometry().setFromPoints([director_vector.clone().multiplyScalar(-axesSize), director_vector.clone().multiplyScalar(axesSize)]), this.material));
-        this.axes.push(new Line(new BufferGeometry().setFromPoints([new Vector3(0, 0, -axesSize), new Vector3(0, 0, axesSize)]), this.material));
+        let origin = new Vector3(0, 0, 0);
+        this.axes.push(new Line(new BufferGeometry().setFromPoints([origin, new Vector3(axesSize, 0, 0)]), this.material));
+        this.axes.push(new Line(new BufferGeometry().setFromPoints([origin, new Vector3(0, axesSize, 0)]), this.material));
+        let director_vector = new Vector3(director[0], director[1], -director[2]);
+        this.axes.push(new Line(new BufferGeometry().setFromPoints([origin, director_vector.clone().multiplyScalar(axesSize)]), this.material));
+        this.axes.push(new Line(new BufferGeometry().setFromPoints([origin, new Vector3(0, 0, axesSize)]), this.material));
     }
 
-    genMulticolourAxes() {
+    genMulticolourAxes(director) {
         this.axes = [];
         let axesSize = this.size / 2;
+        let origin = new Vector3(0, 0, 0);
         let mat1, mat2, mat3;
         mat1 = new LineBasicMaterial({
             color: this.R, linewidth: 5
         });
-        this.axes.push(new Line(new BufferGeometry().setFromPoints([new Vector3(-axesSize, 0, 0), new Vector3(axesSize, 0, 0)]), mat1));
+        this.axes.push(new Line(new BufferGeometry().setFromPoints([origin, new Vector3(axesSize, 0, 0)]), mat1));
         mat2 = this.material = new LineBasicMaterial({
             color: this.G, linewidth: 5
         });
-        this.axes.push(new Line(new BufferGeometry().setFromPoints([new Vector3(0, -axesSize, 0), new Vector3(0, axesSize, 0)]), mat2));
+        this.axes.push(new Line(new BufferGeometry().setFromPoints([origin, new Vector3(0, axesSize, 0)]), mat2));
         mat3 = this.material = new LineBasicMaterial({
             color: this.B, linewidth: 5
         });
-        this.axes.push(new Line(new BufferGeometry().setFromPoints([new Vector3(0, 0, -axesSize), new Vector3(0, 0, axesSize)]), mat3));
+        this.axes.push(new Line(new BufferGeometry().setFromPoints([origin, new Vector3(0, 0, axesSize)]), mat3));
+        if (typeof director !== typeof undefined) {
+            let director_vector = new Vector3(director[0], director[1], -director[2]);
+            let mat4 = this.material = new LineBasicMaterial({color: this.director_colour, linewidth: 5});
+            this.axes.push(new Line(new BufferGeometry().setFromPoints([origin, director_vector.clone().multiplyScalar(axesSize)]), mat4));
+        }
     }
 
     toggleMulticolour(director) {
         this.multicolour = !this.multicolour;
         if (this.multicolour) {
-            this.genMulticolourAxes();
+            this.genMulticolourAxes(director);
         } else {
             this.updateColour(this.colour, director);
             this.genAxes(director);
