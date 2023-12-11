@@ -938,6 +938,8 @@ export class ReferenceOptions extends React.Component {
         this.toggleAxes = this.toggleAxes.bind(this);
 
         this.toggleMulticolour = this.toggleMulticolour.bind(this);
+        this.toggle_axes_enabled = this.toggle_axes_enabled.bind(this)
+        this.toggle_axes_colour = this.toggle_axes_colour.bind(this)
 
     }
    
@@ -961,7 +963,16 @@ export class ReferenceOptions extends React.Component {
         this.model.update();
         View.state.reference.boundingShapeEnabled = ! View.state.reference.boundingShapeEnabled;
     }
-    
+
+    toggle_axes_enabled() {
+        this.model.toggle_axes_enabled();
+        this.setState({axesEnabled: !this.model.axes_enabled});
+    }
+
+    toggle_axes_colour() {
+        this.model.toggle_axes_colour();
+        this.setState({multicolour: !this.model.colour_axes});
+    }
 
     toggleMulticolour() {
         this.setState({
@@ -985,8 +996,8 @@ export class ReferenceOptions extends React.Component {
     render() {
         const configState = this.state.model.configurations[this.state.model.active];
         const enabled = this.state.boundingShapeEnabled;
-        const showAxes = this.state.showAxes;
-        const multicolour = this.state.multicolour;
+        const showAxes = this.model.axes_enabled;
+        const multicolour = this.model.colour_axes;
         return (
             <div>
 
@@ -1027,7 +1038,8 @@ export class ReferenceOptions extends React.Component {
                     <Row className="show-grid">
                         <Col xs={1} />
                         <Col xs={12}>
-                            <Checkbox style={{ marginLeft: 12 }} checked={showAxes} onClick={this.toggleAxes}> Show</Checkbox>
+                            <Checkbox style={{marginLeft: 12}} checked={showAxes}
+                                      onClick={this.toggle_axes_enabled}> Show</Checkbox>
 
                         </Col>
                     </Row>
@@ -1036,7 +1048,8 @@ export class ReferenceOptions extends React.Component {
                         <Col xs={1} />
                         <Col xs={12}>
 
-                            <Checkbox style={{ marginLeft: 12 }} checked={multicolour} onClick={this.toggleMulticolour}> Multi-Colour</Checkbox>
+                            <Checkbox style={{marginLeft: 12}} checked={multicolour}
+                                      onClick={this.toggle_axes_colour}> Multi-Colour</Checkbox>
 
                         </Col>
                         <Col xs={4}>

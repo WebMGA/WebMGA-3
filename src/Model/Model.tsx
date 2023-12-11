@@ -1,7 +1,10 @@
 import {
+    BufferGeometry,
     Color,
     Euler,
     InstancedMesh,
+    Line,
+    LineBasicMaterial,
     Matrix4,
     MeshPhongMaterial,
     OrthographicCamera,
@@ -47,6 +50,9 @@ export class Model {
     clippingPlanes;
     clippingHelpers;
     numOfObject;
+    axes: Line[] = [];
+    axes_enabled: boolean = false;
+    colour_axes: boolean = true;
 
     constructor(chronometer, notify) {
         this.scene = new Scene();
@@ -92,10 +98,72 @@ export class Model {
         }
         this.scene.add(this.camera);
         this.lod = 2;
+        this.set_axes();
+    }
+
+    set_axes(enabled: boolean = this.axes_enabled, scale: number = 200, camera: PerspectiveCamera | OrthographicCamera = this.camera, sets: Set[] = this.sets, axes_origin: Vector3 = new Vector3(450, -250, 0), scene: Scene = this.scene, colour_axes: boolean = this.colour_axes): void {
+        console.assert(scale > 0)
+        console.log(camera.zoom)
+        //Remove existing lines from scene
+        if (typeof this.axes !== typeof undefined) {
+            for (let axis of this.axes) {
+                scene.remove(axis);
+            }
+        }
+        if (!enabled) {
+            return;
+        }
+        scale /= camera.zoom;
+        axes_origin.divideScalar(camera.zoom);
+        //Construct line parameters
+        let world_axes_origin: Vector3 = camera.localToWorld(axes_origin);
+        let axis_line_ends: Vector3[] = [new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1)];
+        let director_line_ends: Vector3[] = sets.map(set => set.director).map(director => new Vector3(director[0], director[1], -director[2]));
+        let line_ends: Vector3[] = axis_line_ends.concat(director_line_ends);
+        //Build line materials
+        let line_materials: LineBasicMaterial[] = line_ends.map(line_end => new LineBasicMaterial({color: this.colour_from_director(line_end, colour_axes)}));
+        //Build line geometries
+        let line_geometries: BufferGeometry[] = line_ends.map(line_end => new BufferGeometry().setFromPoints([world_axes_origin, world_axes_origin.clone().add(line_end.multiplyScalar(scale))]));
+        //Build line objects
+        let axes: Line[] = line_geometries.map((line_geometry, i) => new Line(line_geometry, line_materials[i]));
+        //Add lines to scene
+        for (let axis of axes) {
+            scene.add(axis);
+        }
+        //Store lines
+        this.axes = axes;
+    }
+
+    colour_from_director(vector: Vector3, enable_colour: boolean = true, palette_start: number = 4 * Math.PI / 3, palette_range: number = -2 / 3, sets: Set[] = this.sets): Color {
+        console.assert(0 <= palette_start && palette_start < 2 * Math.PI);
+        console.assert(-1 <= palette_range && palette_range <= 1);
+        console.assert(sets.length > 0);
+        let hue: number = 0;
+        let lightness: number = 1;
+        //Update hue if director present
+        if (enable_colour && sets.length > 0) {
+            //TODO handle multiple directors and director should be stored as vec3 in first place
+            let director: number[] = sets[0].director;
+            let director_vector: Vector3 = new Vector3(director[0], director[1], -director[2]);
+            //Set hue based on angle between director and vector
+            //TODO properly check rather than min
+            let angle: number = Math.acos(Math.min(director_vector.dot(vector.normalize()), 1));
+            console.assert(0 <= angle && angle <= Math.PI);
+            if (angle > Math.PI / 2) {
+                angle = Math.PI - angle;
+            }
+            console.assert(0 <= angle && angle <= Math.PI / 2);
+            hue = (palette_start + (angle * 4) * palette_range) % (2 * Math.PI) / (2 * Math.PI);
+            lightness = 0.5;
+        }
+        console.assert(0 <= hue && hue <= 1);
+        console.assert(0 <= lightness && lightness <= 1);
+        return new Color().setHSL(hue, 1, lightness);
     }
 
     update() {
         console.log('update called');
+        this.set_axes();
         this.renderer.render(this.scene, this.camera);
         if (!this.rotating) {
             this.chronometer.click();
@@ -423,6 +491,16 @@ export class Model {
 
 
     }
+
+    toggle_axes_enabled() {
+        this.axes_enabled = !this.axes_enabled;
+        this.update();
+    }
+
+    toggle_axes_colour() {
+        this.colour_axes = !this.colour_axes;
+        this.update();
+    }
     toggleAxesMulticolour() {
         let passAxes = false;
         if (this.axesEnabled) {
@@ -434,6 +512,7 @@ export class Model {
             this.toggleAxes();
         }
     }
+
     updateBoundingShape(type, enabled) {
         this.boundingShapeEnabled = enabled;
         this.scene.remove(this.tools.boundingShape);
@@ -532,6 +611,7 @@ export class Model {
     retrieveVideoSample() {
         return this.Video_sample_list;
     }
+
     /* PERFORMANCE TEST SUITE */
 
 
