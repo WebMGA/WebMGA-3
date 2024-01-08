@@ -5,7 +5,9 @@ import {
     InstancedMesh,
     Line,
     LineBasicMaterial,
-    Matrix4,
+    LOD,
+    Matrix4, Mesh,
+    MeshBasicMaterial,
     MeshPhongMaterial,
     OrthographicCamera,
     PerspectiveCamera,
@@ -13,6 +15,7 @@ import {
     PlaneHelper,
     Quaternion,
     Scene,
+    SphereGeometry,
     Vector3,
     WebGLRenderer
 } from 'three';
@@ -53,6 +56,7 @@ export class Model extends Scene{
     axes: Line[] = [];
     axes_enabled: boolean = false;
     colour_axes: boolean = true;
+    lods: LOD[] =[];
 
     constructor(chronometer, notify) {
         super();
@@ -251,8 +255,22 @@ export class Model extends Scene{
             m.dispose();
         }
         f(...params);
-        for (const m of this.sets[id].meshes) {
-            this.scene.add(m);
+        for (let lod of this.lods){
+            this.scene.remove(lod)
+        }
+        for (const [index, m] of this.sets[id].meshes.entries()) {
+            console.log("lengths", this.sets[id].meshes.length, this.sets[id].positions.length)
+            console.log("id", id)
+            console.log("mesh", m)
+            console.log("sphere", new SphereGeometry(1, 10, 9))
+            let lod = new LOD();
+            lod.addLevel(m, 0);
+            lod.addLevel(new Mesh(new SphereGeometry(1, 100, 99), new MeshBasicMaterial({wireframe: true})), 0.3);
+            lod.addLevel(new Mesh(new SphereGeometry(1, 10, 9), new MeshBasicMaterial({wireframe: true})), 0.5);
+            lod.addLevel(new Mesh(new SphereGeometry(1, 6, 5), new MeshBasicMaterial({wireframe: true})), 0.7);
+            lod.addLevel(new Mesh(new SphereGeometry(1, 4, 2), new MeshBasicMaterial({wireframe: true})), 1);
+            this.lods.push(lod);
+            this.scene.add(lod);
         }
         // let mesh = this.occlusionCulling();
         // this.scene.add(mesh);
@@ -296,7 +314,6 @@ export class Model extends Scene{
     genSets(sets) {
         for (let set of this.sets) {
             for (const m of set.meshes) {
-                this.scene.remove(m);
                 m.geometry.dispose();
                 m.material.dispose();
                 m.dispose();
