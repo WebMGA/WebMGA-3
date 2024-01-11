@@ -9,6 +9,7 @@ import {
 } from 'three';
 import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils';
 import {Alert} from 'rsuite';
+import * as math from "mathjs";
 
 export class Shape {
 
@@ -40,45 +41,10 @@ export class Shape {
         this.presetGeometry = undefined;
     }
 
-    static normalize(vec: number[], scale: number[] | undefined = undefined) {
-
-        if (scale !== undefined) {
-            vec[0] /= Math.pow(scale[0], 2.0);
-            vec[1] /= Math.pow(scale[1], 2.0);
-            vec[2] /= Math.pow(scale[2], 2.0);
-        }
-
-        let length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
-        vec = vec.map((x: number) => x / length);
-
-        return vec;
-    }
-
     clear() {
         this.presetGeometry = undefined;
         this.stripGeometries = [];
         this.fanGeometries = [];
-    }
-
-    addGeometry(vertices: number[], normals: number[], type: string) {
-        let g = new BufferGeometry();
-
-        g.setAttribute('position', new BufferAttribute(Float32Array.from(vertices), 3));
-        g.setAttribute('normal', new BufferAttribute(Float32Array.from(normals), 3));
-
-
-        if (type.localeCompare('strip') === 0) {
-            g = BufferGeometryUtils.toTrianglesDrawMode(g, TriangleStripDrawMode);
-            this.stripGeometries.push(g);
-        } else {
-            g = BufferGeometryUtils.toTrianglesDrawMode(g, TriangleFanDrawMode);
-            this.fanGeometries.push(g);
-        }
-
-    }
-
-    mergeGeometries() {
-        this.stripGeometry = BufferGeometryUtils.mergeBufferGeometries(this.stripGeometries);
     }
 
 }
@@ -112,592 +78,248 @@ export class Preset extends Shape {
     }
 }
 
-export class Ellipsoid extends Shape {
+export class Sphere extends Shape {
+    radius: number
+    samples: number
 
-    constructor() {
-        super(arguments);
+    constructor(radius: number) {
+        super();
+        this.radius = radius
+        //TODO better complexity
+        this.samples = this.complexity[this.LOD]
     }
 
     generate() {
         this.clear();
+        this.generate_normals();
         this.genGeometries();
-        this.mergeGeometries();
+    }
+
+    linspace(start: number, stop: number, number: number): number[] {
+        let increment: number = (stop - start) / (number - 1)
+        let values: number[] = []
+        for (let i: number = 0; i < number; ++i) {
+            values.push(start + i * increment)
+        }
+        return values
+    }
+
+    sample_sphere(radius: number, theta: number, phi: number): math.MathType {
+        let sin_phi: number = Math.sin(phi);
+        return math.multiply(radius, [sin_phi * Math.cos(theta), sin_phi * Math.sin(theta), Math.cos(phi)])
+    }
+
+    spherical_vertices(radius: number, thetas: math.MathArray, phis: math.MathArray, samples: number): number[][] {
+        let offset_thetas: math.MathType = math.add(thetas, math.divide(math.pi, samples))
+        let result = []
+        for (let [phi_index, phi] of phis.entries()) {
+            let abc = []
+            for (let theta of ((phi_index % 2 == 0) ? thetas : offset_thetas)) {
+                abc.push(this.sample_sphere(radius, theta, phi))
+            }
+            result.push(abc)
+        }
+        return result
+    }
+
+    build_quarters(vertices: number[][][]): math.MathType {
+        return math.concat(vertices, vertices.map(vertex_row => vertex_row.map(vertex => [-vertex[0], -vertex[1], vertex[2]])), 1)
+    }
+
+    quarter_thetas(samples: number): number[] {
+        return this.linspace(0, math.pi, Math.floor(samples / 2) + 1).slice(0, -1)
+    }
+
+    quarter_sphere_vertices(radius: number, samples: number, phi_offset: number): math.MathArray {
+        let phis: number[] = this.linspace(0, math.pi / 2, Math.floor(samples / 2) - phi_offset)
+        return this.spherical_vertices(radius, this.quarter_thetas(samples), phis, samples)
+    }
+
+    build_halves(vertices: number[][][]): math.MathType {
+        return math.concat(vertices, this.bottom_half(vertices), 0)
+    }
+
+    bottom_half(vertices: math.MathArray): math.MathArray {
+        //Initially I used .reverse which broke stuff as it's in-place
+        let rolled_vertices = []
+        let roll_offset = math.floor(vertices[0].length / 2)
+        for (let [vertex_row_index, vertex_row] of vertices.entries()) {
+            rolled_vertices.push(vertex_row.slice(roll_offset).concat(vertex_row.slice(0, roll_offset)))
+        }
+        return math.multiply(rolled_vertices.toReversed(), -1).slice(1)
+    }
+
+    half_sphere_vertices(radius: number, samples: number): math.MathType {
+        return this.build_quarters(this.quarter_sphere_vertices(radius, samples, 0))
+    }
+
+    roll_vertices(vertices: number[][][], offset: boolean = false) {
+        for (let i = 0; i < vertices.length; ++i) {
+            let cut = math.ceil((i + (offset ? 1 : 0)) / 2)
+            vertices[i] = vertices[i].slice(-cut).concat(vertices[i].slice(0, -cut))
+        }
+        return vertices
+    }
+
+    generate_vertices(): math.MathType {
+        return this.roll_vertices(this.build_halves(this.half_sphere_vertices(this.radius, this.samples)))
+    }
+
+    generate_normals(): math.MathType {
+        return this.roll_vertices(this.build_halves(this.half_sphere_vertices(1, this.samples)))
+    }
+
+    to_triangles(vertices: number[][][]) {
+        let positions: number[] = []
+        for (let row = 1; row < vertices.length - 1; ++row) {
+            for (let row_column = 0; row_column < vertices[row].length; ++row_column) {
+                positions = positions.concat(vertices[row][row_column])
+                positions = positions.concat(vertices[row][(row_column + 1) % vertices[row].length])
+                positions = positions.concat(vertices[row - 1][(row_column) % vertices[row - 1].length])
+                //
+                positions = positions.concat(vertices[row][row_column])
+                positions = positions.concat(vertices[row + 1][(row_column + 1) % vertices[row + 1].length])
+                positions = positions.concat(vertices[row][(row_column + 1) % vertices[row].length])
+            }
+        }
+        return positions
     }
 
     genGeometries() {
-        let actComplexity = [], piece = [], scale = this.parameters,
-
-            vertices = [], normals = [], temp = [];
-        console.log(scale)
-        //renders ellipsoid body vertices and normals
-        for (let currLevel = 0; currLevel < this.levels; ++currLevel) {
-            //calculates complexity of current render
-            actComplexity.push(this.complexity[this.LOD] + currLevel * (-this.complexity[this.LOD]) / (this.levels - 1.0));
-            actComplexity.push(this.complexity[this.LOD] + currLevel * (-this.complexity[this.LOD]) / (this.levels - 1.0));
-
-            piece.push(2 * Math.PI / actComplexity[0]);
-            piece.push(Math.PI / ((actComplexity[1] + 1) * 2));
-
-            for (let i = 0; i < actComplexity[1] * 2; ++i) {
-                for (let j = 0; j < actComplexity[0] + 1; ++j) {
-                    if (j === 0 || j === actComplexity[0]) {
-                        temp.push(-scale[0] * Math.sin((i + 1) * piece[1]));
-                        temp.push(0.0);
-                    } else {
-                        temp.push(-Math.cos(j * piece[0]) * scale[0] * Math.sin((i + 1) * piece[1]));
-                        temp.push(-Math.sin(j * piece[0]) * scale[1] * Math.sin((i + 1) * piece[1]));
-                    }
-
-                    temp.push(Math.cos((i + 1) * piece[1]) * scale[2]);
-
-                    vertices.push(...temp);
-                    normals.push(...Shape.normalize(temp, scale))
-                    temp = []
-
-                    if (j === 0 || j === actComplexity[0]) {
-                        temp.push(-scale[0] * Math.sin((i + 2) * piece[1]));
-                        temp.push(0.0);
-                    } else {
-                        temp.push(-Math.cos(j * piece[0]) * scale[0] * Math.sin((i + 2) * piece[1]));
-                        temp.push(-Math.sin(j * piece[0]) * scale[1] * Math.sin((i + 2) * piece[1]));
-
-                    }
-                    temp.push(Math.cos((i + 2) * piece[1]) * scale[2]);
-
-                    vertices.push(...temp);
-                    normals.push(...Shape.normalize(temp, scale))
-                    temp = []
-
-                }
-
-            }
-
-        }
-        this.addGeometry(vertices, normals, 'strip');
-
-        vertices = [];
-        normals = [];
-
-        // renders ellipsoid top vertices and normals
-        temp.push(0.0);
-        temp.push(0.0);
-        temp.push(scale[2]);
-
-        vertices.push(...temp);
-        normals.push(...Shape.normalize(temp, scale));
-        temp = [];
-
-        for (let j = 0; j < actComplexity[0] + 1; ++j) {
-            if (j === 0 || j === actComplexity[0]) {
-                temp.push(-scale[0] * Math.sin(piece[1]));
-                temp.push(0.0);
-            } else {
-                temp.push(-Math.cos(j * piece[0]) * scale[0] * Math.sin(piece[1]));
-                temp.push(-Math.sin(j * piece[0]) * scale[1] * Math.sin(piece[1]));
-            }
-            temp.push(Math.cos(piece[1]) * scale[2]);
-
-            vertices.push(...temp);
-            normals.push(...Shape.normalize(temp, scale))
-            temp = []
-        }
-
-        this.addGeometry(vertices, normals, 'fan');
-        vertices = [];
-        normals = []
-
-        // renders ellipsoid bottom vertices and normals
-        temp.push(0.0);
-        temp.push(0.0);
-        temp.push(-scale[2]);
-
-        vertices.push(...temp);
-        normals.push(...Shape.normalize(temp, scale))
-        temp = []
-
-        for (let j = actComplexity[0]; j >= 0; --j) {
-            if (j === 0 || j === actComplexity[0]) {
-                temp.push(-scale[0] * Math.sin(piece[1]));
-                temp.push(0.0);
-            } else {
-                temp.push(-Math.cos(j * piece[0]) * scale[0] * Math.sin(piece[1]));
-                temp.push(-Math.sin(j * piece[0]) * scale[1] * Math.sin(piece[1]));
-            }
-            temp.push(-Math.cos(piece[1]) * scale[2]);
-
-            vertices.push(...temp);
-            normals.push(...Shape.normalize(temp, scale))
-            temp = []
-
-        }
-        this.addGeometry(vertices, normals, 'fan');
-    }
-
-}
-
-export class Spherocylinder extends Shape {
-
-
-    constructor() {
-        super(arguments);
-    }
-
-    generate() {
-        this.clear();
-        this.genGeometries();
-        this.mergeGeometries();
-    }
-
-    genGeometries() {
-        let actComplexity = [], piece = [], radius = this.parameters[0], length = this.parameters[1], vertices, normals,
-            temp = [];
-
-        for (let currLevel = 0; currLevel < this.levels; ++currLevel) {
-            //calculates complexity of current render
-            actComplexity.push(this.complexity[this.LOD] + currLevel * (-this.complexity[this.LOD]) / (this.levels - 1.0));
-            actComplexity.push(actComplexity[0] / 4);
-
-            piece.push(2 * Math.PI / actComplexity[0]);
-            piece.push(2 * Math.PI / (actComplexity[1] * 4));
-
-            for (let y = 0; y < (actComplexity[1] - 1); ++y) {
-
-                vertices = [];
-                normals = [];
-
-                for (let x = 0; x <= actComplexity[0]; ++x) {
-                    if (x === 0 || x === actComplexity[0]) {
-                        temp.push(-Math.sin((y + 1) * piece[1]) * radius);
-                        temp.push(0);
-                    } else {
-                        temp.push(-Math.cos(x * piece[0]) * Math.sin((y + 1) * piece[1]) * radius);
-                        temp.push(-Math.sin(x * piece[0]) * Math.sin((y + 1) * piece[1]) * radius);
-                    }
-                    temp.push(Math.cos((y + 1) * piece[1]) * radius);
-
-                    normals.push(...Shape.normalize(temp))
-                    temp[2] += length / 2;
-                    vertices.push(...temp);
-                    temp = [];
-
-                    if (x === 0 || x === actComplexity[0]) {
-                        temp.push(-Math.sin((y + 2) * piece[1]) * radius);
-                        temp.push(0);
-                    } else {
-                        temp.push(-Math.cos(x * piece[0]) * Math.sin((y + 2) * piece[1]) * radius);
-                        temp.push(-Math.sin(x * piece[0]) * Math.sin((y + 2) * piece[1]) * radius);
-                    }
-                    temp.push(Math.cos((y + 2) * piece[1]) * radius);
-
-                    normals.push(...Shape.normalize(temp))
-                    temp[2] += length / 2;
-                    vertices.push(...temp);
-                    temp = [];
-                }
-
-                this.addGeometry(vertices, normals, 'strip');
-            }
-
-            for (let y = actComplexity[1] - 1; y < 2 * (actComplexity[1] - 1); ++y) {
-
-                vertices = [];
-                normals = [];
-
-                for (let x = 0; x <= actComplexity[0]; ++x) {
-                    if (x === 0 || x === actComplexity[0]) {
-                        temp.push(-Math.sin((y + 1) * piece[1]) * radius);
-                        temp.push(0);
-                    } else {
-                        temp.push(-Math.cos(x * piece[0]) * Math.sin((y + 1) * piece[1]) * radius);
-                        temp.push(-Math.sin(x * piece[0]) * Math.sin((y + 1) * piece[1]) * radius);
-                    }
-                    temp.push(Math.cos((y + 1) * piece[1]) * radius);
-
-                    normals.push(...Shape.normalize(temp))
-                    temp[2] -= length / 2;
-                    vertices.push(...temp);
-                    temp = [];
-
-                    if (x === 0 || x === actComplexity[0]) {
-                        temp.push(-1 * Math.sin((y + 2) * piece[1]) * radius);
-                        temp.push(0);
-                    } else {
-                        temp.push(-Math.cos(x * piece[0]) * Math.sin((y + 2) * piece[1]) * radius);
-                        temp.push(-Math.sin(x * piece[0]) * Math.sin((y + 2) * piece[1]) * radius);
-                    }
-                    temp.push(Math.cos((y + 2) * piece[1]) * radius);
-
-                    normals.push(...Shape.normalize(temp))
-                    temp[2] -= length / 2;
-                    vertices.push(...temp);
-                    temp = [];
-                }
-
-                this.addGeometry(vertices, normals, 'strip');
-            }
-
-            normals = [];
-            vertices = [];
-
-            for (let x = 0; x <= actComplexity[0]; ++x) {
-
-                if (x === 0 || x === actComplexity[0]) {
-                    temp.push(-radius);
-                    temp.push(0);
-                } else {
-                    temp.push(-Math.cos(x * piece[0]) * radius);
-                    temp.push(-Math.sin(x * piece[0]) * radius);
-                }
-                temp.push(0);
-
-                normals.push(...Shape.normalize(temp))
-                temp[2] += length / 2;
-                vertices.push(...temp);
-                temp[2] = 0;
-                normals.push(...Shape.normalize(temp))
-                temp[2] -= length / 2;
-                vertices.push(...temp);
-                temp = [];
-
-            }
-
-            this.addGeometry(vertices, normals, 'strip');
-
-            normals = [];
-            vertices = [];
-            temp[0] = 0;
-            temp[1] = 0;
-            temp[2] = radius;
-
-            normals.push(...Shape.normalize(temp))
-            temp[2] += length / 2;
-            vertices.push(...temp);
-            temp = [];
-
-            for (let j = 0; j <= actComplexity[0]; ++j) {
-                if (j === 0 || j === actComplexity[0]) {
-                    temp.push(-Math.sin(piece[1]) * radius);
-                    temp.push(0);
-                } else {
-                    temp.push(-Math.cos(j * piece[0]) * Math.sin(piece[1]) * radius);
-                    temp.push(-Math.sin(j * piece[0]) * Math.sin(piece[1]) * radius);
-                }
-                temp.push(Math.cos(piece[1]) * radius);
-
-                normals.push(...Shape.normalize(temp))
-                temp[2] += length / 2;
-                vertices.push(...temp);
-                temp = [];
-            }
-
-            this.addGeometry(vertices, normals, 'fan');
-
-            normals = [];
-            vertices = [];
-            temp[0] = 0;
-            temp[1] = 0;
-            temp[2] = -radius;
-
-            normals.push(...Shape.normalize(temp))
-            temp[2] -= length / 2;
-            vertices.push(...temp);
-            temp = [];
-
-            for (let j = actComplexity[0]; j >= 0; --j) {
-                if (j === 0 || j === actComplexity[0]) {
-                    temp.push(-Math.sin(piece[1]) * radius);
-                    temp.push(0);
-                } else {
-                    temp.push(-Math.cos(j * piece[0]) * Math.sin(piece[1]) * radius);
-                    temp.push(-Math.sin(j * piece[0]) * Math.sin(piece[1]) * radius);
-                }
-                temp.push(-Math.cos(piece[1]) * radius);
-
-                normals.push(...Shape.normalize(temp))
-                temp[2] -= length / 2;
-                vertices.push(...temp);
-                temp = [];
-            }
-
-            this.addGeometry(vertices, normals, 'fan');
-
-        }
-
+        let positions: number[] = this.to_triangles(this.generate_vertices())
+        const normals = this.to_triangles(this.generate_normals())
+        const geometry = new BufferGeometry();
+        const positionNumComponents = 3;
+        const normalNumComponents = 3;
+        geometry.setAttribute('position', new BufferAttribute(new Float32Array(positions), positionNumComponents));
+        geometry.setAttribute('normal', new BufferAttribute(new Float32Array(normals), normalNumComponents));
+        this.stripGeometry = geometry
+        //TODO REMOVE below
+        const false_geometry = new BufferGeometry();
+        false_geometry.setAttribute('position', new BufferAttribute(new Float32Array([100, 100, 100, 101, 101, 101, 102, 102, 102]), positionNumComponents));
+        false_geometry.setAttribute('normal', new BufferAttribute(new Float32Array([1, 1, 1, 1, 1, 1, 1, 1, 1]), normalNumComponents));
+        this.stripGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleStripDrawMode))
+        this.fanGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleFanDrawMode))
+        this.stripGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleStripDrawMode))
+        this.fanGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleFanDrawMode))
+        //
     }
 }
 
-export class Spheroplatelet extends Shape {
+export class Spherocylinder extends Sphere {
+    length: number
 
-    constructor() {
-        super(arguments);
+    constructor(radius: number, length: number) {
+        super(radius);
+        this.length = length
     }
 
-    generate() {
-        this.clear();
-        this.genGeometries();
-        this.mergeGeometries();
-    }
-
-    genGeometries() {
-        let radSphere = this.parameters[0], radCircle = this.parameters[1], plusZ = [0, 0, 1], minusZ = [0, 0, -1],
-            projectionUp = 0, projectionDown = 0, actComplexity = [], piece = [], vertices = [], normals = [],
-            temp = [];
-
-        for (let currLevel = 0; currLevel < this.levels; ++currLevel) {
-            //calculates complexity of current render
-            actComplexity.push(this.complexity[this.LOD] + currLevel * (-this.complexity[this.LOD]) / (this.levels - 1.0));
-            actComplexity.push(this.complexity[this.LOD] + currLevel * (-this.complexity[this.LOD]) / (this.levels - 1.0));
-
-            piece.push(2 * Math.PI / actComplexity[0]);
-            piece.push(Math.PI / (actComplexity[1] * 2));
-
-            for (let i = 0; i < actComplexity[1] * 2; ++i) {
-                projectionUp = radSphere * Math.sin(i * piece[1]);
-                projectionDown = radSphere * Math.sin((i + 1) * piece[1]);
-
-                for (let j = 0; j < actComplexity[0] + 1; ++j) {
-                    // Upper part of triangle strip
-                    if (j === 0 || j === actComplexity[0]) {
-                        temp.push(-projectionUp);
-                        temp.push(0);
-                    } else {
-                        temp.push(-projectionUp * Math.cos(j * piece[0]));
-                        temp.push(-projectionUp * Math.sin(j * piece[0]));
-                    }
-                    temp.push(Math.cos(i * piece[1]) * radSphere);
-
-                    normals.push(...Shape.normalize(temp));
-
-                    if (j === 0 || j === actComplexity[0]) {
-                        temp[0] -= radCircle;
-                    } else {
-                        temp[0] -= radCircle * Math.cos(j * piece[0]);
-                        temp[1] -= radCircle * Math.sin(j * piece[0]);
-                    }
-
-                    vertices.push(...temp);
-                    temp = [];
-
-                    // Lower part of triangle strip
-                    if (j === 0 || j === actComplexity[0]) {
-                        temp.push(-projectionDown);
-                        temp.push(0);
-                    } else {
-                        temp.push(-projectionDown * Math.cos(j * piece[0]));
-                        temp.push(-projectionDown * Math.sin(j * piece[0]));
-                    }
-                    temp.push(Math.cos((i + 1) * piece[1]) * radSphere);
-                    console.log(temp)
-                    normals.push(...Shape.normalize(temp));
-
-                    if (j === 0 || j === actComplexity[0]) {
-                        temp[0] -= radCircle;
-                    } else {
-                        temp[0] -= radCircle * Math.cos(j * piece[0]);
-                        temp[1] -= radCircle * Math.sin(j * piece[0]);
-                    }
-
-                    vertices.push(...temp);
-                    temp = [];
-                }
+    generate_vertices(): math.MathType {
+        let sphere_vertices = super.generate_vertices()
+        let centre_row = math.ceil(math.size(sphere_vertices)[0] / 2)
+        for (let column = 0; column < math.size(sphere_vertices)[1]; ++column) {
+            for (let row = 0; row < centre_row; ++row) {
+                sphere_vertices[row][column][2] += this.length / 2
             }
-
-
-            this.addGeometry(vertices, normals, 'strip');
-            vertices = [];
-            normals = [];
-
-
-            // upper plane
-            temp.push(0);
-            temp.push(0);
-            temp.push(radSphere);
-
-            normals.push(...Shape.normalize(temp));
-            vertices.push(...temp);
-
-            temp = [];
-
-            for (let j = 0; j < actComplexity[0] + 1; ++j) {
-                if (j === 0 || j === actComplexity[0]) {
-                    temp.push(-radCircle);
-                    temp.push(0);
-                } else {
-                    temp.push(-Math.cos(j * piece[0]) * radCircle);
-                    temp.push(-Math.sin(j * piece[0]) * radCircle);
-                }
-
-                temp.push(radSphere);
-                normals.push(...plusZ);
-                vertices.push(...temp);
-                temp = [];
+            for (let row = centre_row - 1; row < math.size(sphere_vertices)[0]; ++row) {
+                sphere_vertices[row][column][2] -= this.length / 2
             }
-
-            this.addGeometry(vertices, normals, 'fan');
-            vertices = [];
-            normals = [];
-
-            // lower plane
-            temp.push(0);
-            temp.push(0);
-            temp.push(-radSphere);
-
-            normals.push(...Shape.normalize(temp));
-            vertices.push(...temp);
-            temp = [];
-
-            for (let j = actComplexity[0]; j >= 0; --j) {
-                if (j === 0 || j === actComplexity[0]) {
-                    temp.push(-radCircle);
-                    temp.push(0);
-                } else {
-                    temp.push(-Math.cos(j * piece[0]) * radCircle);
-                    temp.push(-Math.sin(j * piece[0]) * radCircle);
-                }
-
-                temp.push(-radSphere);
-                normals.push(...minusZ);
-                vertices.push(...temp);
-                temp = [];
-            }
-
-            this.addGeometry(vertices, normals, 'fan');
-
         }
-
+        return sphere_vertices
     }
 
+    //TODO normals will probablyhave a missing column
 }
 
-export class CutSphere extends Shape {
+export class Spheroplatelet extends Sphere {
+    circle_radius: number
 
-    constructor() {
-        super(arguments);
+    constructor(radius: number, circle_radius: number) {
+        super(radius);
+        this.circle_radius = circle_radius
     }
 
-    generate() {
-        this.clear();
-        this.genGeometries();
-        this.mergeGeometries();
-    }
-
-    genGeometries() {
-        let radius = this.parameters[0];
-        let zCut = this.parameters[1];
-        let plusZ = [0, 0, 1]
-        let minusZ = [0, 0, -1];
-        let angle = Math.acos(zCut / radius);
-        let radiusFan = radius * Math.sin(angle);
-        let actComplexity = [];
-        let piece = [];
-        let vertices = [];
-        let normals = [];
-        let temp = [];
-
-        for (let currLevel = 0; currLevel < this.levels; ++currLevel) {
-            //calculates complexity of current render
-            actComplexity.push(this.complexity[this.LOD] + currLevel * (-this.complexity[this.LOD]) / (this.levels - 1.0));
-            actComplexity.push(this.complexity[this.LOD] + currLevel * (-this.complexity[this.LOD]) / (this.levels - 1.0));
-
-            piece.push(2 * Math.PI / actComplexity[0]);
-            piece.push((Math.PI - 2 * angle) / (actComplexity[1] * 2));
-
-            for (let i = 0; i < actComplexity[1] * 2; ++i) {
-                for (let j = 0; j < actComplexity[0] + 1; ++j) {
-                    // Upper part of triangle strip
-                    if (j === 0 || j === actComplexity[0]) {
-                        temp.push(-radius * Math.sin(angle + i * piece[1]));
-                        temp.push(0);
-                    } else {
-                        temp.push(-Math.cos(j * piece[0]) * radius * Math.sin(angle + i * piece[1]));
-                        temp.push(-Math.sin(j * piece[0]) * radius * Math.sin(angle + i * piece[1]));
-                    }
-                    temp.push(Math.cos(angle + i * piece[1]) * radius);
-
-                    normals.push(...Shape.normalize(temp));
-                    vertices.push(...temp);
-                    temp = [];
-
-                    // Lower part of triangle strip
-                    if (j === 0 || j === actComplexity[0]) {
-                        temp.push(-radius * Math.sin(angle + (i + 1) * piece[1]));
-                        temp.push(0);
-                    } else {
-                        temp.push(-Math.cos(j * piece[0]) * radius * Math.sin(angle + (i + 1) * piece[1]));
-                        temp.push(-Math.sin(j * piece[0]) * radius * Math.sin(angle + (i + 1) * piece[1]));
-                    }
-                    temp.push(Math.cos(angle + (i + 1) * piece[1]) * radius);
-
-                    normals.push(...Shape.normalize(temp));
-                    vertices.push(...temp);
-                    temp = [];
+    base(vertices: math.MathType) {
+        let row_count = math.size(vertices)[0]
+        let column_count = math.size(vertices)[1]
+        let top = [vertices[0].map(column => column.map(vertex => vertex))]
+        let bottom = [vertices[row_count - 1].map(column => column.map(vertex => vertex))]
+        let circle_angles = this.linspace(0, 2 * math.pi, column_count + 1)
+        for (let row = 0; row < row_count; ++row) {
+            for (let column = 0; column < column_count; ++column) {
+                let radius_vector = vertices[row][column].slice(0, 2)
+                let norm = math.norm(radius_vector)
+                if (norm == 0) {
+                    //TODO fix other face
+                    let x = circle_angles[math.abs((column) % column_count)]
+                    radius_vector = [math.cos(x), math.sin(x)]
+                    norm = 1
                 }
+                let normalised_radius_vector = math.multiply(this.circle_radius, math.divide(radius_vector, norm))
+                vertices[row][column][0] += normalised_radius_vector[0]
+                vertices[row][column][1] += normalised_radius_vector[1]
             }
-
-
-            this.addGeometry(vertices, normals, 'strip');
-            vertices = [];
-            normals = [];
-
-
-            // upper plane
-            temp.push(0);
-            temp.push(0);
-            temp.push(zCut);
-
-            normals.push(...Shape.normalize(temp));
-            vertices.push(...temp);
-            temp = [];
-
-            for (let j = 0; j < actComplexity[0] + 1; ++j) {
-                if (j === 0 || j === actComplexity[0]) {
-                    temp.push(-radiusFan);
-                    temp.push(0);
-                } else {
-                    temp.push(-Math.cos(j * piece[0]) * radiusFan);
-                    temp.push(-Math.sin(j * piece[0]) * radiusFan);
-                }
-
-                temp.push(zCut);
-                normals.push(...plusZ);
-                vertices.push(...temp);
-                temp = [];
-            }
-
-            this.addGeometry(vertices, normals, 'fan');
-            vertices = [];
-            normals = [];
-
-
-            // lower plane
-            temp.push(0);
-            temp.push(0);
-            temp.push(-zCut);
-
-            normals.push(...Shape.normalize(temp));
-            vertices.push(...temp);
-            temp = [];
-
-            for (let j = actComplexity[0]; j >= 0; --j) {
-                if (j === 0 || j === actComplexity[0]) {
-                    temp.push(-radiusFan);
-                    temp.push(0);
-                } else {
-                    temp.push(-Math.cos(j * piece[0]) * radiusFan);
-                    temp.push(-Math.sin(j * piece[0]) * radiusFan);
-                }
-
-                temp.push(-zCut);
-                normals.push(...minusZ);
-                vertices.push(...temp);
-                temp = [];
-            }
-
-            this.addGeometry(vertices, normals, 'fan');
-
         }
-
+        return top.concat(vertices).concat(bottom)
     }
 
+    generate_vertices(): math.MathType {
+        return this.base(super.generate_vertices())
+    }
 
+    generate_normals(): math.MathType {
+        return this.base(super.generate_normals())
+    }
+}
+
+export class Ellipsoid extends Sphere {
+    x: number
+    y: number
+    z: number
+
+    constructor(x: number, y: number, z: number) {
+        super(1);
+        this.x = x
+        this.y = y
+        this.z = z
+    }
+
+    generate_vertices(): math.MathType {
+        let vertices = super.generate_vertices()
+        for (let row = 0; row < math.size(vertices)[0]; ++row) {
+            for (let column = 0; column < math.size(vertices)[1]; ++column) {
+                vertices[row][column][0] *= this.x
+                vertices[row][column][1] *= this.y
+                vertices[row][column][2] *= this.z
+            }
+        }
+        return vertices
+    }
+}
+
+export class CutSphere extends Sphere {
+    cut_radius: number
+
+    constructor(radius: number, cut_radius: number) {
+        super(radius);
+        this.cut_radius = cut_radius
+    }
+
+    base(radius: number) {
+        let phis = this.linspace(math.asin(this.cut_radius / this.radius), math.pi, this.samples - 1)
+        let vertices = this.build_quarters(this.spherical_vertices(this.radius, this.quarter_thetas(this.samples), phis, this.samples))
+        let xs = vertices[0].map(vertex => vertex[0])
+        let ys = vertices[0].map(vertex => vertex[1])
+        let zs = vertices[0].map(vertex => vertex[2])
+        let top = [new Array(math.size(vertices)[1]).fill([math.mean(xs), math.mean(ys), math.mean(zs)])]
+        return this.roll_vertices(top.concat(vertices), true)
+    }
+
+    generate_vertices(): math.MathType {
+        return this.base(this.radius)
+    }
+
+    generate_normals(): math.MathType {
+        return this.base(1)
+    }
 }

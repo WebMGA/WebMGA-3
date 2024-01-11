@@ -353,7 +353,7 @@ export class Set {
                 this.shape = new SHAPE.CutSphere(...this.parameters);
                 break;
             case 'Sphere':
-                this.shape = new SHAPE.Preset('Sphere', this.parameters);
+                this.shape = new SHAPE.Sphere(...this.parameters);
                 break;
             case 'Cylinder':
                 this.shape = new SHAPE.Preset('Cylinder', this.parameters);
