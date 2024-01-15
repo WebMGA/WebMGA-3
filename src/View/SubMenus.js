@@ -140,7 +140,7 @@ export class ModelsOptions extends React.Component {
         const configState = this.state.configurations[this.state.active];
         const reset = this.state.reset;
         const title = configState.title;
-        const shapes = ["Ellipsoid", "Sphere", "Spherocylinder", "Spheroplatelet", "Cut Sphere", "Cylinder", "Torus"];
+        const shapes = ["Ellipsoid", "Sphere", "Spherocylinder", "Spheroplatelet", "Cut Sphere", "Cylinder", "Torus", "Cap", "Lens"];
         const sets = this.state.sets;
 
         return (

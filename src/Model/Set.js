@@ -109,6 +109,12 @@ export class Set {
             case 'Torus':
                 parameters = Parameters.Torus;
                 break;
+            case 'Cap':
+                parameters=Parameters.Cap;
+                break;
+            case 'Lens':
+                parameters=Parameters.Lens;
+                break;
             default:
                 Alert.error('Error: Unexpected shape identifier');
         }
@@ -360,6 +366,12 @@ export class Set {
                 break;
             case 'Torus':
                 this.shape = new SHAPE.Preset('Torus', this.parameters);
+                break;
+            case 'Cap':
+                this.shape = new SHAPE.Cap(...this.parameters);
+                break;
+            case 'Lens':
+                this.shape = new SHAPE.Lens(...this.parameters);
                 break;
             default:
                 throw new Error('Error: unexpected shape identifier. \n Found: ' + this.shapeType);

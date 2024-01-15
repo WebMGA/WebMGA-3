@@ -34,7 +34,7 @@ export class Shape {
         this.isPreset = false;
         this.levels = 2
         this.LOD = 2;
-        this.complexity = [6, 10, 14, 20, 26];
+        this.complexity = [4, 10, 14, 20, 26];
         this.stripGeometries = [];
         this.fanGeometries = [];
         this.stripGeometry = undefined;
@@ -86,7 +86,7 @@ export class Sphere extends Shape {
         super();
         this.radius = radius
         //TODO better complexity
-        this.samples = this.complexity[this.LOD]
+        this.samples = 10
     }
 
     generate() {
@@ -143,7 +143,7 @@ export class Sphere extends Shape {
         //Initially I used .reverse which broke stuff as it's in-place
         let rolled_vertices = []
         let roll_offset = math.floor(vertices[0].length / 2)
-        for (let [vertex_row_index, vertex_row] of vertices.entries()) {
+        for (let vertex_row of vertices) {
             rolled_vertices.push(vertex_row.slice(roll_offset).concat(vertex_row.slice(0, roll_offset)))
         }
         return math.multiply(rolled_vertices.toReversed(), -1).slice(1)
@@ -161,12 +161,16 @@ export class Sphere extends Shape {
         return vertices
     }
 
+    sphere_base(radius: number) {
+        return this.roll_vertices(this.build_halves(this.half_sphere_vertices(radius, this.samples)))
+    }
+
     generate_vertices(): math.MathType {
-        return this.roll_vertices(this.build_halves(this.half_sphere_vertices(this.radius, this.samples)))
+        return this.sphere_base(this.radius)
     }
 
     generate_normals(): math.MathType {
-        return this.roll_vertices(this.build_halves(this.half_sphere_vertices(1, this.samples)))
+        return this.sphere_base(1)
     }
 
     to_triangles(vertices: number[][][]) {
@@ -244,16 +248,21 @@ export class Spheroplatelet extends Sphere {
         let column_count = math.size(vertices)[1]
         let top = [vertices[0].map(column => column.map(vertex => vertex))]
         let bottom = [vertices[row_count - 1].map(column => column.map(vertex => vertex))]
-        let circle_angles = this.linspace(0, 2 * math.pi, column_count + 1)
+        let circle_angles = this.linspace(0, 2 * math.pi, column_count + 1).slice(0, -1)
         for (let row = 0; row < row_count; ++row) {
             for (let column = 0; column < column_count; ++column) {
                 let radius_vector = vertices[row][column].slice(0, 2)
                 let norm = math.norm(radius_vector)
-                if (norm == 0) {
-                    //TODO fix other face
-                    let x = circle_angles[math.abs((column) % column_count)]
+                if (row == 0 || row == row_count - 1) {
+                    let face_circle_angles = circle_angles
+                    if (row == row_count - 1) {
+                        let offset = math.floor(row / 2) + 2
+                        face_circle_angles = circle_angles.slice(offset).concat(circle_angles.slice(0, offset))
+                    }
+                    let x = face_circle_angles[column]
                     radius_vector = [math.cos(x), math.sin(x)]
                     norm = 1
+                    console.log("r", row, circle_angles, face_circle_angles, vertices)
                 }
                 let normalised_radius_vector = math.multiply(this.circle_radius, math.divide(radius_vector, norm))
                 vertices[row][column][0] += normalised_radius_vector[0]
@@ -297,7 +306,7 @@ export class Ellipsoid extends Sphere {
     }
 }
 
-export class CutSphere extends Sphere {
+export class CapCutSphereBase extends Sphere {
     cut_radius: number
 
     constructor(radius: number, cut_radius: number) {
@@ -305,21 +314,89 @@ export class CutSphere extends Sphere {
         this.cut_radius = cut_radius
     }
 
-    base(radius: number) {
-        let phis = this.linspace(math.asin(this.cut_radius / this.radius), math.pi, this.samples - 1)
+    base(radius: number, phis: number[], flat_top: boolean) {
         let vertices = this.build_quarters(this.spherical_vertices(this.radius, this.quarter_thetas(this.samples), phis, this.samples))
-        let xs = vertices[0].map(vertex => vertex[0])
-        let ys = vertices[0].map(vertex => vertex[1])
-        let zs = vertices[0].map(vertex => vertex[2])
-        let top = [new Array(math.size(vertices)[1]).fill([math.mean(xs), math.mean(ys), math.mean(zs)])]
-        return this.roll_vertices(top.concat(vertices), true)
+        let end_source_index = flat_top ? 0 : vertices.length - 1
+        let xs = vertices[end_source_index].map(vertex => vertex[0])
+        let ys = vertices[end_source_index].map(vertex => vertex[1])
+        let zs = vertices[end_source_index].map(vertex => vertex[2])
+        let end = [new Array(math.size(vertices)[1]).fill([math.mean(xs), math.mean(ys), math.mean(zs)])]
+        return this.roll_vertices(flat_top ? end.concat(vertices) : vertices.concat(end), flat_top)
     }
 
     generate_vertices(): math.MathType {
-        return this.base(this.radius)
+        return this.base(this.radius, [], true)
     }
 
     generate_normals(): math.MathType {
-        return this.base(1)
+        return this.base(1, [], true)
+    }
+}
+
+export class CutSphere extends CapCutSphereBase {
+    base(radius: number) {
+        let phis = this.linspace(math.asin(this.cut_radius / this.radius), math.pi, this.samples - 1)
+        return super.base(radius, phis, true)
+    }
+}
+
+export class Cap extends CapCutSphereBase {
+    base(radius: number) {
+        let phis = this.linspace(0, math.asin(this.cut_radius / this.radius), this.samples - 1)
+        return super.base(radius, phis, false)
+    }
+}
+
+export class Lens extends Sphere {
+    radius_2: number
+    distance: number
+
+    constructor(radius: number, radius_2: number, distance: number) {
+        super(radius);
+        this.radius_2 = radius_2
+        this.distance = distance
+    }
+
+    base(radius, radius_2, distance, normal_mode: boolean) {
+        if (distance >= radius + radius_2) {
+            return super.sphere_base(radius)
+        }
+        let y = (distance ** 2 + radius ** 2 - radius_2 ** 2) / (2 * distance)
+        let cut_radius = math.sqrt(radius_2 ** 2 - (distance - y) ** 2)
+        let top = math.multiply(new Cap(radius_2, cut_radius).generate_vertices().slice(0, -1), -1)
+        let bottom
+        if (y > 0) {
+            bottom = new CutSphere(radius, cut_radius).generate_vertices().slice(1)
+            for (let row = 0; row < math.size(bottom)[0]; ++row) {
+                bottom[row] = bottom[row].slice(1).concat(bottom[row].slice(0, 1))
+            }
+        } else {
+            bottom = new Cap(radius, cut_radius).generate_vertices().slice(0, -1)
+            bottom.reverse()
+            for (let row = 0; row < math.size(bottom)[0]; ++row) {
+                bottom[row].reverse()
+                bottom[row] = bottom[row].slice(6).concat(bottom[row].slice(0, 6))
+                for (let column = 0; column < math.size(bottom)[1]; ++column) {
+                    bottom[row][column][1] *= -1
+                    bottom[row][column][2] *= -1
+                }
+            }
+        }
+        if (!normal_mode) {
+            for (let row = 0; row < math.size(top)[0]; ++row) {
+                for (let column = 0; column < math.size(top)[1]; ++column) {
+                    top[row][column][2] += distance
+                }
+            }
+        }
+        return top.concat(bottom)
+    }
+
+    generate_vertices(): math.MathType {
+        return this.base(this.radius, this.radius_2, this.distance, false)
+    }
+
+    generate_normals(): math.MathType {
+        return this.base(1, this.radius_2 / this.radius, this.distance / this.radius, true)
     }
 }
