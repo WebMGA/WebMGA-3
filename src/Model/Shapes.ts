@@ -34,7 +34,7 @@ export class Shape {
         this.isPreset = false;
         this.levels = 2
         this.LOD = 2;
-        this.complexity = [4, 10, 14, 20, 26];
+        this.complexity = this.logspace(2, 5, 5, 2);
         this.stripGeometries = [];
         this.fanGeometries = [];
         this.stripGeometry = undefined;
@@ -45,6 +45,19 @@ export class Shape {
         this.presetGeometry = undefined;
         this.stripGeometries = [];
         this.fanGeometries = [];
+    }
+
+    linspace(start: number, stop: number, number: number): number[] {
+        let increment: number = (stop - start) / (number - 1)
+        let values: number[] = []
+        for (let i: number = 0; i < number; ++i) {
+            values.push(start + i * increment)
+        }
+        return values
+    }
+
+    logspace(start: number, stop: number, number: number, base: number): number[] {
+        return this.linspace(start, stop, number).map(value => base ** value)
     }
 
 }
@@ -80,37 +93,30 @@ export class Preset extends Shape {
 
 export class Sphere extends Shape {
     radius: number
-    samples: number
+    samples: number = 4
 
     constructor(radius: number) {
         super();
         this.radius = radius
-        //TODO better complexity
-        this.samples = 10
     }
 
-    generate() {
+    update_samples(): void {
+        this.samples = this.complexity[this.LOD]
+    }
+
+    generate(): void {
         this.clear();
-        this.generate_normals();
+        this.update_samples();
         this.genGeometries();
     }
 
-    linspace(start: number, stop: number, number: number): number[] {
-        let increment: number = (stop - start) / (number - 1)
-        let values: number[] = []
-        for (let i: number = 0; i < number; ++i) {
-            values.push(start + i * increment)
-        }
-        return values
-    }
-
-    sample_sphere(radius: number, theta: number, phi: number): math.MathType {
+    sample_sphere(radius: number, theta: number, phi: number): number {
         let sin_phi: number = Math.sin(phi);
         return math.multiply(radius, [sin_phi * Math.cos(theta), sin_phi * Math.sin(theta), Math.cos(phi)])
     }
 
     spherical_vertices(radius: number, thetas: math.MathArray, phis: math.MathArray, samples: number): number[][] {
-        let offset_thetas: math.MathType = math.add(thetas, math.divide(math.pi, samples))
+        let offset_thetas: math.MathType = math.add(thetas, math.divide(Math.PI, samples))
         let result = []
         for (let [phi_index, phi] of phis.entries()) {
             let abc = []
@@ -127,11 +133,11 @@ export class Sphere extends Shape {
     }
 
     quarter_thetas(samples: number): number[] {
-        return this.linspace(0, math.pi, Math.floor(samples / 2) + 1).slice(0, -1)
+        return this.linspace(0, Math.PI, Math.floor(samples / 2) + 1).slice(0, -1)
     }
 
     quarter_sphere_vertices(radius: number, samples: number, phi_offset: number): math.MathArray {
-        let phis: number[] = this.linspace(0, math.pi / 2, Math.floor(samples / 2) - phi_offset)
+        let phis: number[] = this.linspace(0, Math.PI / 2, Math.floor(samples / 2) - phi_offset)
         return this.spherical_vertices(radius, this.quarter_thetas(samples), phis, samples)
     }
 
@@ -161,15 +167,15 @@ export class Sphere extends Shape {
         return vertices
     }
 
-    sphere_base(radius: number) {
+    sphere_base(radius: number): number[][][] {
         return this.roll_vertices(this.build_halves(this.half_sphere_vertices(radius, this.samples)))
     }
 
-    generate_vertices(): math.MathType {
+    generate_vertices(): number[][][] {
         return this.sphere_base(this.radius)
     }
 
-    generate_normals(): math.MathType {
+    generate_normals(): number[][][] {
         return this.sphere_base(1)
     }
 
@@ -189,17 +195,17 @@ export class Sphere extends Shape {
         return positions
     }
 
-    genGeometries() {
+    genGeometries(): void {
         let positions: number[] = this.to_triangles(this.generate_vertices())
-        const normals = this.to_triangles(this.generate_normals())
-        const geometry = new BufferGeometry();
-        const positionNumComponents = 3;
-        const normalNumComponents = 3;
+        const normals: number[] = this.to_triangles(this.generate_normals())
+        const geometry: BufferGeometry = new BufferGeometry();
+        const positionNumComponents: number = 3;
+        const normalNumComponents: number = 3;
         geometry.setAttribute('position', new BufferAttribute(new Float32Array(positions), positionNumComponents));
         geometry.setAttribute('normal', new BufferAttribute(new Float32Array(normals), normalNumComponents));
         this.stripGeometry = geometry
         //TODO REMOVE below
-        const false_geometry = new BufferGeometry();
+        const false_geometry: BufferGeometry = new BufferGeometry();
         false_geometry.setAttribute('position', new BufferAttribute(new Float32Array([100, 100, 100, 101, 101, 101, 102, 102, 102]), positionNumComponents));
         false_geometry.setAttribute('normal', new BufferAttribute(new Float32Array([1, 1, 1, 1, 1, 1, 1, 1, 1]), normalNumComponents));
         this.stripGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleStripDrawMode))
@@ -219,13 +225,13 @@ export class Spherocylinder extends Sphere {
     }
 
     generate_vertices(): math.MathType {
-        let sphere_vertices = super.generate_vertices()
-        let centre_row = math.ceil(math.size(sphere_vertices)[0] / 2)
-        for (let column = 0; column < math.size(sphere_vertices)[1]; ++column) {
-            for (let row = 0; row < centre_row; ++row) {
+        let sphere_vertices: number[][][] = super.generate_vertices()
+        let centre_row: number = math.ceil(math.size(sphere_vertices)[0] / 2)
+        for (let column: number = 0; column < math.size(sphere_vertices)[1]; ++column) {
+            for (let row: number = 0; row < centre_row; ++row) {
                 sphere_vertices[row][column][2] += this.length / 2
             }
-            for (let row = centre_row - 1; row < math.size(sphere_vertices)[0]; ++row) {
+            for (let row: number = centre_row - 1; row < math.size(sphere_vertices)[0]; ++row) {
                 sphere_vertices[row][column][2] -= this.length / 2
             }
         }
@@ -248,7 +254,7 @@ export class Spheroplatelet extends Sphere {
         let column_count = math.size(vertices)[1]
         let top = [vertices[0].map(column => column.map(vertex => vertex))]
         let bottom = [vertices[row_count - 1].map(column => column.map(vertex => vertex))]
-        let circle_angles = this.linspace(0, 2 * math.pi, column_count + 1).slice(0, -1)
+        let circle_angles = this.linspace(0, 2 * Math.PI, column_count + 1).slice(0, -1)
         for (let row = 0; row < row_count; ++row) {
             for (let column = 0; column < column_count; ++column) {
                 let radius_vector = vertices[row][column].slice(0, 2)
@@ -335,7 +341,7 @@ export class CapCutSphereBase extends Sphere {
 
 export class CutSphere extends CapCutSphereBase {
     base(radius: number) {
-        let phis = this.linspace(math.asin(this.cut_radius / this.radius), math.pi, this.samples - 1)
+        let phis = this.linspace(math.asin(this.cut_radius / this.radius), Math.PI, this.samples - 1)
         return super.base(radius, phis, true)
     }
 }
