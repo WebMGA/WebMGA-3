@@ -53,6 +53,7 @@ export class Model extends Scene{
     axes: Line[] = [];
     axes_enabled: boolean = false;
     colour_axes: boolean = true;
+    lod: number = SHAPE.Shape.default_lod;
 
     constructor(chronometer, notify) {
         super();
@@ -101,7 +102,7 @@ export class Model extends Scene{
             this.scene.add(l.light);
         }
         this.scene.add(this.camera);
-        this.lod = 2;
+        this.lod = SHAPE.Shape.default_lod;
     }
 
     set_axes(enabled: boolean = this.axes_enabled, scale: number = 200, camera: PerspectiveCamera | OrthographicCamera = this.camera, sets: Set[] = this.sets, axes_origin: Vector3 = new Vector3(450, -250, 0), scene: Scene = this.scene, colour_axes: boolean = this.colour_axes): void {

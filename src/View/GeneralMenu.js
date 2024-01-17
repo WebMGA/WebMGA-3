@@ -17,6 +17,7 @@ import {
 } from 'rsuite';
 import {ParameterSet} from './Tools';
 import React from "react";
+import {Shape} from "../Model/Shapes";
 
 
 class ExportDropdown extends React.Component {
@@ -145,7 +146,7 @@ class PerformanceDropdown extends React.Component {
             <Slider
                 min={1}
                 step={1}
-                max={5}
+                max={Shape.complexity_count}
                 value={lod}
                 graduated
                 progress

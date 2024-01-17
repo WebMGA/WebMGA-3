@@ -6,6 +6,7 @@ import Model from './Model';
 import Parameters from './Parameters';
 import {Alert} from 'rsuite';
 import colourMap from './ColourMap.json';
+import {Shape} from "./Shapes";
 
 export class Set {
     name;
@@ -176,7 +177,7 @@ export class Set {
         this.colourByDirector = true;
         this.wireframe = true;
         this.renderBackFace = false;
-        this.lod = 2;
+        this.lod = Shape.default_lod;
         this.shapeType = 'Ellipsoid';
         this.parameters = Parameters.Ellipsoid.vals;
     }
