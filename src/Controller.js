@@ -219,7 +219,12 @@ class Controller {
     load = (file, VIDEO, vidstate) => {
         let fileReader = new FileReader();
         fileReader.onloadend = () => {
-            const data = JSON.parse(fileReader.result);
+            let data;
+            if (file.type === "application/json") {
+                data = JSON.parse(fileReader.result);
+            } else {
+                data = this.cnf_to_json(fileReader.result);
+            }
             try {
                 console.log(vidstate);
                 this.generate(data, false, vidstate);
@@ -231,6 +236,22 @@ class Controller {
             }
         };
         fileReader.readAsText(file);
+    }
+
+    cnf_to_json(data) {
+        let set = {name: "Molecules", orientationType: "v"}
+        let split_data = data.trim().split("\n")
+        set.unitBox = [parseFloat(split_data[1]), parseFloat(split_data[2]), parseFloat(split_data[3])]
+        let molecule_count = parseInt(split_data[0])
+        set.positions = new Array(molecule_count)
+        set.orientations = new Array(molecule_count)
+        for (let molecule of split_data.slice(5)) {
+            let molecule_data = molecule.trim().split(/ +/)
+            let molecule_number = parseInt(molecule_data[12]) - 1
+            set.positions[molecule_number] = molecule_data.slice(0, 3).map(value => parseFloat(value))
+            set.orientations[molecule_number] = molecule_data.slice(6, 9).map(value => parseFloat(value))
+        }
+        return {model: {sets: [set]}, state: null}
     }
 
 
