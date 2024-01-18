@@ -182,16 +182,8 @@ export class Sphere extends Shape {
         return vertices
     }
 
-    sphere_base(radius: number): number[][][] {
-        return this.roll_vertices(this.build_halves(this.half_sphere_vertices(radius, this.samples, this.vertical_samples)))
-    }
-
     generate_vertices(): number[][][] {
-        return this.sphere_base(this.radius)
-    }
-
-    generate_normals(): number[][][] {
-        return this.sphere_base(1)
+        return this.roll_vertices(this.build_halves(this.half_sphere_vertices(this.radius, this.samples, this.vertical_samples)))
     }
 
     to_triangles(vertices: number[][][]) {
@@ -212,14 +204,15 @@ export class Sphere extends Shape {
 
     genGeometries(): void {
         let positions: number[] = this.to_triangles(this.generate_vertices())
-        const normals: number[] = this.to_triangles(this.generate_normals())
-        const geometry: BufferGeometry = new BufferGeometry();
         const positionNumComponents: number = 3;
-        const normalNumComponents: number = 3;
+        let geometry: BufferGeometry = new BufferGeometry();
         geometry.setAttribute('position', new BufferAttribute(new Float32Array(positions), positionNumComponents));
-        geometry.setAttribute('normal', new BufferAttribute(new Float32Array(normals), normalNumComponents));
+        geometry = BufferGeometryUtils.mergeVertices(geometry)
+        geometry.computeVertexNormals();
+        geometry.normalizeNormals();
         this.stripGeometry = geometry
         //TODO REMOVE below
+        const normalNumComponents: number = 3;
         const false_geometry: BufferGeometry = new BufferGeometry();
         false_geometry.setAttribute('position', new BufferAttribute(new Float32Array([100, 100, 100, 101, 101, 101, 102, 102, 102]), positionNumComponents));
         false_geometry.setAttribute('normal', new BufferAttribute(new Float32Array([1, 1, 1, 1, 1, 1, 1, 1, 1]), normalNumComponents));
@@ -252,8 +245,6 @@ export class Spherocylinder extends Sphere {
         }
         return sphere_vertices
     }
-
-    //TODO normals will probablyhave a missing column
 }
 
 export class Spheroplatelet extends Sphere {
@@ -264,7 +255,8 @@ export class Spheroplatelet extends Sphere {
         this.circle_radius = circle_radius
     }
 
-    base(vertices: math.MathType) {
+    generate_vertices(): math.MathType {
+        let vertices = super.generate_vertices()
         let row_count = math.size(vertices)[0]
         let column_count = math.size(vertices)[1]
         let top = [vertices[0].map(column => column.map(vertex => vertex))]
@@ -290,14 +282,6 @@ export class Spheroplatelet extends Sphere {
             }
         }
         return top.concat(vertices).concat(bottom)
-    }
-
-    generate_vertices(): math.MathType {
-        return this.base(super.generate_vertices())
-    }
-
-    generate_normals(): math.MathType {
-        return this.base(super.generate_normals())
     }
 }
 
@@ -334,8 +318,8 @@ export class CapCutSphereBase extends Sphere {
         this.cut_radius = cut_radius
     }
 
-    base(radius: number, phis: number[], flat_top: boolean) {
-        let vertices = this.build_quarters(this.spherical_vertices(radius, this.quarter_thetas(this.samples), phis, this.samples))
+    base(phis: number[], flat_top: boolean) {
+        let vertices = this.build_quarters(this.spherical_vertices(this.radius, this.quarter_thetas(this.samples), phis, this.samples))
         let end_source_index = flat_top ? 0 : vertices.length - 1
         let xs = vertices[end_source_index].map(vertex => vertex[0])
         let ys = vertices[end_source_index].map(vertex => vertex[1])
@@ -343,27 +327,19 @@ export class CapCutSphereBase extends Sphere {
         let end = [new Array(math.size(vertices)[1]).fill([math.mean(xs), math.mean(ys), math.mean(zs)])]
         return this.roll_vertices(flat_top ? end.concat(vertices) : vertices.concat(end), flat_top)
     }
-
-    generate_vertices(): math.MathType {
-        return this.base(this.radius, [], true)
-    }
-
-    generate_normals(): math.MathType {
-        return this.base(1, [], true)
-    }
 }
 
 export class CutSphere extends CapCutSphereBase {
-    base(radius: number) {
+    generate_vertices() {
         let phis = linspace(math.asin(this.cut_radius / this.radius), Math.PI, this.vertical_samples - 1)
-        return super.base(radius, phis, true)
+        return super.base(phis, true)
     }
 }
 
 export class Cap extends CapCutSphereBase {
-    base(radius: number) {
+    generate_vertices() {
         let phis = linspace(0, math.asin(this.cut_radius / this.radius), this.vertical_samples - 1)
-        return super.base(radius, phis, false)
+        return super.base(phis, false)
     }
 }
 
@@ -377,16 +353,17 @@ export class Lens extends Sphere {
         this.distance = distance
     }
 
-    base(radius, radius_2, distance, normal_mode: boolean) {
-        if (distance >= radius + radius_2) {
-            return super.sphere_base(radius)
+
+    generate_vertices(): math.MathType {
+        if (this.distance >= this.radius + this.radius_2) {
+            return super.sphere_base(this.radius)
         }
-        let y = (distance ** 2 + radius ** 2 - radius_2 ** 2) / (2 * distance)
-        let cut_radius = math.sqrt(radius_2 ** 2 - (distance - y) ** 2)
+        let y = (this.distance ** 2 + this.radius ** 2 - this.radius_2 ** 2) / (2 * this.distance)
+        let cut_radius = math.sqrt(this.radius_2 ** 2 - (this.distance - y) ** 2)
         let top_proportion = 0.5
         let bottom_proportion = 0.5
-        let top_shape = new Cap(radius_2, cut_radius, top_proportion)
-        let bottom_shape = y > 0 ? new CutSphere(radius, cut_radius, bottom_proportion) : new Cap(radius, cut_radius, bottom_proportion)
+        let top_shape = new Cap(this.radius_2, cut_radius, top_proportion)
+        let bottom_shape = y > 0 ? new CutSphere(this.radius, cut_radius, bottom_proportion) : new Cap(this.radius, cut_radius, bottom_proportion)
         top_shape.set_lod(this.LOD)
         bottom_shape.set_lod(this.LOD)
         let top = math.multiply(top_shape.generate_vertices().slice(0, -1), -1)
@@ -414,21 +391,11 @@ export class Lens extends Sphere {
         for (let row = 0; row < math.size(bottom)[0]; ++row) {
             bottom[row] = bottom[row].slice(twist).concat(bottom[row].slice(0, twist))
         }
-        if (!normal_mode) {
-            for (let row = 0; row < math.size(top)[0]; ++row) {
-                for (let column = 0; column < math.size(top)[1]; ++column) {
-                    top[row][column][2] += distance
-                }
+        for (let row = 0; row < math.size(top)[0]; ++row) {
+            for (let column = 0; column < math.size(top)[1]; ++column) {
+                top[row][column][2] += this.distance
             }
         }
         return top.concat(bottom)
-    }
-
-    generate_vertices(): math.MathType {
-        return this.base(this.radius, this.radius_2, this.distance, false)
-    }
-
-    generate_normals(): math.MathType {
-        return this.base(1, this.radius_2 / this.radius, this.distance / this.radius, true)
     }
 }
