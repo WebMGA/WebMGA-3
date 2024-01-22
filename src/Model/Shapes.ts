@@ -27,10 +27,10 @@ function logspace(start: number, stop: number, number: number, base: number): nu
 export class Shape {
 
     //complexity attributes
-    LOD = 8;
-    static default_lod: number = 7
+    LOD;
+    static default_lod: number = 5
     static complexity_count: number = 10
-    static complexity: number[] = math.multiply(math.round(math.divide(logspace(2, 6, Shape.complexity_count, 2), 2)), 2);
+    static complexity: number[] = math.multiply(math.round(math.divide(logspace(3, 7, Shape.complexity_count, 2), 2)), 2);
 
     //shape model attributes
     parameters;
@@ -182,35 +182,48 @@ export class Sphere extends Shape {
         return vertices
     }
 
-    generate_vertices(): number[][][] {
-        return this.roll_vertices(this.build_halves(this.half_sphere_vertices(this.radius, this.samples, this.vertical_samples)))
+    generate_vertices(): number[][][][] {
+        return [this.roll_vertices(this.build_halves(this.half_sphere_vertices(this.radius, this.samples, this.vertical_samples)))]
     }
 
     to_triangles(vertices: number[][][]) {
         let positions: number[] = []
-        for (let row = 1; row < vertices.length - 1; ++row) {
+        for (let row = 0; row < vertices.length; ++row) {
             for (let row_column = 0; row_column < vertices[row].length; ++row_column) {
-                positions = positions.concat(vertices[row][row_column])
-                positions = positions.concat(vertices[row][(row_column + 1) % vertices[row].length])
-                positions = positions.concat(vertices[row - 1][(row_column) % vertices[row - 1].length])
+                if (row > 0) {
+                    positions = positions.concat(vertices[row][row_column])
+                    positions = positions.concat(vertices[row][(row_column + 1) % vertices[row].length])
+                    positions = positions.concat(vertices[row - 1][(row_column) % vertices[row - 1].length])
+                }
                 //
-                positions = positions.concat(vertices[row][row_column])
-                positions = positions.concat(vertices[row + 1][(row_column + 1) % vertices[row + 1].length])
-                positions = positions.concat(vertices[row][(row_column + 1) % vertices[row].length])
+                if (row < vertices.length - 1) {
+                    positions = positions.concat(vertices[row][row_column])
+                    positions = positions.concat(vertices[row + 1][(row_column + 1) % vertices[row + 1].length])
+                    positions = positions.concat(vertices[row][(row_column + 1) % vertices[row].length])
+                }
             }
         }
         return positions
     }
 
-    genGeometries(): void {
-        let positions: number[] = this.to_triangles(this.generate_vertices())
-        const positionNumComponents: number = 3;
+    geometry_from_vertices(vertices: number[][][], position_components: number): BufferGeometry {
+        let positions: number[] = this.to_triangles(vertices)
         let geometry: BufferGeometry = new BufferGeometry();
-        geometry.setAttribute('position', new BufferAttribute(new Float32Array(positions), positionNumComponents));
+        geometry.setAttribute('position', new BufferAttribute(new Float32Array(positions), position_components));
         geometry = BufferGeometryUtils.mergeVertices(geometry)
         geometry.computeVertexNormals();
         geometry.normalizeNormals();
-        this.stripGeometry = geometry
+        return geometry
+    }
+
+    genGeometriesBase(position_components: number): BufferGeometry {
+        let sub_geometries = this.generate_vertices().map(sub_vertices => this.geometry_from_vertices(sub_vertices, position_components))
+        return BufferGeometryUtils.mergeBufferGeometries(sub_geometries)
+    }
+
+    genGeometries(): void {
+        const positionNumComponents: number = 3;
+        this.stripGeometry = this.genGeometriesBase(positionNumComponents)
         //TODO REMOVE below
         const normalNumComponents: number = 3;
         const false_geometry: BufferGeometry = new BufferGeometry();
@@ -233,7 +246,7 @@ export class Spherocylinder extends Sphere {
     }
 
     generate_vertices(): math.MathType {
-        let sphere_vertices: number[][][] = super.generate_vertices()
+        let sphere_vertices: number[][][] = super.generate_vertices()[0]
         let centre_row: number = math.ceil(math.size(sphere_vertices)[0] / 2)
         for (let column: number = 0; column < math.size(sphere_vertices)[1]; ++column) {
             for (let row: number = 0; row < centre_row; ++row) {
@@ -243,7 +256,7 @@ export class Spherocylinder extends Sphere {
                 sphere_vertices[row][column][2] -= this.length / 2
             }
         }
-        return sphere_vertices
+        return [sphere_vertices]
     }
 }
 
@@ -256,7 +269,7 @@ export class Spheroplatelet extends Sphere {
     }
 
     generate_vertices(): math.MathType {
-        let vertices = super.generate_vertices()
+        let vertices = super.generate_vertices()[0]
         let row_count = math.size(vertices)[0]
         let column_count = math.size(vertices)[1]
         let top = [vertices[0].map(column => column.map(vertex => vertex))]
@@ -281,7 +294,7 @@ export class Spheroplatelet extends Sphere {
                 vertices[row][column][1] += normalised_radius_vector[1]
             }
         }
-        return top.concat(vertices).concat(bottom)
+        return [top.concat(vertices.slice(0, 1)), vertices, vertices.slice(-1).concat(bottom)]
     }
 }
 
@@ -298,7 +311,7 @@ export class Ellipsoid extends Sphere {
     }
 
     generate_vertices(): math.MathType {
-        let vertices = super.generate_vertices()
+        let vertices = super.generate_vertices()[0]
         for (let row = 0; row < math.size(vertices)[0]; ++row) {
             for (let column = 0; column < math.size(vertices)[1]; ++column) {
                 vertices[row][column][0] *= this.x
@@ -306,7 +319,7 @@ export class Ellipsoid extends Sphere {
                 vertices[row][column][2] *= this.z
             }
         }
-        return vertices
+        return [vertices]
     }
 }
 
@@ -319,13 +332,13 @@ export class CapCutSphereBase extends Sphere {
     }
 
     base(phis: number[], flat_top: boolean) {
-        let vertices = this.build_quarters(this.spherical_vertices(this.radius, this.quarter_thetas(this.samples), phis, this.samples))
+        let vertices = this.roll_vertices(this.build_quarters(this.spherical_vertices(this.radius, this.quarter_thetas(this.samples), phis, this.samples)))
         let end_source_index = flat_top ? 0 : vertices.length - 1
         let xs = vertices[end_source_index].map(vertex => vertex[0])
         let ys = vertices[end_source_index].map(vertex => vertex[1])
         let zs = vertices[end_source_index].map(vertex => vertex[2])
         let end = [new Array(math.size(vertices)[1]).fill([math.mean(xs), math.mean(ys), math.mean(zs)])]
-        return this.roll_vertices(flat_top ? end.concat(vertices) : vertices.concat(end), flat_top)
+        return [vertices, flat_top ? end.concat(vertices.slice(0, 1)) : vertices.slice(-1).concat(end)]
     }
 }
 
@@ -366,12 +379,9 @@ export class Lens extends Sphere {
         let bottom_shape = y > 0 ? new CutSphere(this.radius, cut_radius, bottom_proportion) : new Cap(this.radius, cut_radius, bottom_proportion)
         top_shape.set_lod(this.LOD)
         bottom_shape.set_lod(this.LOD)
-        let top = math.multiply(top_shape.generate_vertices().slice(0, -1), -1)
-        let bottom = bottom_shape.generate_vertices()
-        if (y > 0) {
-            bottom = bottom.slice(1)
-        } else {
-            bottom = bottom.slice(0, -1)
+        let top = math.multiply(top_shape.generate_vertices()[0], -1)
+        let bottom = bottom_shape.generate_vertices()[0]
+        if (y <= 0) {
             bottom.reverse()
             for (let row = 0; row < math.size(bottom)[0]; ++row) {
                 bottom[row].reverse()
@@ -381,21 +391,11 @@ export class Lens extends Sphere {
                 }
             }
         }
-        let top_end = top[top.length - 1][0].slice(0, 2)
-        let bottom_end = bottom[0][bottom[0].length - 1].slice(0, 2)
-        let angle = math.acos(math.dot(top_end, bottom_end) / (math.norm(top_end) * math.norm(bottom_end)))
-        if (angle.type == "Complex") {
-            angle = angle.re
-        }
-        let twist = Math.round(angle * bottom[0].length / (2 * Math.PI)) + (math.add(math.sign(top_end), math.sign(bottom_end)).every(i => i == 0) ? -1 : 1) * (y > 0 ? 1 : -1)
-        for (let row = 0; row < math.size(bottom)[0]; ++row) {
-            bottom[row] = bottom[row].slice(twist).concat(bottom[row].slice(0, twist))
-        }
         for (let row = 0; row < math.size(top)[0]; ++row) {
             for (let column = 0; column < math.size(top)[1]; ++column) {
                 top[row][column][2] += this.distance
             }
         }
-        return top.concat(bottom)
+        return [top, bottom]
     }
 }
