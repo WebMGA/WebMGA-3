@@ -247,9 +247,9 @@ export class Model extends Scene{
     updateSets(id, params, f) {
         for (const m of this.sets[id].meshes) {
             this.scene.remove(m);
-            m.geometry.dispose();
-            m.material.dispose();
-            m.dispose();
+            // m.geometry.dispose();
+            // m.material.dispose();
+            // m.dispose();
         }
         f(...params);
         for (const m of this.sets[id].meshes) {
@@ -298,9 +298,9 @@ export class Model extends Scene{
         for (let set of this.sets) {
             for (const m of set.meshes) {
                 this.scene.remove(m);
-                m.geometry.dispose();
-                m.material.dispose();
-                m.dispose();
+                // m.geometry.dispose();
+                // m.material.dispose();
+                // m.dispose();
             }
         }
         this.sets = [];
@@ -667,9 +667,9 @@ export class Model extends Scene{
             console.log(set)
             for (const m of set.meshes) {
                 this.scene.remove(m);
-                m.geometry.dispose();
-                m.material.dispose();
-                m.dispose();
+                // m.geometry.dispose();
+                // m.material.dispose();
+                // m.dispose();
             }
 
         }

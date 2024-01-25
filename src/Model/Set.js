@@ -1,12 +1,12 @@
 import * as THREE from 'three';
-import {Color, Euler, MeshPhongMaterial, Quaternion, Vector3} from 'three';
+import {Color, Euler, LOD, MeshPhongMaterial, Quaternion, Vector3} from 'three';
 import {eigs} from 'mathjs';
 import * as SHAPE from './Shapes';
+import {Shape} from './Shapes';
 import Model from './Model';
 import Parameters from './Parameters';
 import {Alert} from 'rsuite';
 import colourMap from './ColourMap.json';
-import {Shape} from "./Shapes";
 
 export class Set {
     name;
@@ -111,10 +111,10 @@ export class Set {
                 parameters = Parameters.Torus;
                 break;
             case 'Cap':
-                parameters=Parameters.Cap;
+                parameters = Parameters.Cap;
                 break;
             case 'Lens':
-                parameters=Parameters.Lens;
+                parameters = Parameters.Lens;
                 break;
             default:
                 Alert.error('Error: Unexpected shape identifier');
@@ -247,16 +247,11 @@ export class Set {
         let num = this.elements.length;
 
         let c = '#FFFFFF'
-        let mat = new MeshPhongMaterial({
-            side: THREE.FrontSide, clipShadows: true, clippingPlanes: this.clippingPlanes, wireframe: this.wireframe
-        });
         let gut = new THREE.MeshBasicMaterial({
             side: THREE.BackSide, clipShadows: true, clippingPlanes: this.clippingPlanes, wireframe: this.wireframe
         });
-
-        let Intsancemesh1 = new THREE.InstancedMesh(this.elements[0].geometries[0], mat, num);
-        let Instancemesh2 = new THREE.InstancedMesh(this.elements[0].geometries[1], mat, num);
-        let Instancemesh3 = new THREE.InstancedMesh(this.elements[0].geometries[2], mat, num);
+        let geometry_distances = [0, 0.05, 0.1, 0.2]
+        let geometries = geometry_distances.map((distance, distance_index) => this.new_gen_geometries(Math.max(0, this.lod - distance_index)))
         for (let i = 0; i < num; i++) {
             if (this.colourByDirector) {
                 let rgb = colourMap.values[this.elements[i].colourIndex];
@@ -264,6 +259,13 @@ export class Set {
             } else {
                 c = this.userColour;
             }
+            let mat = new MeshPhongMaterial({
+                side: THREE.FrontSide,
+                clipShadows: true,
+                clippingPlanes: this.clippingPlanes,
+                wireframe: this.wireframe,
+                color: c,
+            });
             let matrix2 = new THREE.Matrix4();
             const position = new THREE.Vector3();
             position.x = this.elements[i].position[0];
@@ -271,20 +273,20 @@ export class Set {
             position.z = this.elements[i].position[2];
             let ori = this.elements[i].quaternion
             matrix2.compose(position, ori, new THREE.Vector3(0.5, 0.5, 0.5));
-            Intsancemesh1.setMatrixAt(i, matrix2);
-            Instancemesh2.setMatrixAt(i, matrix2);
-            Instancemesh3.setMatrixAt(i, matrix2);
-            Intsancemesh1.setColorAt(i, c);
-            Instancemesh2.setColorAt(i, c);
-            Instancemesh3.setColorAt(i, c);
+            // Intsancemesh1.setMatrixAt(i, matrix2);
+            // Intsancemesh1.setColorAt(i, c);
+            let meshes = geometries.map(geometry => new THREE.Mesh(geometry, mat))
+            let lod_mesh = new LOD()
+            for (let i = 0; i < meshes.length; ++i) {
+                lod_mesh.addLevel(meshes[i], geometry_distances[i])
+            }
+            lod_mesh.applyMatrix4(matrix2)
+            console.log("pos", lod_mesh.position)
+            this.meshes.push(lod_mesh);
         }
-        this.meshes.push(Intsancemesh1, Instancemesh2, Instancemesh3);
-        console.log(Intsancemesh1)
         if (this.renderBackFace) {
 
             let Intsancemeshback1 = new THREE.InstancedMesh(this.elements[0].geometries[0], gut, num);
-            let Instancemeshback2 = new THREE.InstancedMesh(this.elements[0].geometries[1], gut, num);
-            let Instancemeshback3 = new THREE.InstancedMesh(this.elements[0].geometries[2], gut, num);
             for (let i = 0; i < num; i++) {
                 if (this.colourByDirector) {
                     let rgb = colourMap.values[this.elements[i].colourIndex];
@@ -300,13 +302,9 @@ export class Set {
                 let ori = this.elements[i].quaternion;
                 matrix2.compose(position, ori, new THREE.Vector3(0.5, 0.5, 0.5));
                 Intsancemeshback1.setMatrixAt(i, matrix2);
-                Instancemeshback2.setMatrixAt(i, matrix2);
-                Instancemeshback3.setMatrixAt(i, matrix2);
                 Intsancemeshback1.setColorAt(i, c);
-                Instancemeshback2.setColorAt(i, c);
-                Instancemeshback3.setColorAt(i, c);
             }
-            this.meshes.push(Intsancemeshback1, Instancemeshback2, Instancemeshback3);
+            this.meshes.push(Intsancemeshback1);
 
         }
 
@@ -320,8 +318,6 @@ export class Set {
                 geoms.push(this.shape.presetGeometry.clone());
             } else {
                 geoms.push(this.shape.stripGeometry.clone());
-                geoms.push(this.shape.fanGeometries[0].clone());
-                geoms.push(this.shape.fanGeometries[1].clone());
             }
             // this.(elem.euler, geoms);
             // this.translate(elem.position, geoms);
@@ -381,6 +377,44 @@ export class Set {
         this.shape.LOD = this.lod;
         this.shape.generate();
 
+    }
+
+    new_gen_geometries(lod) {
+        let shape
+        switch (this.shapeType) {
+            case 'Ellipsoid':
+                shape = new SHAPE.Ellipsoid(...this.parameters);
+                break;
+            case 'Spherocylinder':
+                shape = new SHAPE.Spherocylinder(...this.parameters);
+                break;
+            case 'Spheroplatelet':
+                shape = new SHAPE.Spheroplatelet(...this.parameters);
+                break;
+            case 'Cut Sphere':
+                shape = new SHAPE.CutSphere(...this.parameters);
+                break;
+            case 'Sphere':
+                shape = new SHAPE.Sphere(...this.parameters);
+                break;
+            case 'Cylinder':
+                shape = new SHAPE.Preset('Cylinder', this.parameters);
+                break;
+            case 'Torus':
+                shape = new SHAPE.Preset('Torus', this.parameters);
+                break;
+            case 'Cap':
+                shape = new SHAPE.Cap(...this.parameters);
+                break;
+            case 'Lens':
+                shape = new SHAPE.Lens(...this.parameters);
+                break;
+            default:
+                throw new Error('Error: unexpected shape identifier. \n Found: ' + this.shapeType);
+        }
+        shape.LOD = lod
+        shape.generate();
+        return shape.stripGeometry
     }
 
     translate(pos, geoms) {
