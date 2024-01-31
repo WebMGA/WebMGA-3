@@ -145,9 +145,7 @@ export class Set {
 
     genSet() {
         this.validateData();
-        this.genGeometries();
         this.genElements();
-        this.setElements();
         this.genMeshes();
         // this.genListBoundingBox();
     }
@@ -307,18 +305,6 @@ export class Set {
 
     }
 
-    setElements() {
-        let geoms = [];
-
-        for (let elem of this.elements) {
-            geoms.push(this.shape.stripGeometry.clone());
-            // this.(elem.euler, geoms);
-            // this.translate(elem.position, geoms);
-            elem.setGeometries(geoms);
-            geoms = [];
-        }
-    }
-
     genElements() {
         let pos = this.positions
         if (this.Folded_position.length > 0) {
@@ -331,42 +317,6 @@ export class Set {
         for (let elem of this.elements) {
             elem.setColourIndex(this.calculateColourIndex(elem));
         }
-    }
-
-    genGeometries() {
-        switch (this.shapeType) {
-            case 'Ellipsoid':
-                this.shape = new SHAPE.Ellipsoid(...this.parameters);
-                console.log(this.parameters)
-                break;
-            case 'Spherocylinder':
-                this.shape = new SHAPE.Spherocylinder(...this.parameters);
-                break;
-            case 'Spheroplatelet':
-                this.shape = new SHAPE.Spheroplatelet(...this.parameters);
-                break;
-            case 'Cut Sphere':
-                this.shape = new SHAPE.CutSphere(...this.parameters);
-                break;
-            case 'Sphere':
-                this.shape = new SHAPE.Sphere(...this.parameters);
-                break;
-            case 'Cap':
-                this.shape = new SHAPE.Cap(...this.parameters);
-                break;
-            case 'Lens':
-                this.shape = new SHAPE.Lens(...this.parameters);
-                break;
-            case 'Double Cut Sphere':
-                this.shape = new SHAPE.DoubleCutSphere(...this.parameters);
-                break;
-            default:
-                throw new Error('Error: unexpected shape identifier. \n Found: ' + this.shapeType);
-        }
-
-        this.shape.LOD = this.lod;
-        this.shape.generate();
-
     }
 
     new_gen_geometries(lod) {

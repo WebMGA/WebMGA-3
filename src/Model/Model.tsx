@@ -24,7 +24,7 @@ import {Alert} from 'rsuite'
 import * as SHAPE from './Shapes';
 
 
-export class Model extends Scene{
+export class Model extends Scene {
     sets = [];
 
     scene;
@@ -63,6 +63,7 @@ export class Model extends Scene{
         this.notify = notify;
 
     }
+
     onBeforeRender = () => {
         this.set_axes();
     };
@@ -242,6 +243,7 @@ export class Model extends Scene{
     getParameters(val) {
         return Set.getParameters(val);
     }
+
     /* UPDATING SETS FUNCTIONS */
 
     updateSets(id, params, f) {
@@ -272,8 +274,6 @@ export class Model extends Scene{
             this.sets[id].meshes = [];
             this.sets[id].shapeType = shape;
             this.sets[id].parameters = parameters.vals;
-            this.sets[id].genGeometries();
-            this.sets[id].setElements();
             this.sets[id].genMeshes();
         });
     }
@@ -323,8 +323,6 @@ export class Model extends Scene{
             this.updateSets(i, [i, val], (i, val) => {
                 this.sets[i].lod = val;
                 this.sets[i].meshes = [];
-                this.sets[i].genGeometries();
-                this.sets[i].setElements();
                 this.sets[i].genMeshes();
             });
         }
@@ -405,6 +403,7 @@ export class Model extends Scene{
         this.bgColour = colour;
         this.renderer.setClearColor(this.bgColour);
     }
+
     updateLight(type, colour) {
         this.lighting[type].updateColour(Model.rgbToHex(colour.r, colour.g, colour.b), colour.i);
         if (type !== 0) {
@@ -439,7 +438,6 @@ export class Model extends Scene{
                 this.sets[id].meshes = [];
                 this.sets[id].genFoldedPositionFromUnfold();
                 this.sets[id].genElements();
-                this.sets[id].setElements();
                 this.sets[id].genMeshes();
             });
         } else if (toggle === false) {
@@ -448,7 +446,6 @@ export class Model extends Scene{
                 this.sets[id].meshes = [];
                 this.sets[id].Folded_position = [];
                 this.sets[id].genElements();
-                this.sets[id].setElements();
                 this.sets[id].genMeshes();
             });
         }
@@ -461,7 +458,6 @@ export class Model extends Scene{
     //             this.sets[id].meshes = [];
     //             this.sets[id].genUnfoldPosition();
     //             this.sets[id].genElements();
-    //             this.sets[id].setElements();
     //             this.sets[id].genMeshes();
     //         });
     //     }
@@ -471,7 +467,6 @@ export class Model extends Scene{
     //             this.sets[id].meshes = [];
     //             this.sets[id].genFoldedPositionFromUnfold();
     //             this.sets[id].genElements();
-    //             this.sets[id].setElements();
     //             this.sets[id].genMeshes();
     //         });
     //     }
@@ -504,6 +499,7 @@ export class Model extends Scene{
         this.colour_axes = !this.colour_axes;
         this.update();
     }
+
     toggleAxesMulticolour() {
         let passAxes = false;
         if (this.axesEnabled) {
@@ -535,7 +531,6 @@ export class Model extends Scene{
                     this.sets[x].meshes = [];
                     this.sets[x].setBackFace(true);
                     this.sets[x].genElements();
-                    this.sets[x].setElements();
                     this.sets[x].genMeshes();
                 });
             }
