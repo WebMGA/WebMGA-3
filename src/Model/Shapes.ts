@@ -1,4 +1,4 @@
-import {BufferAttribute, BufferGeometry, TriangleFanDrawMode, TriangleStripDrawMode} from 'three';
+import {BufferAttribute, BufferGeometry} from 'three';
 import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils';
 import * as math from "mathjs";
 
@@ -27,27 +27,12 @@ export class Shape {
     parameters;
 
     //graphics components
-    stripGeometries: BufferGeometry[];
-    fanGeometries: BufferGeometry[];
     stripGeometry?: BufferGeometry;
-    presetGeometry?: BufferGeometry;
-
-    isPreset;
 
     constructor() {
         this.parameters = arguments[0];
-        this.isPreset = false;
         this.LOD = Shape.default_lod;
-        this.stripGeometries = [];
-        this.fanGeometries = [];
         this.stripGeometry = undefined;
-        this.presetGeometry = undefined;
-    }
-
-    clear() {
-        this.presetGeometry = undefined;
-        this.stripGeometries = [];
-        this.fanGeometries = [];
     }
 
     set_lod(lod: number) {
@@ -82,7 +67,6 @@ export class Sphere extends Shape {
     }
 
     generate(): void {
-        this.clear();
         this.update_samples();
         this.genGeometries();
     }
@@ -186,16 +170,6 @@ export class Sphere extends Shape {
     genGeometries(): void {
         const positionNumComponents: number = 3;
         this.stripGeometry = this.genGeometriesBase(positionNumComponents)
-        //TODO REMOVE below
-        const normalNumComponents: number = 3;
-        const false_geometry: BufferGeometry = new BufferGeometry();
-        false_geometry.setAttribute('position', new BufferAttribute(new Float32Array([100, 100, 100, 101, 101, 101, 102, 102, 102]), positionNumComponents));
-        false_geometry.setAttribute('normal', new BufferAttribute(new Float32Array([1, 1, 1, 1, 1, 1, 1, 1, 1]), normalNumComponents));
-        this.stripGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleStripDrawMode))
-        this.fanGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleFanDrawMode))
-        this.stripGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleStripDrawMode))
-        this.fanGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleFanDrawMode))
-        //
     }
 }
 

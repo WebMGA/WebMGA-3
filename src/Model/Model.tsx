@@ -634,13 +634,7 @@ export class Model extends Scene{
         this.testLimit = 140001;
 
         let geoms = [];
-        if (this.testShape.isPreset) {
-            geoms.push(this.testShape.presetGeometry.clone());
-        } else {
-            geoms.push(this.testShape.stripGeometry.clone());
-            geoms.push(this.testShape.fanGeometries[0].clone());
-            geoms.push(this.testShape.fanGeometries[1].clone());
-        }
+        geoms.push(this.testShape.stripGeometry.clone());
         this.testGeo = geoms;
 
         this.translate([Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50], geoms);

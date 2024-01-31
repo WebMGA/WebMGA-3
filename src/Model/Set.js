@@ -311,11 +311,7 @@ export class Set {
         let geoms = [];
 
         for (let elem of this.elements) {
-            if (this.shape.isPreset) {
-                geoms.push(this.shape.presetGeometry.clone());
-            } else {
-                geoms.push(this.shape.stripGeometry.clone());
-            }
+            geoms.push(this.shape.stripGeometry.clone());
             // this.(elem.euler, geoms);
             // this.translate(elem.position, geoms);
             elem.setGeometries(geoms);
