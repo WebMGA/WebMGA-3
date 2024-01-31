@@ -349,6 +349,21 @@ export class CutSphere extends CapCutSphereBase {
     }
 }
 
+export class DoubleCutSphere extends CapCutSphereBase {
+    generate_vertices() {
+        let angle_cut = math.asin(this.cut_radius / this.radius)
+        let phis = linspace(angle_cut, Math.PI - angle_cut, this.vertical_samples - 2)
+        let partial_vertices = super.base(phis, true)
+        let index = partial_vertices[0].length - 1
+        let xs = partial_vertices[0][index].map(vertex => vertex[0])
+        let ys = partial_vertices[0][index].map(vertex => vertex[1])
+        let zs = partial_vertices[0][index].map(vertex => vertex[2])
+        let end = [new Array(math.size(partial_vertices[0])[1]).fill([math.mean(xs), math.mean(ys), math.mean(zs)])]
+        partial_vertices.push(end.concat([partial_vertices[0][index].toReversed()]))
+        return partial_vertices
+    }
+}
+
 export class Cap extends CapCutSphereBase {
     generate_vertices() {
         let phis = linspace(0, math.asin(this.cut_radius / this.radius), this.vertical_samples - 1)

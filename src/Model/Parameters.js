@@ -17,6 +17,9 @@ export var Parameters = {
         names: ['Radius', 'zCut'], vals: [0.8, 0.7]
     }, Lens: {
         names: ['Radius', 'Radius 2', 'Distance'], vals: [1, 1.9, 1]
+    }, DoubleCutSphere: {
+        names: ['Radius', 'zCut'], vals: [0.8, 0.7]
+
     }
 }
 

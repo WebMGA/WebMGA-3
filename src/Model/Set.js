@@ -116,6 +116,9 @@ export class Set {
             case 'Lens':
                 parameters = Parameters.Lens;
                 break;
+            case 'Double Cut Sphere':
+                parameters = Parameters.DoubleCutSphere;
+                break;
             default:
                 Alert.error('Error: Unexpected shape identifier');
         }
@@ -370,6 +373,9 @@ export class Set {
             case 'Lens':
                 this.shape = new SHAPE.Lens(...this.parameters);
                 break;
+            case 'Double Cut Sphere':
+                this.shape = new SHAPE.DoubleCutSphere(...this.parameters);
+                break;
             default:
                 throw new Error('Error: unexpected shape identifier. \n Found: ' + this.shapeType);
         }
@@ -408,6 +414,9 @@ export class Set {
                 break;
             case 'Lens':
                 shape = new SHAPE.Lens(...this.parameters);
+                break;
+            case 'Double Cut Sphere':
+                shape = new SHAPE.DoubleCutSphere(...this.parameters);
                 break;
             default:
                 throw new Error('Error: unexpected shape identifier. \n Found: ' + this.shapeType);
