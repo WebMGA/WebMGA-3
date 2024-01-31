@@ -9,10 +9,6 @@ export var Parameters = {
         names: ['Radius', 'zCut'], vals: [0.8, 0.7]
     }, Sphere: {
         names: ['Radius'], vals: [0.6]
-    }, Cylinder: {
-        names: ['Top', 'Bottom', 'Height'], vals: [0.5, 0.5, 2.0]
-    }, Torus: {
-        names: ['Radius', 'Tube', 'Arc'], vals: [1.0, 0.3, 6.3]
     }, Cap: {
         names: ['Radius', 'zCut'], vals: [0.8, 0.7]
     }, Lens: {

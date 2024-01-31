@@ -19,7 +19,6 @@ import sample12 from './Samples/fig1.json';
 import sample13 from './Samples/hbc.json';
 import sample14 from './Samples/single.json'
 import sample15 from './Samples/qmga-shapes.json'
-import sample16 from './Samples/threejs-shapes.json'
 
 import {Alert, Notification} from 'rsuite'
 
@@ -303,9 +302,6 @@ class Controller {
                 break;
             case 15:
                 sample = sample15;
-                break;
-            case 16:
-                sample = sample16;
                 break;
             case 17:
                 sample = unfolded_sample1;

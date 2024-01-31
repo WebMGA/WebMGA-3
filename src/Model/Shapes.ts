@@ -1,14 +1,5 @@
-import {
-    BufferAttribute,
-    BufferGeometry,
-    CylinderBufferGeometry,
-    SphereBufferGeometry,
-    TorusBufferGeometry,
-    TriangleFanDrawMode,
-    TriangleStripDrawMode
-} from 'three';
+import {BufferAttribute, BufferGeometry, TriangleFanDrawMode, TriangleStripDrawMode} from 'three';
 import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils';
-import {Alert} from 'rsuite';
 import * as math from "mathjs";
 
 function linspace(start: number, stop: number, number: number): number[] {
@@ -61,35 +52,6 @@ export class Shape {
 
     set_lod(lod: number) {
         this.LOD = lod
-    }
-}
-
-export class Preset extends Shape {
-    type;
-
-    constructor(type: string, parameters: number[]) {
-        super();
-        this.isPreset = true;
-        this.type = type;
-        this.parameters = parameters;
-    }
-
-    generate() {
-        this.clear();
-
-        switch (this.type) {
-            case 'Sphere':
-                this.presetGeometry = new SphereBufferGeometry(this.parameters, Preset.complexity[this.LOD], Preset.complexity[this.LOD]);
-                break;
-            case 'Cylinder':
-                this.presetGeometry = new CylinderBufferGeometry(...this.parameters, Preset.complexity[this.LOD]);
-                break;
-            case 'Torus':
-                this.presetGeometry = new TorusBufferGeometry(...this.parameters, 2 * Preset.complexity[this.LOD]);
-                break;
-            default:
-                Alert.error('Error: Unknown shape identifier');
-        }
     }
 }
 

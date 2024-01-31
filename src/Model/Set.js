@@ -104,12 +104,6 @@ export class Set {
             case 'Sphere':
                 parameters = Parameters.Sphere;
                 break;
-            case 'Cylinder':
-                parameters = Parameters.Cylinder;
-                break;
-            case 'Torus':
-                parameters = Parameters.Torus;
-                break;
             case 'Cap':
                 parameters = Parameters.Cap;
                 break;
@@ -361,12 +355,6 @@ export class Set {
             case 'Sphere':
                 this.shape = new SHAPE.Sphere(...this.parameters);
                 break;
-            case 'Cylinder':
-                this.shape = new SHAPE.Preset('Cylinder', this.parameters);
-                break;
-            case 'Torus':
-                this.shape = new SHAPE.Preset('Torus', this.parameters);
-                break;
             case 'Cap':
                 this.shape = new SHAPE.Cap(...this.parameters);
                 break;
@@ -402,12 +390,6 @@ export class Set {
                 break;
             case 'Sphere':
                 shape = new SHAPE.Sphere(...this.parameters);
-                break;
-            case 'Cylinder':
-                shape = new SHAPE.Preset('Cylinder', this.parameters);
-                break;
-            case 'Torus':
-                shape = new SHAPE.Preset('Torus', this.parameters);
                 break;
             case 'Cap':
                 shape = new SHAPE.Cap(...this.parameters);
