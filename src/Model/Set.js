@@ -242,9 +242,6 @@ export class Set {
         let num = this.elements.length;
 
         let c = '#FFFFFF'
-        let gut = new THREE.MeshBasicMaterial({
-            side: THREE.BackSide, clipShadows: true, clippingPlanes: this.clippingPlanes, wireframe: this.wireframe
-        });
         let geometry_distances = [0, 0.05, 0.1, 0.2]
         let geometries = geometry_distances.map((distance, distance_index) => this.new_gen_geometries(Math.max(0, this.lod - distance_index)))
         for (let i = 0; i < num; i++) {
@@ -255,7 +252,7 @@ export class Set {
                 c = this.userColour;
             }
             let mat = new MeshPhongMaterial({
-                side: THREE.FrontSide,
+                side: this.renderBackFace ? THREE.DoubleSide : THREE.FrontSide,
                 clipShadows: true,
                 clippingPlanes: this.clippingPlanes,
                 wireframe: this.wireframe,
@@ -268,41 +265,14 @@ export class Set {
             position.z = this.elements[i].position[2];
             let ori = this.elements[i].quaternion
             matrix2.compose(position, ori, new THREE.Vector3(0.5, 0.5, 0.5));
-            // Intsancemesh1.setMatrixAt(i, matrix2);
-            // Intsancemesh1.setColorAt(i, c);
             let meshes = geometries.map(geometry => new THREE.Mesh(geometry, mat))
             let lod_mesh = new LOD()
             for (let i = 0; i < meshes.length; ++i) {
                 lod_mesh.addLevel(meshes[i], geometry_distances[i])
             }
             lod_mesh.applyMatrix4(matrix2)
-            console.log("pos", lod_mesh.position)
             this.meshes.push(lod_mesh);
         }
-        if (this.renderBackFace) {
-
-            let Intsancemeshback1 = new THREE.InstancedMesh(this.elements[0].geometries[0], gut, num);
-            for (let i = 0; i < num; i++) {
-                if (this.colourByDirector) {
-                    let rgb = colourMap.values[this.elements[i].colourIndex];
-                    c = new Color(Model.rgbToHex(...rgb));
-                }
-                let matrix2 = new THREE.Matrix4();
-                const position = new THREE.Vector3();
-                position.x = this.elements[i].position[0];
-                position.y = this.elements[i].position[1];
-                position.z = this.elements[i].position[2];
-                const scale = new THREE.Vector3();
-                scale.x = scale.y = scale.z = Math.random();
-                let ori = this.elements[i].quaternion;
-                matrix2.compose(position, ori, new THREE.Vector3(0.5, 0.5, 0.5));
-                Intsancemeshback1.setMatrixAt(i, matrix2);
-                Intsancemeshback1.setColorAt(i, c);
-            }
-            this.meshes.push(Intsancemeshback1);
-
-        }
-
     }
 
     genElements() {
