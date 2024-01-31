@@ -83,7 +83,6 @@ class LibraryDropdown extends React.Component {
             <Dropdown.Menu title="Samples">
                 <Dropdown.Item eventKey={14}>Single Molecule</Dropdown.Item>
                 <Dropdown.Item eventKey={15}>QMGA Geometries</Dropdown.Item>
-                <Dropdown.Item eventKey={16}>Threejs Geometries</Dropdown.Item>
                 <Dropdown.Item eventKey={1}>Unit Vector Orientations</Dropdown.Item>
                 <Dropdown.Item eventKey={2}>Quaternion Orientations</Dropdown.Item>
             </Dropdown.Menu>
