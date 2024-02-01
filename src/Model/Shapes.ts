@@ -262,9 +262,9 @@ export class Ellipsoid extends Sphere {
 export class CapCutSphereBase extends Sphere {
     cut_radius: number
 
-    constructor(radius: number, cut_radius: number, vertical_sample_scale: number = 1) {
+    constructor(radius: number, cut_radius: number, vertical_sample_scale: number = 1, z_cut: boolean = true) {
         super(radius, vertical_sample_scale);
-        this.cut_radius = cut_radius
+        this.cut_radius = z_cut ? math.sqrt(math.square(radius) - math.square(cut_radius)) : cut_radius
     }
 
     base(phis: number[], flat_top: boolean) {
@@ -326,8 +326,8 @@ export class Lens extends Sphere {
         let cut_radius = math.sqrt(this.radius_2 ** 2 - (this.distance - y) ** 2)
         let top_proportion = 0.5
         let bottom_proportion = 0.5
-        let top_shape = new Cap(this.radius_2, cut_radius, top_proportion)
-        let bottom_shape = y > 0 ? new CutSphere(this.radius, cut_radius, bottom_proportion) : new Cap(this.radius, cut_radius, bottom_proportion)
+        let top_shape = new Cap(this.radius_2, cut_radius, top_proportion, false)
+        let bottom_shape = y > 0 ? new CutSphere(this.radius, cut_radius, bottom_proportion, false) : new Cap(this.radius, cut_radius, bottom_proportion, false)
         top_shape.set_lod(this.LOD)
         bottom_shape.set_lod(this.LOD)
         let top = math.multiply(top_shape.generate_vertices()[0], -1)
