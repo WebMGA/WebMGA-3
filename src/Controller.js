@@ -221,6 +221,8 @@ class Controller {
             let data;
             if (file.type === "application/json") {
                 data = JSON.parse(fileReader.result);
+            } else if (file.name.split(".").pop().toLowerCase() === "qmga") {
+                data = this.qmga_to_json(fileReader.result);
             } else {
                 data = this.cnf_to_json(fileReader.result);
             }
@@ -235,6 +237,23 @@ class Controller {
             }
         };
         fileReader.readAsText(file);
+    }
+
+    qmga_to_json(data) {
+        let set = {name: "Molecules", orientationType: "v"}
+        let split_data = data.trim().split("\n")
+        let unit_box = split_data[0].split(/ +/)
+        set.unitBox = [parseFloat(unit_box[0]), parseFloat(unit_box[1]), parseFloat(unit_box[2])]
+        let molecule_count = split_data.length - 1
+        set.positions = new Array(molecule_count)
+        set.orientations = new Array(molecule_count)
+        for (let molecule_number = 0; molecule_number < molecule_count; ++molecule_number) {
+            let molecule_data = split_data[molecule_number + 1].trim().split(/ +/)
+            //TODO need to implement scale at position 0
+            set.positions[molecule_number] = molecule_data.slice(1, 4).map(value => parseFloat(value))
+            set.orientations[molecule_number] = molecule_data.slice(4, 7).map(value => parseFloat(value))
+        }
+        return {model: {sets: [set]}, state: null}
     }
 
     cnf_to_json(data) {
