@@ -243,7 +243,7 @@ class Controller {
         let set = {name: "Molecules", orientationType: "v"}
         let split_data = data.trim().split("\n")
         let unit_box = split_data[0].split(/ +/)
-        set.unitBox = [parseFloat(unit_box[0]), parseFloat(unit_box[1]), parseFloat(unit_box[2])]
+        set.unitBox = [parseFloat(unit_box[0]) / 2, parseFloat(unit_box[1]) / 2, parseFloat(unit_box[2]) / 2]
         let molecule_count = split_data.length - 1
         set.positions = new Array(molecule_count)
         set.orientations = new Array(molecule_count)
