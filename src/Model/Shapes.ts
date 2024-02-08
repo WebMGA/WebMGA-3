@@ -309,30 +309,29 @@ export class Cap extends CapCutSphereBase {
 
 export class Lens extends Sphere {
     radius_2: number
-    distance: number
+    angle: number
 
-    constructor(radius: number, radius_2: number, distance: number) {
+    constructor(radius: number, radius_2: number, angle: number) {
         super(radius);
         this.radius_2 = radius_2
-        this.distance = distance
+        this.angle = angle
     }
 
-
     generate_vertices(): math.MathType {
-        if (this.distance >= this.radius + this.radius_2) {
-            return super.sphere_base(this.radius)
+        if (this.angle == 0) {
+            return super.generate_vertices()
         }
-        let y = (this.distance ** 2 + this.radius ** 2 - this.radius_2 ** 2) / (2 * this.distance)
-        let cut_radius = math.sqrt(this.radius_2 ** 2 - (this.distance - y) ** 2)
+        let cut_radius = this.radius * Math.sin(this.angle)
         let top_proportion = 0.5
         let bottom_proportion = 0.5
         let top_shape = new Cap(this.radius_2, cut_radius, top_proportion, false)
-        let bottom_shape = y > 0 ? new CutSphere(this.radius, cut_radius, bottom_proportion, false) : new Cap(this.radius, cut_radius, bottom_proportion, false)
+        let bottom_cap = this.angle > Math.PI / 2
+        let bottom_shape = bottom_cap ? new Cap(this.radius, cut_radius, bottom_proportion, false) : new CutSphere(this.radius, cut_radius, bottom_proportion, false)
         top_shape.set_lod(this.LOD)
         bottom_shape.set_lod(this.LOD)
         let top = math.multiply(top_shape.generate_vertices()[0], -1)
         let bottom = bottom_shape.generate_vertices()[0]
-        if (y <= 0) {
+        if (bottom_cap) {
             bottom.reverse()
             for (let row = 0; row < math.size(bottom)[0]; ++row) {
                 bottom[row].reverse()
@@ -342,9 +341,10 @@ export class Lens extends Sphere {
                 }
             }
         }
+        let distance = bottom[0][0][2] - top[top.length - 1][0][2]
         for (let row = 0; row < math.size(top)[0]; ++row) {
             for (let column = 0; column < math.size(top)[1]; ++column) {
-                top[row][column][2] += this.distance
+                top[row][column][2] += distance
             }
         }
         return [top, bottom]
