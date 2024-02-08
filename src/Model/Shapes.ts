@@ -307,7 +307,7 @@ export class Cap extends CapCutSphereBase {
     }
 }
 
-export class Lens extends Sphere {
+export class BaseLens extends Sphere {
     radius_2: number
     angle: number
 
@@ -348,5 +348,19 @@ export class Lens extends Sphere {
             }
         }
         return [top, bottom]
+    }
+}
+
+export class ThickLens extends BaseLens {
+    constructor(radius: number, thickness: number, angle: number) {
+        let cos_theta = Math.cos(angle)
+        let radius_2 = (2 * radius ** 2 * cos_theta + 2 * radius ** 2 - 2 * radius * thickness * cos_theta - 2 * radius * thickness + thickness ** 2) / (2 * (radius * cos_theta + radius - thickness))
+        super(radius, radius_2, angle);
+    }
+}
+
+export class Lens extends BaseLens {
+    constructor(radius: number, angle: number) {
+        super(radius, radius, angle);
     }
 }
