@@ -12,9 +12,9 @@ export var Parameters = {
     }, Cap: {
         names: ['Radius', 'zCut'], vals: [0.8, 0.7]
     }, Lens: {
-        names: ['Radius', 'Angle'], vals: [1, 1, 1.57]
+        names: ['Radius', 'Angle'], vals: [1, 2.4]
     }, ThickLens: {
-        names: ['Radius', 'Thickness', 'Angle'], vals: [1, 1, 1.57]
+        names: ['Radius', 'Thickness', 'Angle'], vals: [1, 0.1, 2.4]
     }, DoubleCutSphere: {
         names: ['Radius', 'zCut'], vals: [0.8, 0.7]
 
