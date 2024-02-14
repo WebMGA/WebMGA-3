@@ -347,6 +347,14 @@ export class BaseLens extends Sphere {
                 top[row][column][2] += distance
             }
         }
+        //TODO flips zs to align with QMGA, should be implemented better
+        for (let part of [top, bottom]) {
+            for (let row = 0; row < math.size(part)[0]; ++row) {
+                for (let column = 0; column < math.size(part)[1]; ++column) {
+                    part[row][column][2] *= -1
+                }
+            }
+        }
         return [top, bottom]
     }
 }
