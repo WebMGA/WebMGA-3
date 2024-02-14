@@ -1,14 +1,5 @@
-import {
-    BufferAttribute,
-    BufferGeometry,
-    CylinderBufferGeometry,
-    SphereBufferGeometry,
-    TorusBufferGeometry,
-    TriangleFanDrawMode,
-    TriangleStripDrawMode
-} from 'three';
+import {BufferAttribute, BufferGeometry} from 'three';
 import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils';
-import {Alert} from 'rsuite';
 import * as math from "mathjs";
 
 function linspace(start: number, stop: number, number: number): number[] {
@@ -36,60 +27,16 @@ export class Shape {
     parameters;
 
     //graphics components
-    stripGeometries: BufferGeometry[];
-    fanGeometries: BufferGeometry[];
     stripGeometry?: BufferGeometry;
-    presetGeometry?: BufferGeometry;
-
-    isPreset;
 
     constructor() {
         this.parameters = arguments[0];
-        this.isPreset = false;
         this.LOD = Shape.default_lod;
-        this.stripGeometries = [];
-        this.fanGeometries = [];
         this.stripGeometry = undefined;
-        this.presetGeometry = undefined;
-    }
-
-    clear() {
-        this.presetGeometry = undefined;
-        this.stripGeometries = [];
-        this.fanGeometries = [];
     }
 
     set_lod(lod: number) {
         this.LOD = lod
-    }
-}
-
-export class Preset extends Shape {
-    type;
-
-    constructor(type: string, parameters: number[]) {
-        super();
-        this.isPreset = true;
-        this.type = type;
-        this.parameters = parameters;
-    }
-
-    generate() {
-        this.clear();
-
-        switch (this.type) {
-            case 'Sphere':
-                this.presetGeometry = new SphereBufferGeometry(this.parameters, Preset.complexity[this.LOD], Preset.complexity[this.LOD]);
-                break;
-            case 'Cylinder':
-                this.presetGeometry = new CylinderBufferGeometry(...this.parameters, Preset.complexity[this.LOD]);
-                break;
-            case 'Torus':
-                this.presetGeometry = new TorusBufferGeometry(...this.parameters, 2 * Preset.complexity[this.LOD]);
-                break;
-            default:
-                Alert.error('Error: Unknown shape identifier');
-        }
     }
 }
 
@@ -120,7 +67,6 @@ export class Sphere extends Shape {
     }
 
     generate(): void {
-        this.clear();
         this.update_samples();
         this.genGeometries();
     }
@@ -224,16 +170,6 @@ export class Sphere extends Shape {
     genGeometries(): void {
         const positionNumComponents: number = 3;
         this.stripGeometry = this.genGeometriesBase(positionNumComponents)
-        //TODO REMOVE below
-        const normalNumComponents: number = 3;
-        const false_geometry: BufferGeometry = new BufferGeometry();
-        false_geometry.setAttribute('position', new BufferAttribute(new Float32Array([100, 100, 100, 101, 101, 101, 102, 102, 102]), positionNumComponents));
-        false_geometry.setAttribute('normal', new BufferAttribute(new Float32Array([1, 1, 1, 1, 1, 1, 1, 1, 1]), normalNumComponents));
-        this.stripGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleStripDrawMode))
-        this.fanGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleFanDrawMode))
-        this.stripGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleStripDrawMode))
-        this.fanGeometries.push(BufferGeometryUtils.toTrianglesDrawMode(false_geometry, TriangleFanDrawMode))
-        //
     }
 }
 
@@ -326,9 +262,9 @@ export class Ellipsoid extends Sphere {
 export class CapCutSphereBase extends Sphere {
     cut_radius: number
 
-    constructor(radius: number, cut_radius: number, vertical_sample_scale: number = 1) {
+    constructor(radius: number, cut_radius: number, vertical_sample_scale: number = 1, z_cut: boolean = true) {
         super(radius, vertical_sample_scale);
-        this.cut_radius = cut_radius
+        this.cut_radius = z_cut ? math.sqrt(math.square(radius) - math.square(cut_radius)) : cut_radius
     }
 
     base(phis: number[], flat_top: boolean) {
@@ -349,6 +285,21 @@ export class CutSphere extends CapCutSphereBase {
     }
 }
 
+export class DoubleCutSphere extends CapCutSphereBase {
+    generate_vertices() {
+        let angle_cut = math.asin(this.cut_radius / this.radius)
+        let phis = linspace(angle_cut, Math.PI - angle_cut, this.vertical_samples - 2)
+        let partial_vertices = super.base(phis, true)
+        let index = partial_vertices[0].length - 1
+        let xs = partial_vertices[0][index].map(vertex => vertex[0])
+        let ys = partial_vertices[0][index].map(vertex => vertex[1])
+        let zs = partial_vertices[0][index].map(vertex => vertex[2])
+        let end = [new Array(math.size(partial_vertices[0])[1]).fill([math.mean(xs), math.mean(ys), math.mean(zs)])]
+        partial_vertices.push(end.concat([partial_vertices[0][index].toReversed()]))
+        return partial_vertices
+    }
+}
+
 export class Cap extends CapCutSphereBase {
     generate_vertices() {
         let phis = linspace(0, math.asin(this.cut_radius / this.radius), this.vertical_samples - 1)
@@ -356,32 +307,31 @@ export class Cap extends CapCutSphereBase {
     }
 }
 
-export class Lens extends Sphere {
+export class BaseLens extends Sphere {
     radius_2: number
-    distance: number
+    angle: number
 
-    constructor(radius: number, radius_2: number, distance: number) {
+    constructor(radius: number, radius_2: number, angle: number) {
         super(radius);
         this.radius_2 = radius_2
-        this.distance = distance
+        this.angle = angle
     }
 
-
     generate_vertices(): math.MathType {
-        if (this.distance >= this.radius + this.radius_2) {
-            return super.sphere_base(this.radius)
+        if (this.angle == 0) {
+            return super.generate_vertices()
         }
-        let y = (this.distance ** 2 + this.radius ** 2 - this.radius_2 ** 2) / (2 * this.distance)
-        let cut_radius = math.sqrt(this.radius_2 ** 2 - (this.distance - y) ** 2)
+        let cut_radius = this.radius * Math.sin(this.angle)
         let top_proportion = 0.5
         let bottom_proportion = 0.5
-        let top_shape = new Cap(this.radius_2, cut_radius, top_proportion)
-        let bottom_shape = y > 0 ? new CutSphere(this.radius, cut_radius, bottom_proportion) : new Cap(this.radius, cut_radius, bottom_proportion)
+        let top_shape = new Cap(this.radius_2, cut_radius, top_proportion, false)
+        let bottom_cap = this.angle > Math.PI / 2
+        let bottom_shape = bottom_cap ? new Cap(this.radius, cut_radius, bottom_proportion, false) : new CutSphere(this.radius, cut_radius, bottom_proportion, false)
         top_shape.set_lod(this.LOD)
         bottom_shape.set_lod(this.LOD)
         let top = math.multiply(top_shape.generate_vertices()[0], -1)
         let bottom = bottom_shape.generate_vertices()[0]
-        if (y <= 0) {
+        if (bottom_cap) {
             bottom.reverse()
             for (let row = 0; row < math.size(bottom)[0]; ++row) {
                 bottom[row].reverse()
@@ -391,11 +341,26 @@ export class Lens extends Sphere {
                 }
             }
         }
+        let distance = bottom[0][0][2] - top[top.length - 1][0][2]
         for (let row = 0; row < math.size(top)[0]; ++row) {
             for (let column = 0; column < math.size(top)[1]; ++column) {
-                top[row][column][2] += this.distance
+                top[row][column][2] += distance
             }
         }
         return [top, bottom]
+    }
+}
+
+export class ThickLens extends BaseLens {
+    constructor(radius: number, thickness: number, angle: number) {
+        let cos_theta = Math.cos(angle)
+        let radius_2 = (2 * radius ** 2 * cos_theta + 2 * radius ** 2 - 2 * radius * thickness * cos_theta - 2 * radius * thickness + thickness ** 2) / (2 * (radius * cos_theta + radius - thickness))
+        super(radius, radius_2, angle);
+    }
+}
+
+export class Lens extends BaseLens {
+    constructor(radius: number, angle: number) {
+        super(radius, radius, angle);
     }
 }

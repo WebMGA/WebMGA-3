@@ -140,7 +140,7 @@ export class ModelsOptions extends React.Component {
         const configState = this.state.configurations[this.state.active];
         const reset = this.state.reset;
         const title = configState.title;
-        const shapes = ["Ellipsoid", "Sphere", "Spherocylinder", "Spheroplatelet", "Cut Sphere", "Cylinder", "Torus", "Cap", "Lens"];
+        const shapes = ["Sphere", "Ellipsoid", "Spherocylinder", "Spheroplatelet", "Cut Sphere", "Double Cut Sphere", "Cap", "Lens", "Thick Lens"];
         const sets = this.state.sets;
 
         return (
@@ -216,7 +216,7 @@ export class VideoOptions extends React.Component{
         else{
             this.model.Video_sample_list =[];
         }
-        
+
         View.state.reference.uploaded= !View.state.reference.uploaded;
     }
     setVideoState(){
@@ -226,7 +226,7 @@ export class VideoOptions extends React.Component{
         this.setState({
             loadVideoState :toggle
         })
-        View.state.reference.loadVideoState =!View.state.reference.loadVideoState;  
+        View.state.reference.loadVideoState =!View.state.reference.loadVideoState;
     }
     VideoToggle(){
         console.log(this.state.video);
@@ -242,11 +242,11 @@ export class VideoOptions extends React.Component{
             const max_iter = samples.length;
             var capturer = new ccapture( { format: 'webm',framerate:this.state.fps,quality:100});
             this.RealTimeVideo(0,samples,max_iter,capturer,this.state.vidstate ,this.state.filename);
-            
+
         }
         View.state.reference.video = !View.state.reference.video
     }
-    
+
     RealTimeVideo(i,samples,max_iter,capturer,vidState,filename){
         if(i ===0){
             capturer.start();
@@ -275,7 +275,7 @@ export class VideoOptions extends React.Component{
                 });
                 View.state.reference.video =false;
                 View.state.reference.setVideoState = false;
-                
+
         }}
 
 
@@ -300,7 +300,7 @@ export class VideoOptions extends React.Component{
                             <Checkbox checked={upload} onClick={this.UploadFiles} > Load </Checkbox>
                         </Col>
                     </Row>
-    
+
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
@@ -332,7 +332,7 @@ export class VideoOptions extends React.Component{
                             </Whisper>
                         </Col>
                     </Row>
-                   
+
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
@@ -344,7 +344,7 @@ export class VideoOptions extends React.Component{
                         <Col xs={2} />
                         <Col xs={12}>
                         <p>Input File name:</p>
-                        <Input style={{ width:150,height:30,marginLeft: 20 }} placeholder="New_Video" 
+                        <Input style={{ width:150,height:30,marginLeft: 20 }} placeholder="New_Video"
                             onChange={(filename) => this.setFileName(filename)}/>
                         </Col>
                     </Row>
@@ -354,7 +354,7 @@ export class VideoOptions extends React.Component{
                             <Checkbox onClick={this.VideoToggle} checked={video} disabled={!upload||!setVideoState}> Create </Checkbox>
                         </Col>
                    </Row>
-                   
+
                 </Grid>
                 <br />
                 <br />
@@ -378,7 +378,7 @@ export class CameraOptions extends React.Component {
         this.updatePosition = this.updatePosition.bind(this);
         this.updateZoom = this.updateZoom.bind(this);
         this.updateState = this.updateState.bind(this);
-        
+
         this.toggler.updateCamera = () => {
             this.updateState()
         }
@@ -588,7 +588,7 @@ export class SlicingOptions extends React.Component {
     }
 
     updateSlicer(i, val) {
-    
+
         switch (i) {
             case 0:
                 this.setState(
@@ -617,8 +617,8 @@ export class SlicingOptions extends React.Component {
             default:
                 Alert.error('Error: Unexpected Slicing Identifier');
         }
-        
-        
+
+
 
         this.model.updateSlicer(i, val);
         this.model.update();
@@ -679,7 +679,7 @@ export class SlicingOptions extends React.Component {
 }
 
 
-      
+
 
 
 export const AdditionalLightsNav = ({ active, onSelect }) => {
@@ -901,7 +901,7 @@ export class AmbientLightOptions extends React.Component {
         }
         this.model.update();
         View.state.ambientLight.darkBackGround = !View.state.ambientLight.darkBackGround;
-       
+
     }
     render() {
         const ambientLightColour = this.state.ambientLightColour;
@@ -926,7 +926,7 @@ export class AmbientLightOptions extends React.Component {
         );
     }
 }
-   
+
 export class ReferenceOptions extends React.Component {
     constructor(props) {
         super();
@@ -942,7 +942,7 @@ export class ReferenceOptions extends React.Component {
         this.toggle_axes_colour = this.toggle_axes_colour.bind(this)
 
     }
-   
+
     toggleFold() {
         let toggle = !this.state.model.configurations[this.state.model.active].displayFoldState;
         this.setState({
@@ -988,7 +988,7 @@ export class ReferenceOptions extends React.Component {
         });
         this.model.toggleAxes();
         this.model.update();
-        
+
         View.state.reference.showAxes = !View.state.reference.showAxes;
     }
 
@@ -1062,11 +1062,11 @@ export class ReferenceOptions extends React.Component {
                             </Whisper>
                         </Col>
                     </Row>
-                    
+
 
 
                 </Grid>
-               
+
             </div>
         );
     }

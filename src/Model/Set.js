@@ -1,12 +1,12 @@
 import * as THREE from 'three';
-import {Color, Euler, MeshPhongMaterial, Quaternion, Vector3} from 'three';
+import {Color, Euler, LOD, MeshPhongMaterial, Quaternion, Vector3} from 'three';
 import {eigs} from 'mathjs';
 import * as SHAPE from './Shapes';
+import {Shape} from './Shapes';
 import Model from './Model';
 import Parameters from './Parameters';
 import {Alert} from 'rsuite';
 import colourMap from './ColourMap.json';
-import {Shape} from "./Shapes";
 
 export class Set {
     name;
@@ -104,17 +104,17 @@ export class Set {
             case 'Sphere':
                 parameters = Parameters.Sphere;
                 break;
-            case 'Cylinder':
-                parameters = Parameters.Cylinder;
-                break;
-            case 'Torus':
-                parameters = Parameters.Torus;
-                break;
             case 'Cap':
-                parameters=Parameters.Cap;
+                parameters = Parameters.Cap;
                 break;
             case 'Lens':
-                parameters=Parameters.Lens;
+                parameters = Parameters.Lens;
+                break;
+            case 'Thick Lens':
+                parameters = Parameters.ThickLens;
+                break;
+            case 'Double Cut Sphere':
+                parameters = Parameters.DoubleCutSphere;
                 break;
             default:
                 Alert.error('Error: Unexpected shape identifier');
@@ -148,9 +148,7 @@ export class Set {
 
     genSet() {
         this.validateData();
-        this.genGeometries();
         this.genElements();
-        this.setElements();
         this.genMeshes();
         // this.genListBoundingBox();
     }
@@ -247,16 +245,8 @@ export class Set {
         let num = this.elements.length;
 
         let c = '#FFFFFF'
-        let mat = new MeshPhongMaterial({
-            side: THREE.FrontSide, clipShadows: true, clippingPlanes: this.clippingPlanes, wireframe: this.wireframe
-        });
-        let gut = new THREE.MeshBasicMaterial({
-            side: THREE.BackSide, clipShadows: true, clippingPlanes: this.clippingPlanes, wireframe: this.wireframe
-        });
-
-        let Intsancemesh1 = new THREE.InstancedMesh(this.elements[0].geometries[0], mat, num);
-        let Instancemesh2 = new THREE.InstancedMesh(this.elements[0].geometries[1], mat, num);
-        let Instancemesh3 = new THREE.InstancedMesh(this.elements[0].geometries[2], mat, num);
+        let geometry_distances = [0, 0.05, 0.1, 0.2]
+        let geometries = geometry_distances.map((distance, distance_index) => this.new_gen_geometries(Math.max(0, this.lod - distance_index)))
         for (let i = 0; i < num; i++) {
             if (this.colourByDirector) {
                 let rgb = colourMap.values[this.elements[i].colourIndex];
@@ -264,6 +254,13 @@ export class Set {
             } else {
                 c = this.userColour;
             }
+            let mat = new MeshPhongMaterial({
+                side: this.renderBackFace ? THREE.DoubleSide : THREE.FrontSide,
+                clipShadows: true,
+                clippingPlanes: this.clippingPlanes,
+                wireframe: this.wireframe,
+                color: c,
+            });
             let matrix2 = new THREE.Matrix4();
             const position = new THREE.Vector3();
             position.x = this.elements[i].position[0];
@@ -271,62 +268,13 @@ export class Set {
             position.z = this.elements[i].position[2];
             let ori = this.elements[i].quaternion
             matrix2.compose(position, ori, new THREE.Vector3(0.5, 0.5, 0.5));
-            Intsancemesh1.setMatrixAt(i, matrix2);
-            Instancemesh2.setMatrixAt(i, matrix2);
-            Instancemesh3.setMatrixAt(i, matrix2);
-            Intsancemesh1.setColorAt(i, c);
-            Instancemesh2.setColorAt(i, c);
-            Instancemesh3.setColorAt(i, c);
-        }
-        this.meshes.push(Intsancemesh1, Instancemesh2, Instancemesh3);
-        console.log(Intsancemesh1)
-        if (this.renderBackFace) {
-
-            let Intsancemeshback1 = new THREE.InstancedMesh(this.elements[0].geometries[0], gut, num);
-            let Instancemeshback2 = new THREE.InstancedMesh(this.elements[0].geometries[1], gut, num);
-            let Instancemeshback3 = new THREE.InstancedMesh(this.elements[0].geometries[2], gut, num);
-            for (let i = 0; i < num; i++) {
-                if (this.colourByDirector) {
-                    let rgb = colourMap.values[this.elements[i].colourIndex];
-                    c = new Color(Model.rgbToHex(...rgb));
-                }
-                let matrix2 = new THREE.Matrix4();
-                const position = new THREE.Vector3();
-                position.x = this.elements[i].position[0];
-                position.y = this.elements[i].position[1];
-                position.z = this.elements[i].position[2];
-                const scale = new THREE.Vector3();
-                scale.x = scale.y = scale.z = Math.random();
-                let ori = this.elements[i].quaternion;
-                matrix2.compose(position, ori, new THREE.Vector3(0.5, 0.5, 0.5));
-                Intsancemeshback1.setMatrixAt(i, matrix2);
-                Instancemeshback2.setMatrixAt(i, matrix2);
-                Instancemeshback3.setMatrixAt(i, matrix2);
-                Intsancemeshback1.setColorAt(i, c);
-                Instancemeshback2.setColorAt(i, c);
-                Instancemeshback3.setColorAt(i, c);
+            let meshes = geometries.map(geometry => new THREE.Mesh(geometry, mat))
+            let lod_mesh = new LOD()
+            for (let i = 0; i < meshes.length; ++i) {
+                lod_mesh.addLevel(meshes[i], geometry_distances[i])
             }
-            this.meshes.push(Intsancemeshback1, Instancemeshback2, Instancemeshback3);
-
-        }
-
-    }
-
-    setElements() {
-        let geoms = [];
-
-        for (let elem of this.elements) {
-            if (this.shape.isPreset) {
-                geoms.push(this.shape.presetGeometry.clone());
-            } else {
-                geoms.push(this.shape.stripGeometry.clone());
-                geoms.push(this.shape.fanGeometries[0].clone());
-                geoms.push(this.shape.fanGeometries[1].clone());
-            }
-            // this.(elem.euler, geoms);
-            // this.translate(elem.position, geoms);
-            elem.setGeometries(geoms);
-            geoms = [];
+            lod_mesh.applyMatrix4(matrix2)
+            this.meshes.push(lod_mesh);
         }
     }
 
@@ -344,43 +292,42 @@ export class Set {
         }
     }
 
-    genGeometries() {
+    new_gen_geometries(lod) {
+        let shape
         switch (this.shapeType) {
             case 'Ellipsoid':
-                this.shape = new SHAPE.Ellipsoid(...this.parameters);
-                console.log(this.parameters)
+                shape = new SHAPE.Ellipsoid(...this.parameters);
                 break;
             case 'Spherocylinder':
-                this.shape = new SHAPE.Spherocylinder(...this.parameters);
+                shape = new SHAPE.Spherocylinder(...this.parameters);
                 break;
             case 'Spheroplatelet':
-                this.shape = new SHAPE.Spheroplatelet(...this.parameters);
+                shape = new SHAPE.Spheroplatelet(...this.parameters);
                 break;
             case 'Cut Sphere':
-                this.shape = new SHAPE.CutSphere(...this.parameters);
+                shape = new SHAPE.CutSphere(...this.parameters);
                 break;
             case 'Sphere':
-                this.shape = new SHAPE.Sphere(...this.parameters);
-                break;
-            case 'Cylinder':
-                this.shape = new SHAPE.Preset('Cylinder', this.parameters);
-                break;
-            case 'Torus':
-                this.shape = new SHAPE.Preset('Torus', this.parameters);
+                shape = new SHAPE.Sphere(...this.parameters);
                 break;
             case 'Cap':
-                this.shape = new SHAPE.Cap(...this.parameters);
+                shape = new SHAPE.Cap(...this.parameters);
                 break;
             case 'Lens':
-                this.shape = new SHAPE.Lens(...this.parameters);
+                shape = new SHAPE.Lens(...this.parameters);
+                break;
+            case 'Thick Lens':
+                shape = new SHAPE.ThickLens(...this.parameters);
+                break;
+            case 'Double Cut Sphere':
+                shape = new SHAPE.DoubleCutSphere(...this.parameters);
                 break;
             default:
                 throw new Error('Error: unexpected shape identifier. \n Found: ' + this.shapeType);
         }
-
-        this.shape.LOD = this.lod;
-        this.shape.generate();
-
+        shape.LOD = lod
+        shape.generate();
+        return shape.stripGeometry
     }
 
     translate(pos, geoms) {
