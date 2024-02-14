@@ -314,7 +314,7 @@ export class BaseLens extends Sphere {
     constructor(radius: number, radius_2: number, angle: number) {
         super(radius);
         this.radius_2 = radius_2
-        this.angle = angle
+        this.angle = Math.PI - angle
     }
 
     generate_vertices(): math.MathType {
@@ -353,7 +353,7 @@ export class BaseLens extends Sphere {
 
 export class ThickLens extends BaseLens {
     constructor(radius: number, thickness: number, angle: number) {
-        let cos_theta = Math.cos(angle)
+        let cos_theta = Math.cos(Math.PI - angle)
         let radius_2 = (2 * radius ** 2 * cos_theta + 2 * radius ** 2 - 2 * radius * thickness * cos_theta - 2 * radius * thickness + thickness ** 2) / (2 * (radius * cos_theta + radius - thickness))
         super(radius, radius_2, angle);
     }
