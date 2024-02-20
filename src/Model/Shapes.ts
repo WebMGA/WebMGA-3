@@ -71,7 +71,7 @@ export class Sphere extends Shape {
         this.genGeometries();
     }
 
-    sample_sphere(radius: number, theta: number, phi: number): number {
+    sample_sphere(radius: number, theta: number, phi: number): number[] {
         let sin_phi: number = Math.sin(phi);
         return math.multiply(radius, [sin_phi * Math.cos(theta), sin_phi * Math.sin(theta), Math.cos(phi)])
     }
@@ -174,25 +174,15 @@ export class Sphere extends Shape {
 }
 
 export class Spherocylinder extends Sphere {
-    length: number
+    length_scaling_vector: number[]
 
     constructor(radius: number, length: number) {
         super(radius);
-        this.length = length
+        this.length_scaling_vector = [0, 0, length / 2]
     }
 
-    generate_vertices(): math.MathType {
-        let sphere_vertices: number[][][] = super.generate_vertices()[0]
-        let centre_row: number = math.ceil(math.size(sphere_vertices)[0] / 2)
-        for (let column: number = 0; column < math.size(sphere_vertices)[1]; ++column) {
-            for (let row: number = 0; row < centre_row; ++row) {
-                sphere_vertices[row][column][2] += this.length / 2
-            }
-            for (let row: number = centre_row - 1; row < math.size(sphere_vertices)[0]; ++row) {
-                sphere_vertices[row][column][2] -= this.length / 2
-            }
-        }
-        return [sphere_vertices]
+    sample_sphere(radius: number, theta: number, phi: number): number[] {
+        return math.add(super.sample_sphere(radius, theta, phi), this.length_scaling_vector)
     }
 }
 
@@ -242,7 +232,7 @@ export class Ellipsoid extends Sphere {
         this.scale = [x, y, z]
     }
 
-    sample_sphere(radius: number, theta: number, phi: number): number {
+    sample_sphere(radius: number, theta: number, phi: number): number[] {
         return math.dotMultiply(super.sample_sphere(radius, theta, phi), this.scale)
     }
 }
