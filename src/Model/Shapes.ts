@@ -235,27 +235,15 @@ export class Spheroplatelet extends Sphere {
 }
 
 export class Ellipsoid extends Sphere {
-    x: number
-    y: number
-    z: number
+    scale: number[]
 
     constructor(x: number, y: number, z: number) {
         super(1);
-        this.x = x
-        this.y = y
-        this.z = z
+        this.scale = [x, y, z]
     }
 
-    generate_vertices(): math.MathType {
-        let vertices = super.generate_vertices()[0]
-        for (let row = 0; row < math.size(vertices)[0]; ++row) {
-            for (let column = 0; column < math.size(vertices)[1]; ++column) {
-                vertices[row][column][0] *= this.x
-                vertices[row][column][1] *= this.y
-                vertices[row][column][2] *= this.z
-            }
-        }
-        return [vertices]
+    sample_sphere(radius: number, theta: number, phi: number): number {
+        return math.dotMultiply(super.sample_sphere(radius, theta, phi), this.scale)
     }
 }
 
