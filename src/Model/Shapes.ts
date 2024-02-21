@@ -173,16 +173,22 @@ export class Sphere extends Shape {
     }
 }
 
+//Spherocylinder mesh generator
 export class Spherocylinder extends Sphere {
-    length_scaling_vector: number[]
+    //Scaling vector (either side of centre) to stretch sphere into spherocylinder ([0, 0, length / 2])
+    length_scaling_vector: number[];
 
     constructor(radius: number, length: number) {
+        //Derive from origin centred sphere of chosen radius
         super(radius);
-        this.length_scaling_vector = [0, 0, length / 2]
+        this.length_scaling_vector = [0, 0, length / 2];
     }
 
+    //Samples from spherocylinder instead of sphere
     sample_sphere(radius: number, theta: number, phi: number): number[] {
-        return math.add(super.sample_sphere(radius, theta, phi), this.length_scaling_vector)
+        let sphere_coordinate: number[] = super.sample_sphere(radius, theta, phi);
+        //Stretch point in z direction by scale vector, matching stretch direction to sign of original vertex z
+        return sphere_coordinate[2] >= 0 ? math.add(sphere_coordinate, this.length_scaling_vector) : math.subtract(sphere_coordinate, this.length_scaling_vector);
     }
 }
 
@@ -224,16 +230,21 @@ export class Spheroplatelet extends Sphere {
     }
 }
 
+//Ellipsoid mesh generator
 export class Ellipsoid extends Sphere {
-    scale: number[]
+    //Scale factor in [x, y, z] directions
+    scale: number[];
 
     constructor(x: number, y: number, z: number) {
+        //Derive from origin centred sphere of radius 1
         super(1);
-        this.scale = [x, y, z]
+        this.scale = [x, y, z];
     }
 
+    //Samples from ellipsoid instead of sphere
     sample_sphere(radius: number, theta: number, phi: number): number[] {
-        return math.dotMultiply(super.sample_sphere(radius, theta, phi), this.scale)
+        //Multiply origin centred sphere coordinates by scale vector
+        return math.dotMultiply(super.sample_sphere(radius, theta, phi), this.scale);
     }
 }
 
