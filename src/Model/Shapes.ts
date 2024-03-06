@@ -330,12 +330,10 @@ export class BaseLens extends Sphere {
                 }
             }
         }
-        let distance = bottom[0][0][2] - top[top.length - 1][0][2]
-        for (let row = 0; row < math.size(top)[0]; ++row) {
-            for (let column = 0; column < math.size(top)[1]; ++column) {
-                top[row][column][2] += distance
-            }
-        }
+        let pole_offset = bottom[bottom.length - 1][0][2]
+        bottom = bottom.map(row => row.map(vertex => math.multiply(math.subtract(vertex, [0, 0, pole_offset]), -1))).reverse()
+        let distance = bottom[bottom.length - 1][0][2] + top[top.length - 1][0][2]
+        top = top.map(row => row.map(vertex => math.add(math.multiply(vertex, -1), [0, 0, distance]))).reverse()
         return [top, bottom]
     }
 }
@@ -351,5 +349,12 @@ export class ThickLens extends BaseLens {
 export class Lens extends BaseLens {
     constructor(radius: number, angle: number) {
         super(radius, radius, angle);
+    }
+}
+
+export class RadiusOnlyLens extends BaseLens {
+    constructor(radius: number) {
+        let angle = Math.acos(1 - 1 / (2 * Math.PI * radius ** 2));
+        super(radius / 2, radius / 2, angle);
     }
 }

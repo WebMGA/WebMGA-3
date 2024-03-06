@@ -110,6 +110,9 @@ export class Set {
             case 'Lens':
                 parameters = Parameters.Lens;
                 break;
+            case 'Cinacchi Lens':
+                parameters = Parameters.RadiusOnlyLens;
+                break;
             case 'Thick Lens':
                 parameters = Parameters.ThickLens;
                 break;
@@ -318,6 +321,9 @@ export class Set {
                 break;
             case 'Thick Lens':
                 shape = new SHAPE.ThickLens(...this.parameters);
+                break;
+            case 'Cinacchi Lens':
+                shape = new SHAPE.RadiusOnlyLens(...this.parameters);
                 break;
             case 'Double Cut Sphere':
                 shape = new SHAPE.DoubleCutSphere(...this.parameters);

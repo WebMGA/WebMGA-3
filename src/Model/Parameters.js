@@ -15,6 +15,8 @@ export var Parameters = {
         names: ['Radius', 'Angle'], vals: [1, 0.7]
     }, ThickLens: {
         names: ['Radius', 'Thickness', 'Angle'], vals: [1, 0.1, 0.7]
+    }, RadiusOnlyLens: {
+        names: ['Radius'], vals: [0.5]
     }, DoubleCutSphere: {
         names: ['Radius', 'zCut'], vals: [0.8, 0.7]
 
