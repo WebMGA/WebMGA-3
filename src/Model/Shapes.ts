@@ -342,6 +342,7 @@ export class ThickLens extends BaseLens {
     constructor(radius: number, thickness: number, angle: number) {
         let cos_theta = Math.cos(Math.PI - angle)
         let radius_2 = (2 * radius ** 2 * cos_theta + 2 * radius ** 2 - 2 * radius * thickness * cos_theta - 2 * radius * thickness + thickness ** 2) / (2 * (radius * cos_theta + radius - thickness))
+        console.log(radius, radius_2)
         super(radius, radius_2, angle);
     }
 }
@@ -356,5 +357,11 @@ export class RadiusOnlyLens extends BaseLens {
     constructor(radius: number) {
         let angle = Math.acos(1 - 1 / (2 * Math.PI * radius ** 2));
         super(radius / 2, radius / 2, angle);
+    }
+}
+
+export class BiconvexLens extends BaseLens {
+    constructor(radius: number, angle: number) {
+        super(radius, -radius, angle);
     }
 }
