@@ -7,6 +7,7 @@ import {
     LineBasicMaterial,
     Matrix4,
     MeshPhongMaterial,
+    Object3D,
     OrthographicCamera,
     PerspectiveCamera,
     Plane,
@@ -25,7 +26,7 @@ import * as SHAPE from './Shapes';
 
 
 export class Model extends Scene {
-    sets = [];
+    sets:Set[] = [];
 
     scene;
     camera;
@@ -54,6 +55,9 @@ export class Model extends Scene {
     axes_enabled: boolean = false;
     colour_axes: boolean = true;
     lod: number = SHAPE.Shape.default_lod;
+    repeats_x: number =1;
+    repeats_y: number =1;
+    repeats_z: number= 1;
 
     constructor(chronometer, notify) {
         super();
@@ -238,6 +242,27 @@ export class Model extends Scene {
     toggleAutorotate() {
         this.controls.autoRotate = !this.controls.autoRotate;
         this.rotating = !this.rotating;
+    }
+
+    update_repeats(x: number, y: number, z: number) {
+        this.repeats_x = x
+        this.repeats_y = y
+        this.repeats_z = z
+        this.sets.forEach(set => {
+            set.meshes.forEach(mesh => {
+                for (let x = -this.repeats_x; x < this.repeats_x; ++x) {
+                    for (let y = -this.repeats_y; y < this.repeats_y; ++y) {
+                        for (let z = -this.repeats_z; z < this.repeats_z; ++z) {
+                            let new_mesh: Object3D = mesh.clone();
+                            new_mesh.position.x += set.unitBox[0]*x;
+                            new_mesh.position.y += set.unitBox[1]*y;
+                            new_mesh.position.z += set.unitBox[2]*z;
+                            this.scene.add(new_mesh);
+                        }
+                    }
+                }
+            })
+        });
     }
 
     getParameters(val) {

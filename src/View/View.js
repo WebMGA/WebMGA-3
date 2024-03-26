@@ -57,7 +57,8 @@ export class View {
         fps: 24,
         uploaded: true,
         video: false,
-        loadVideoState: false
+        loadVideoState: false,
+        repeats: {x: 0, y: 0, z: 0}
     }
     AmbientLightDefaultState = {
         ambientLightColour: {
@@ -82,6 +83,9 @@ export class View {
         View.state = state;
         if (!vid) {
             this.loadLightingAndCamera(state, vid);
+        }
+        if (View.state.reference.repeats === undefined) {
+            View.state.reference.repeats = this.ReferenceDefaultState.repeats
         }
         this.loadReferenceAndSlicing(state);
         this.loadModel(state);

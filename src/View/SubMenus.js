@@ -935,6 +935,7 @@ export class ReferenceOptions extends React.Component {
         this.model = props.model;
         this.toggleFold = this.toggleFold.bind(this);
         this.toggleBoundingShapeEnabled= this.toggleBoundingShapeEnabled.bind(this);
+        this.update_repeats = this.update_repeats.bind(this);
         this.toggleAxes = this.toggleAxes.bind(this);
 
         this.toggleMulticolour = this.toggleMulticolour.bind(this);
@@ -992,6 +993,25 @@ export class ReferenceOptions extends React.Component {
         View.state.reference.showAxes = !View.state.reference.showAxes;
     }
 
+    update_repeats(val, type) {
+        val = Math.abs(Math.round(val));
+        switch (type) {
+            case 0:
+                this.state.repeats.x = val;
+                break;
+            case 1:
+                this.state.repeats.y = val;
+                break;
+            case 2:
+                this.state.repeats.z = val;
+                break;
+            default:
+                throw new Error("Bad repeat type")
+        }
+        console.log("bread", this.state, View)
+        this.model.update_repeats(this.state.repeats.x, this.state.repeats.y, this.state.repeats.z);
+        this.model.update();
+    }
 
     render() {
         const configState = this.state.model.configurations[this.state.model.active];
@@ -1028,6 +1048,14 @@ export class ReferenceOptions extends React.Component {
                             <Checkbox style={{ marginLeft: 12 }} checked={configState.displayFoldState} onClick={this.toggleFold}> Fold</Checkbox>
                         </Col>
                     </Row>
+                    <Row className="show-grid">
+                        <Col xs={2} />
+                        <Col xs={12}>
+                            <br />
+                            <p><b> Repeats  </b></p>
+                        </Col>
+                    </Row>
+                    <ParameterSet titles={["x", "y", "z"]} values={[this.state.repeats.x, this.state.repeats.y, this.state.repeats.z]} f={this.update_repeats} step={1} styling={submenuParameterSetStyling} />
                     <Row className="show-grid">
                         <Col xs={2} />
                         <Col xs={12}>
