@@ -26,7 +26,7 @@ import * as SHAPE from './Shapes';
 
 
 export class Model extends Scene {
-    sets:Set[] = [];
+    sets: Set[] = [];
 
     scene;
     camera;
@@ -55,9 +55,10 @@ export class Model extends Scene {
     axes_enabled: boolean = false;
     colour_axes: boolean = true;
     lod: number = SHAPE.Shape.default_lod;
-    repeats_x: number =1;
-    repeats_y: number =1;
-    repeats_z: number= 1;
+    repeats_x: number = 0;
+    repeats_y: number = 0;
+    repeats_z: number = 0;
+    molecules: Object3D[] = [];
 
     constructor(chronometer, notify) {
         super();
@@ -244,19 +245,27 @@ export class Model extends Scene {
         this.rotating = !this.rotating;
     }
 
-    update_repeats(x: number, y: number, z: number) {
+    update_repeats(x: number = this.repeats_x, y: number = this.repeats_y, z: number = this.repeats_z) {
         this.repeats_x = x
         this.repeats_y = y
         this.repeats_z = z
+        while (true) {
+            let molecule = this.molecules.pop();
+            if (molecule == undefined) {
+                break;
+            }
+            this.scene.remove(molecule);
+        }
         this.sets.forEach(set => {
             set.meshes.forEach(mesh => {
-                for (let x = -this.repeats_x; x < this.repeats_x; ++x) {
-                    for (let y = -this.repeats_y; y < this.repeats_y; ++y) {
-                        for (let z = -this.repeats_z; z < this.repeats_z; ++z) {
+                for (let x = -this.repeats_x; x < this.repeats_x + 1; ++x) {
+                    for (let y = -this.repeats_y; y < this.repeats_y + 1; ++y) {
+                        for (let z = -this.repeats_z; z < this.repeats_z + 1; ++z) {
                             let new_mesh: Object3D = mesh.clone();
-                            new_mesh.position.x += set.unitBox[0]*x;
-                            new_mesh.position.y += set.unitBox[1]*y;
-                            new_mesh.position.z += set.unitBox[2]*z;
+                            new_mesh.position.x += set.unitBox[0] * x;
+                            new_mesh.position.y += set.unitBox[1] * y;
+                            new_mesh.position.z += set.unitBox[2] * z;
+                            this.molecules.push(new_mesh);
                             this.scene.add(new_mesh);
                         }
                     }
