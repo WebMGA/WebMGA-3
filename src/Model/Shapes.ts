@@ -128,6 +128,10 @@ export class Sphere extends Shape {
         return vertices
     }
 
+    reverse_vertices(section: number[][][]): number[][][] {
+        return section.map((row, row_index) => row.slice(-row_index).concat(row.slice(0, -row_index)))
+    }
+
     generate_vertices(): number[][][][] {
         return [this.roll_vertices(this.build_halves(this.half_sphere_vertices(this.radius, this.samples, this.vertical_samples)))]
     }
@@ -331,9 +335,9 @@ export class BaseLens extends Sphere {
             }
         }
         let pole_offset = bottom[bottom.length - 1][0][2]
-        bottom = bottom.map(row => row.map(vertex => math.multiply(math.subtract(vertex, [0, 0, pole_offset]), -1))).reverse()
+        bottom = this.reverse_vertices(bottom.map(row => row.map(vertex => math.multiply(math.subtract(vertex, [0, 0, pole_offset]), -1))).reverse())
         let distance = bottom[bottom.length - 1][0][2] + top[top.length - 1][0][2]
-        top = top.map(row => row.map(vertex => math.add(math.multiply(vertex, -1), [0, 0, distance]))).reverse()
+        top = this.reverse_vertices(top.map(row => row.map(vertex => math.add(math.multiply(vertex, -1), [0, 0, distance]))).reverse())
         return [top, bottom]
     }
 }
