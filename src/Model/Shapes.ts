@@ -368,4 +368,10 @@ export class BiconvexLens extends BaseLens {
     constructor(radius: number, angle: number) {
         super(radius, -radius, angle);
     }
+
+    generate_vertices(): math.MathType {
+        let shape_halves = super.generate_vertices();
+        let offset = -(shape_halves[0][shape_halves[0].length - 1][0][2] + shape_halves[1][0][0][2]) / 2
+        return shape_halves.map(part => part.map(row => row.map(item => math.add(item, [0, 0, offset]))))
+    }
 }
