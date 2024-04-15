@@ -14,11 +14,11 @@ export var Parameters = {
     }, Lens: {
         names: ['Radius', 'Angle'], vals: [1, 0.7]
     }, ThickLens: {
-        names: ['Radius', 'Thickness', 'Angle'], vals: [1, 0.1, 0.7]
+        names: ['Radius', 'Thickness', 'Angle'], vals: [1, 0, 0.7]
     }, RadiusOnlyLens: {
         names: ['Radius'], vals: [0.5]
     }, BiconvexLens: {
-        names: ['Radius', 'Angle'], vals: [1, 0.7]
+        names: ['Radius', 'Angle', "Separation"], vals: [1, 0.7, 0]
     }, DoubleCutSphere: {
         names: ['Radius', 'zCut'], vals: [0.8, 0.7]
 

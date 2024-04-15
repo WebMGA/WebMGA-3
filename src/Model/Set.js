@@ -108,13 +108,10 @@ export class Set {
                 parameters = Parameters.Cap;
                 break;
             case 'Lens':
-                parameters = Parameters.Lens;
+                parameters = Parameters.ThickLens;
                 break;
             case 'Cinacchi Lens':
                 parameters = Parameters.RadiusOnlyLens;
-                break;
-            case 'Thick Lens':
-                parameters = Parameters.ThickLens;
                 break;
             case 'Biconvex Lens':
                 parameters = Parameters.BiconvexLens;
@@ -320,9 +317,6 @@ export class Set {
                 shape = new SHAPE.Cap(...this.parameters);
                 break;
             case 'Lens':
-                shape = new SHAPE.Lens(...this.parameters);
-                break;
-            case 'Thick Lens':
                 shape = new SHAPE.ThickLens(...this.parameters);
                 break;
             case 'Cinacchi Lens':
