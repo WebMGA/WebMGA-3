@@ -187,32 +187,6 @@ export class Sphere extends Shape {
     }
 }
 
-//Spherocylinder mesh generator
-export class Spherocylinder extends Sphere {
-    //Scaling vector (either side of centre) to stretch sphere into spherocylinder ([0, 0, length / 2])
-    length_scaling_vector: number[];
-
-    constructor(radius: number, length: number) {
-        //Derive from origin centred sphere of chosen radius
-        super(radius);
-        this.length_scaling_vector = [0, 0, length / 2];
-    }
-
-    // //Samples from spherocylinder instead of sphere
-    // sample_sphere(radius: number, theta: number, phi: number): number[] {
-    //     let sphere_coordinate: number[] = super.sample_sphere(radius, theta, phi);
-    //     //Stretch point in z direction by scale vector, matching stretch direction to sign of original vertex z
-    //     return sphere_coordinate[2] >= 0 ? math.add(sphere_coordinate, this.length_scaling_vector) : math.subtract(sphere_coordinate, this.length_scaling_vector);
-    // }
-    generate_vertices(): number[][][][] {
-        let sphere = super.generate_vertices()[0];
-        let top = sphere.slice(0, Math.ceil(sphere.length / 2)).map(row => row.map(vertex => math.add(vertex, this.length_scaling_vector)))
-        let bottom = sphere.slice(Math.floor(sphere.length / 2)).map(row => row.map(vertex => math.subtract(vertex, this.length_scaling_vector)))
-        let connector = this.connect_halves(this.roll_row(bottom[0], bottom[0].length / 2), this.roll_row(top[top.length - 1], top[top.length - 1].length / 2), this.radius)
-        return [top, connector, bottom]
-    }
-}
-
 export class Spheroplatelet extends Sphere {
     circle_radius: number
 
@@ -398,5 +372,12 @@ export class BiconvexLens extends BaseLens {
         let side_bottom_row = shape_halves[1][shape_halves[1].length - 1];
         shape_halves.push(this.connect_halves(side_top_row, side_bottom_row, this.cut_radius))
         return shape_halves;
+    }
+}
+
+//Spherocylinder mesh generator
+export class Spherocylinder extends BiconvexLens {
+    constructor(radius: number, length: number) {
+        super(radius, Math.PI/2, length);
     }
 }
