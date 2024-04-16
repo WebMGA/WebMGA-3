@@ -38,6 +38,22 @@ export class Shape {
     set_lod(lod: number) {
         this.LOD = lod
     }
+
+    roll_vertices(vertices: number[][][], offset: boolean = false) {
+        for (let i = 0; i < vertices.length; ++i) {
+            let cut = math.ceil((i + (offset ? 1 : 0)) / 2)
+            vertices[i] = this.roll_row(vertices[i], cut)
+        }
+        return vertices
+    }
+
+    roll_row(vertices: number[][], cut: number) {
+        return vertices.slice(-cut).concat(vertices.slice(0, -cut))
+    }
+
+    reverse_vertices(section: number[][][]): number[][][] {
+        return section.map((row, row_index) => row.slice(-row_index).concat(row.slice(0, -row_index)))
+    }
 }
 
 export class Sphere extends Shape {
@@ -120,18 +136,6 @@ export class Sphere extends Shape {
         return this.build_quarters(this.quarter_sphere_vertices(radius, samples, 0, vertical_samples))
     }
 
-    roll_vertices(vertices: number[][][], offset: boolean = false) {
-        for (let i = 0; i < vertices.length; ++i) {
-            let cut = math.ceil((i + (offset ? 1 : 0)) / 2)
-            vertices[i] = vertices[i].slice(-cut).concat(vertices[i].slice(0, -cut))
-        }
-        return vertices
-    }
-
-    reverse_vertices(section: number[][][]): number[][][] {
-        return section.map((row, row_index) => row.slice(-row_index).concat(row.slice(0, -row_index)))
-    }
-
     generate_vertices(): number[][][][] {
         return [this.roll_vertices(this.build_halves(this.half_sphere_vertices(this.radius, this.samples, this.vertical_samples)))]
     }
@@ -175,6 +179,12 @@ export class Sphere extends Shape {
         const positionNumComponents: number = 3;
         this.stripGeometry = this.genGeometriesBase(positionNumComponents)
     }
+
+    connect_halves(top: number[][], bottom: number[][], radius: number) {
+        let offset = Math.acos(bottom[0][0] / radius)
+        let new_row = linspace(0 + offset, Math.PI * 2 + offset, top.length + 1).slice(0, -1).map(angle => this.sample_sphere(radius, angle, Math.PI / 2))
+        return [bottom, new_row, top]
+    }
 }
 
 //Spherocylinder mesh generator
@@ -188,11 +198,18 @@ export class Spherocylinder extends Sphere {
         this.length_scaling_vector = [0, 0, length / 2];
     }
 
-    //Samples from spherocylinder instead of sphere
-    sample_sphere(radius: number, theta: number, phi: number): number[] {
-        let sphere_coordinate: number[] = super.sample_sphere(radius, theta, phi);
-        //Stretch point in z direction by scale vector, matching stretch direction to sign of original vertex z
-        return sphere_coordinate[2] >= 0 ? math.add(sphere_coordinate, this.length_scaling_vector) : math.subtract(sphere_coordinate, this.length_scaling_vector);
+    // //Samples from spherocylinder instead of sphere
+    // sample_sphere(radius: number, theta: number, phi: number): number[] {
+    //     let sphere_coordinate: number[] = super.sample_sphere(radius, theta, phi);
+    //     //Stretch point in z direction by scale vector, matching stretch direction to sign of original vertex z
+    //     return sphere_coordinate[2] >= 0 ? math.add(sphere_coordinate, this.length_scaling_vector) : math.subtract(sphere_coordinate, this.length_scaling_vector);
+    // }
+    generate_vertices(): number[][][][] {
+        let sphere = super.generate_vertices()[0];
+        let top = sphere.slice(0, Math.floor(sphere.length / 2)).map(row => row.map(vertex => math.add(vertex, this.length_scaling_vector)))
+        let bottom = sphere.slice(Math.floor(sphere.length / 2)).map(row => row.map(vertex => math.subtract(vertex, this.length_scaling_vector)))
+        let connector = this.connect_halves(this.roll_row(bottom[0], bottom[0].length / 2), this.roll_row(top[top.length - 1], top[top.length - 1].length / 2), this.radius)
+        return [top, connector, bottom]
     }
 }
 
@@ -303,18 +320,20 @@ export class Cap extends CapCutSphereBase {
 export class BaseLens extends Sphere {
     radius_2: number
     angle: number
+    cut_radius: number
 
     constructor(radius: number, radius_2: number, angle: number) {
         super(radius);
         this.radius_2 = radius_2
         this.angle = Math.PI - angle
+        this.cut_radius = this.radius * Math.sin(this.angle)
     }
 
     generate_vertices(): math.MathType {
         if (this.angle == 0) {
             return super.generate_vertices()
         }
-        let cut_radius = this.radius * Math.sin(this.angle)
+        let cut_radius = this.cut_radius
         let top_proportion = 0.5
         let bottom_proportion = 0.5
         let top_shape = new Cap(this.radius_2, cut_radius, top_proportion, false)
@@ -346,7 +365,6 @@ export class ThickLens extends BaseLens {
     constructor(radius: number, thickness: number, angle: number) {
         let cos_theta = Math.cos(Math.PI - angle)
         let radius_2 = (2 * radius ** 2 * cos_theta + 2 * radius ** 2 - 2 * radius * thickness * cos_theta - 2 * radius * thickness + thickness ** 2) / (2 * (radius * cos_theta + radius - thickness))
-        console.log(radius, radius_2)
         super(radius, radius_2, angle);
     }
 }
@@ -365,13 +383,20 @@ export class RadiusOnlyLens extends BaseLens {
 }
 
 export class BiconvexLens extends BaseLens {
-    constructor(radius: number, angle: number) {
+    constructor(radius: number, angle: number, separation: number) {
         super(radius, -radius, angle);
+        this.separation = separation;
     }
 
     generate_vertices(): math.MathType {
         let shape_halves = super.generate_vertices();
-        let offset = -(shape_halves[0][shape_halves[0].length - 1][0][2] + shape_halves[1][0][0][2]) / 2
-        return shape_halves.map(part => part.map(row => row.map(item => math.add(item, [0, 0, offset]))))
+        let offset = -(shape_halves[0][shape_halves[0].length - 1][0][2] + shape_halves[1][0][0][2]) / 2;
+        shape_halves = shape_halves.map(part => part.map(row => row.map(item => math.add(item, [0, 0, offset]))));
+        shape_halves[0] = shape_halves[0].map(row => row.map(item => math.subtract(item, [0, 0, this.separation / 2])));
+        shape_halves[1] = shape_halves[1].map(row => row.map(item => math.add(item, [0, 0, this.separation / 2])));
+        let side_top_row = this.roll_row(shape_halves[0][0], shape_halves[0][0].length / 2 - 1);
+        let side_bottom_row = shape_halves[1][shape_halves[1].length - 1];
+        shape_halves.push(this.connect_halves(side_top_row, side_bottom_row, this.cut_radius))
+        return shape_halves;
     }
 }
