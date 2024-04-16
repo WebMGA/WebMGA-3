@@ -378,6 +378,6 @@ export class BiconvexLens extends BaseLens {
 //Spherocylinder mesh generator
 export class Spherocylinder extends BiconvexLens {
     constructor(radius: number, length: number) {
-        super(radius, Math.PI/2, length);
+        super(radius, Math.PI / 2, length);
     }
 }
