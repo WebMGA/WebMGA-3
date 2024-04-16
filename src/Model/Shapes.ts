@@ -181,7 +181,8 @@ export class Sphere extends Shape {
     }
 
     connect_halves(top: number[][], bottom: number[][], radius: number) {
-        let offset = Math.acos(bottom[0][0] / radius)
+        let offset = (Math.acos(bottom[0][0] / radius) + Math.acos(bottom[1][0] / radius)) / 2
+        bottom = this.roll_row(bottom, -1)
         let new_row = linspace(0 + offset, Math.PI * 2 + offset, top.length + 1).slice(0, -1).map(angle => this.sample_sphere(radius, angle, Math.PI / 2))
         return [bottom, new_row, top]
     }
