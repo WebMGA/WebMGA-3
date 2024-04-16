@@ -206,7 +206,7 @@ export class Spherocylinder extends Sphere {
     // }
     generate_vertices(): number[][][][] {
         let sphere = super.generate_vertices()[0];
-        let top = sphere.slice(0, Math.floor(sphere.length / 2)).map(row => row.map(vertex => math.add(vertex, this.length_scaling_vector)))
+        let top = sphere.slice(0, Math.ceil(sphere.length / 2)).map(row => row.map(vertex => math.add(vertex, this.length_scaling_vector)))
         let bottom = sphere.slice(Math.floor(sphere.length / 2)).map(row => row.map(vertex => math.subtract(vertex, this.length_scaling_vector)))
         let connector = this.connect_halves(this.roll_row(bottom[0], bottom[0].length / 2), this.roll_row(top[top.length - 1], top[top.length - 1].length / 2), this.radius)
         return [top, connector, bottom]
