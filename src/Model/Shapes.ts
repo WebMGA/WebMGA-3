@@ -179,12 +179,6 @@ export class Sphere extends Shape {
         const positionNumComponents: number = 3;
         this.stripGeometry = this.genGeometriesBase(positionNumComponents)
     }
-
-    connect_halves(top: number[][], bottom: number[][], radius: number) {
-        let offset = Math.acos(bottom[0][0] / radius)
-        let new_row = linspace(0 + offset, Math.PI * 2 + offset, top.length + 1).slice(0, -1).map(angle => this.sample_sphere(radius, angle, Math.PI / 2))
-        return [bottom, new_row, top]
-    }
 }
 
 export class Spheroplatelet extends Sphere {
@@ -362,15 +356,21 @@ export class BiconvexLens extends BaseLens {
         this.separation = separation;
     }
 
+    connect_halves(top: number[][], bottom: number[][], radius: number) {
+        let offset = Math.acos(top[0][0] / radius)
+        let new_row = linspace(0 + offset, Math.PI * 2 + offset, top.length + 1).slice(0, -1).map(angle => this.sample_sphere(radius, angle, Math.PI / 2))
+        let bottom_offsets = bottom.map(vertex => math.norm(math.subtract(vertex, top[0])))
+        bottom = this.roll_row(bottom, -bottom_offsets.indexOf(Math.min.apply(Math, bottom_offsets)))
+        return [top, new_row, bottom]
+    }
+
     generate_vertices(): math.MathType {
         let shape_halves = super.generate_vertices();
         let offset = -(shape_halves[0][shape_halves[0].length - 1][0][2] + shape_halves[1][0][0][2]) / 2;
         shape_halves = shape_halves.map(part => part.map(row => row.map(item => math.add(item, [0, 0, offset]))));
         shape_halves[0] = shape_halves[0].map(row => row.map(item => math.subtract(item, [0, 0, this.separation / 2])));
         shape_halves[1] = shape_halves[1].map(row => row.map(item => math.add(item, [0, 0, this.separation / 2])));
-        let side_top_row = this.roll_row(shape_halves[0][0], shape_halves[0][0].length / 2 - 1);
-        let side_bottom_row = shape_halves[1][shape_halves[1].length - 1];
-        shape_halves.push(this.connect_halves(side_top_row, side_bottom_row, this.cut_radius))
+        shape_halves.push(this.connect_halves(shape_halves[1][shape_halves[1].length - 1], shape_halves[0][0], this.cut_radius))
         return shape_halves;
     }
 }
