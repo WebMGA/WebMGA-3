@@ -331,8 +331,10 @@ export class BaseLens extends Sphere {
 
 export class ThickLens extends BaseLens {
     constructor(radius: number, thickness: number, angle: number) {
-        let cos_theta = Math.cos(Math.PI - angle)
-        let radius_2 = (2 * radius ** 2 * cos_theta + 2 * radius ** 2 - 2 * radius * thickness * cos_theta - 2 * radius * thickness + thickness ** 2) / (2 * (radius * cos_theta + radius - thickness))
+        // let cos_theta_old = Math.cos(Math.PI - angle)
+        // let radius_2_old = (2 * radius ** 2 * cos_theta_old + 2 * radius ** 2 - 2 * radius * thickness * cos_theta_old - 2 * radius * thickness + thickness ** 2) / (2 * (radius * cos_theta_old + radius - thickness))
+        let cos_theta = Math.cos(angle)
+        let radius_2 = (2 * radius ** 2 * (1 - cos_theta) + 2 * thickness * radius * (cos_theta - 1) + thickness ** 2) / (2 * (radius * (1 - cos_theta) - thickness))
         super(radius, radius_2, angle);
     }
 }
