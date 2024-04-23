@@ -358,12 +358,9 @@ export class BiconvexLens extends BaseLens {
         this.separation = separation;
     }
 
-    connect_halves(top: number[][], bottom: number[][], radius: number) {
+    new_row(top: number[][], radius: number) {
         let offset = Math.acos(top[0][0] / radius)
-        let new_row = linspace(0 + offset, Math.PI * 2 + offset, top.length + 1).slice(0, -1).map(angle => this.sample_sphere(radius, angle, Math.PI / 2))
-        let bottom_offsets = bottom.map(vertex => math.norm(math.subtract(vertex, top[0])))
-        bottom = this.roll_row(bottom, -bottom_offsets.indexOf(Math.min.apply(Math, bottom_offsets)))
-        return [top, new_row, bottom]
+        return linspace(0 + offset, Math.PI * 2 + offset, top.length + 1).slice(0, -1).map(angle => this.sample_sphere(radius, angle, Math.PI / 2))
     }
 
     generate_vertices(): math.MathType {
@@ -372,8 +369,18 @@ export class BiconvexLens extends BaseLens {
         shape_halves = shape_halves.map(part => part.map(row => row.map(item => math.add(item, [0, 0, offset]))));
         shape_halves[0] = shape_halves[0].map(row => row.map(item => math.subtract(item, [0, 0, this.separation / 2])));
         shape_halves[1] = shape_halves[1].map(row => row.map(item => math.add(item, [0, 0, this.separation / 2])));
-        shape_halves.push(this.connect_halves(shape_halves[1][shape_halves[1].length - 1], shape_halves[0][0], this.cut_radius))
-        return shape_halves;
+        if (this.separation == 0) {
+            return shape_halves;
+        }
+        let top = shape_halves[1]
+        let bottom = shape_halves[0]
+        let new_row = this.new_row(top[top.length - 1], this.cut_radius)
+        let bottom_offsets = bottom[0].map(vertex => math.norm(math.subtract(vertex, top[top.length - 1][0])))
+        let bottom_roll = -bottom_offsets.indexOf(Math.min.apply(Math, bottom_offsets))
+        bottom = bottom.map(row => this.roll_row(row, bottom_roll))
+        top.push(new_row)
+        top = top.concat(bottom)
+        return [top];
     }
 }
 
