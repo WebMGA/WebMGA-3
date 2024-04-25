@@ -261,6 +261,9 @@ export class Model extends Scene {
                 for (let x = -this.repeats_x; x < this.repeats_x + 1; ++x) {
                     for (let y = -this.repeats_y; y < this.repeats_y + 1; ++y) {
                         for (let z = -this.repeats_z; z < this.repeats_z + 1; ++z) {
+                            if (x == 0 && y == 0 && z == 0) {
+                                continue;
+                            }
                             let new_mesh: Object3D = mesh.clone();
                             new_mesh.position.x += set.unitBox[0] * x;
                             new_mesh.position.y += set.unitBox[1] * y;
@@ -291,6 +294,7 @@ export class Model extends Scene {
         for (const m of this.sets[id].meshes) {
             this.scene.add(m);
         }
+        this.update_repeats();
         // let mesh = this.occlusionCulling();
         // this.scene.add(mesh);
     }
