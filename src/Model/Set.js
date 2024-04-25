@@ -21,6 +21,7 @@ export class Set {
     clippingPlanes;
     clipIntersection;
     unitBox;
+    variable_lod=false;
 
 
     positions = [];
@@ -248,7 +249,7 @@ export class Set {
         let num = this.elements.length;
 
         let c = '#FFFFFF'
-        let geometry_distances = [0, 0.01, 0.05, 0.1, 0.4, 0.5, 0.6, 0.7, 0.9]
+        let geometry_distances = this.variable_lod?[0, 0.01, 0.05, 0.1, 0.4, 0.5, 0.6, 0.7, 0.9]:[0]
         let geometries = geometry_distances.map((distance, distance_index) => this.new_gen_geometries(Math.max(0, this.lod - distance_index)))
         for (let i = 0; i < num; i++) {
             if (this.colourByDirector) {

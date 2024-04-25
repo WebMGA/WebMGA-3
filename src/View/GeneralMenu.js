@@ -2,6 +2,7 @@ import {
     Alert,
     Button,
     ButtonToolbar,
+    Checkbox,
     ControlLabel,
     Drawer,
     Dropdown,
@@ -118,8 +119,9 @@ class PerformanceDropdown extends React.Component {
     constructor(props) {
         super(props);
         this.model = props.model;
-        this.state = {val: props.model.lod + 1};
+        this.state = {val: props.model.lod + 1, variable_lod: props.model.variable_lod};
         this.updateVal = this.updateVal.bind(this);
+        this.toggleVariableLod = this.toggleVariableLod.bind(this);
     }
 
     updateVal(val) {
@@ -128,8 +130,14 @@ class PerformanceDropdown extends React.Component {
         });
     }
 
+    toggleVariableLod(){
+        this.model.set_variable_lod(!this.model.variable_lod);
+        this.setState({variable_lod: this.model.variable_lod})
+    }
+
     render() {
         const lod = this.state.val;
+        const variable_lod = this.state.variable_lod;
         return (<Dropdown title="Level of Detail" trigger='click' placement="bottomEnd" icon={<Icon icon="sliders"/>}>
             <Form style={{marginLeft: 20, marginTop: 20}} layout="inline">
                 <FormGroup>
@@ -157,6 +165,8 @@ class PerformanceDropdown extends React.Component {
                 }}
 
             />
+            <Checkbox style={{marginLeft: 12}} checked={variable_lod}
+                      onClick={this.toggleVariableLod}> Variable LOD</Checkbox>
             <br/>
         </Dropdown>);
     }

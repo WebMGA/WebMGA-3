@@ -59,6 +59,7 @@ export class Model extends Scene {
     repeats_y: number = 0;
     repeats_z: number = 0;
     molecules: Object3D[] = [];
+    variable_lod: boolean = false;
 
     constructor(chronometer, notify) {
         super();
@@ -110,6 +111,18 @@ export class Model extends Scene {
         this.scene.add(this.camera);
         this.lod = SHAPE.Shape.default_lod;
     }
+
+    set_variable_lod(status: boolean) {
+        this.variable_lod = status;
+        for (let i = 0; i < this.sets.length; i++) {
+            this.updateSets(i, [i, this.variable_lod], (i, status) => {
+                this.sets[i].variable_lod = status;
+                this.sets[i].meshes = [];
+                this.sets[i].genMeshes();
+            });
+        }
+    }
+
 
     set_axes(enabled: boolean = this.axes_enabled, scale: number = 200, camera: PerspectiveCamera | OrthographicCamera = this.camera, sets: Set[] = this.sets, axes_origin: Vector3 = new Vector3(450, -250, 0), scene: Scene = this.scene, colour_axes: boolean = this.colour_axes): void {
         console.assert(scale > 0)
