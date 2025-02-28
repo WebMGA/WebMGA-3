@@ -60,7 +60,7 @@ UCL, 2024, https://webmga.github.io/WebMGA-3.
 [2] Adrian T. Gabriel, Timm Meyer, Guido Germano, “Molecular
 graphics of convex-body fluids”, Journal of Chemical Theory and
 Computation 4, 468-476, 2008, DOI 10.1021/ct700192z,
-http://qmga.sourceforce.net.
+http://qmga.sourceforge.net.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                      CONFIGURATION FILE FORMAT
