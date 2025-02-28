@@ -340,6 +340,7 @@ class GeneralMenu extends React.Component {
                 <div style={{margin: 25}}>
                     <h2>WebMGA </h2>
                     <br/>
+                    <h3>About</h3>
                     WebMGA was developed by Eduardo Battistini in 2020-21 for his final project within the BSc
                     Computer Science at University College London, supervised by Guido Germano, Michael P. Allen,
                     and Tobias Ritschel.
@@ -362,7 +363,15 @@ class GeneralMenu extends React.Component {
                     WebMGA is an evolution of <a href="http://qmga.sourceforge.net/" target="_blank"
                                                  rel="noopener noreferrer">QMGA</a>, an OpenGL and Qt3 based
                     application written in C++ that filled this gap in molecular graphics in 2008.
-
+                    <br/><br/>
+                    <h3>Citation</h3>
+                    If you like WebMGA and use pictures generated with it in a scientific publication, please cite it this way:
+                    <br/><br/>
+                    The pictures were produced with WebMGA 3.0 [1], an evolution of QMGA [2] based on WebGL.
+                    <br/><br/>
+                    [1] Joe Down, Yue He, Eduardo Battistini Parra, Guido Germano, “WebMGA 3.0, a WebGL molecular graphics application for the interactive rendering of coarse-grained liquid crystal models”, UCL, 2024, <a href="https://webmga.github.io/WebMGA-3">https://webmga.github.io/WebMGA-3</a>.
+                    <br/><br/>
+                    [2] Adrian T. Gabriel, Timm Meyer, Guido Germano, “Molecular graphics of convex-body fluids", Journal of Chemical Theory and Computation 4, 468-476, 2008, DOI 10.1021/ct700192z, <a href="http://qmga.sourceforge.net">http://qmga.sourceforge.net</a>.
                 </div>
             </Drawer>
         </div>);
