@@ -221,7 +221,7 @@ export class VideoOptions extends React.Component{
     }
     setVideoState(){
         var data = this.functions[5]();
-        this.state.vidstate  = data;
+        this.setState((state)=>{state.vidstate = data})
         let toggle = ! this.state.loadVideoState
         this.setState({
             loadVideoState :toggle
@@ -234,7 +234,7 @@ export class VideoOptions extends React.Component{
         this.setState({
             video:toggle
         })
-        this.state.video = toggle;
+        this.setState((state)=>{state.video = toggle})
         console.log(toggle)
         if(toggle ===true){
             this.toggler.closeSidemenu();
@@ -413,7 +413,7 @@ export class CameraOptions extends React.Component {
 
     updatePosition(val, type) {
         let position = this.state.position;
-        if (val != isNaN && val != null) {
+        if (val !== isNaN && val != null) {
             switch (type) {
                 case 'x':
                     position.x = parseInt(val);
@@ -997,19 +997,20 @@ export class ReferenceOptions extends React.Component {
         val = Math.abs(Math.round(val));
         switch (type) {
             case 0:
-                this.state.repeats.x = val;
+                this.setState((state)=>{state.repeats.x = val})
+                this.model.update_repeats(val, this.state.repeats.y, this.state.repeats.z);
                 break;
             case 1:
-                this.state.repeats.y = val;
+                this.setState((state)=>{state.repeats.y = val})
+                this.model.update_repeats(this.state.repeats.x, val, this.state.repeats.z);
                 break;
             case 2:
-                this.state.repeats.z = val;
+                this.setState((state)=>{state.repeats.z = val})
+                this.model.update_repeats(this.state.repeats.x, this.state.repeats.y, val);
                 break;
             default:
                 throw new Error("Bad repeat type")
         }
-        console.log("bread", this.state, View)
-        this.model.update_repeats(this.state.repeats.x, this.state.repeats.y, this.state.repeats.z);
         this.model.update();
     }
 

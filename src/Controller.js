@@ -425,6 +425,7 @@ class Controller {
                 case  'KeyA':
                     console.log(this.model.camera.position);
                     break;
+                default:
             }
 
             // //g

@@ -72,7 +72,7 @@ export class Sphere extends Shape {
     update_samples(): void {
         this.samples = Math.max(4, Sphere.complexity[this.LOD])
         this.vertical_samples = Math.max(4, this.samples * this.vertical_sample_scale)
-        if (this.vertical_samples % 2 == 1) {
+        if (this.vertical_samples % 2 === 1) {
             ++this.vertical_samples
         }
     }
@@ -97,7 +97,7 @@ export class Sphere extends Shape {
         let result = []
         for (let [phi_index, phi] of phis.entries()) {
             let abc = []
-            for (let theta of ((phi_index % 2 == 0) ? thetas : offset_thetas)) {
+            for (let theta of ((phi_index % 2 === 0) ? thetas : offset_thetas)) {
                 abc.push(this.sample_sphere(radius, theta, phi))
             }
             result.push(abc)
@@ -200,9 +200,9 @@ export class Spheroplatelet extends Sphere {
             for (let column = 0; column < column_count; ++column) {
                 let radius_vector = vertices[row][column].slice(0, 2)
                 let norm = math.norm(radius_vector)
-                if (row == 0 || row == row_count - 1) {
+                if (row === 0 || row === row_count - 1) {
                     let face_circle_angles = circle_angles
-                    if (row == row_count - 1) {
+                    if (row === row_count - 1) {
                         let offset = math.floor(row / 2) + 2
                         face_circle_angles = circle_angles.slice(offset).concat(circle_angles.slice(0, offset))
                     }
@@ -298,7 +298,7 @@ export class BaseLens extends Sphere {
     }
 
     generate_vertices(): math.MathType {
-        if (this.angle == 0) {
+        if (this.angle === 0) {
             return super.generate_vertices()
         }
         let cut_radius = this.cut_radius
@@ -369,7 +369,7 @@ export class BiconvexLens extends BaseLens {
         shape_halves = shape_halves.map(part => part.map(row => row.map(item => math.add(item, [0, 0, offset]))));
         shape_halves[0] = shape_halves[0].map(row => row.map(item => math.subtract(item, [0, 0, this.separation / 2])));
         shape_halves[1] = shape_halves[1].map(row => row.map(item => math.add(item, [0, 0, this.separation / 2])));
-        if (this.separation == 0) {
+        if (this.separation === 0) {
             return shape_halves;
         }
         let top = shape_halves[1]

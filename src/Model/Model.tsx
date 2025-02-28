@@ -264,7 +264,7 @@ export class Model extends Scene {
         this.repeats_z = z
         while (true) {
             let molecule = this.molecules.pop();
-            if (molecule == undefined) {
+            if (molecule === undefined) {
                 break;
             }
             this.scene.remove(molecule);
@@ -274,7 +274,7 @@ export class Model extends Scene {
                 for (let x = -this.repeats_x; x < this.repeats_x + 1; ++x) {
                     for (let y = -this.repeats_y; y < this.repeats_y + 1; ++y) {
                         for (let z = -this.repeats_z; z < this.repeats_z + 1; ++z) {
-                            if (x == 0 && y == 0 && z == 0) {
+                            if (x === 0 && y === 0 && z === 0) {
                                 continue;
                             }
                             let new_mesh: Object3D = mesh.clone();
