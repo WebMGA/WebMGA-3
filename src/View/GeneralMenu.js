@@ -302,26 +302,30 @@ class GeneralMenu extends React.Component {
                     <Drawer.Title>About</Drawer.Title>
                     <br/>
                     <ButtonToolbar>
-                        <Button color="cyan" href="http://students.cs.ucl.ac.uk/2019/group3/WebMGA/notes.pdf"
-                                target="_blank" rel="noopener noreferrer">
-                            <Icon icon="mortar-board"/> Liquid Crystals
-                        </Button>
                         <Button key="man" color="cyan"
                                 href="files/manual.txt" target="_blank"
                                 rel="noopener noreferrer">
                             <Icon icon="info-circle"/> User Manual
                         </Button>
-                        <Button color="cyan" href="dissertations/2021.pdf"
+                        <Button color="cyan" href="http://students.cs.ucl.ac.uk/2019/group3/WebMGA/notes.pdf"
                                 target="_blank" rel="noopener noreferrer">
-                            <Icon icon="book"/> Dissertation 2021
-                        </Button>
-                        <Button color="cyan" href="dissertations/2023.pdf"
-                                target="_blank" rel="noopener noreferrer">
-                            <Icon icon="book"/> Dissertation 2023
+                            <Icon icon="mortar-board"/> Liquid Crystals
                         </Button>
                         <Button color="cyan" href="https://github.com/WebMGA/WebMGA-3" target="_blank"
                                 rel="noopener noreferrer">
                             <Icon icon="github"/> Github
+                        </Button>
+                        <Button color="cyan" href="https://joe-down.github.io/Final-Year-Project-Dissertation/main.pdf"
+                                target="_blank" rel="noopener noreferrer">
+                            <Icon icon="book"/> Joe Down, MSc Thesis, UCL 2024
+                        </Button>
+                        <Button color="cyan" href="dissertations/2023.pdf"
+                                target="_blank" rel="noopener noreferrer">
+                            <Icon icon="book"/> Yue He, MSc Thesis, UCL, 2023
+                        </Button>
+                        <Button color="cyan" href="dissertations/2021.pdf"
+                                target="_blank" rel="noopener noreferrer">
+                            <Icon icon="book"/> Eduardo Battistini Parra, MSc Thesis, UCL, 2021
                         </Button>
                     </ButtonToolbar>
                     <br/>
