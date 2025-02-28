@@ -4,7 +4,7 @@
                | |/ |/ /  __/ /_/ / /  / / /_/ / ___ |
                |__/|__/\___/_.___/_/  /_/\____/_/  |_|
 
-                 by Eduardo Battistini, Yue He, Joe Down
+                 by Joe Down, Yue He, Eduardo Battistini
 
 ====================================================================
                            USER MANUAL
@@ -20,7 +20,7 @@ Library.
                              LICENSE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Copyright 2024. Carlos Eduardo Battistini Parra, Yue He, Joe Down.
+Copyright 2024. Joe Down, Yue He, Carlos Eduardo Battistini Parra.
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation files
@@ -41,6 +41,26 @@ BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                          CITING WEBMGA
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you like WebMGA and use pictures generated with it in a
+scientific publication, please cite it this way:
+
+“The pictures were produced with WebMGA 3.0 [1], an evolution of
+QMGA [2] based on WebGL.”
+
+[1] Joe Down, Yue He, Eduardo Battistini Parra, Guido Germano,
+“WebMGA 3.0, a WebGL molecular graphics application for the
+interactive rendering of coarse-grained liquid crystal models”,
+UCL, 2024, https://webmga.github.io/WebMGA-3.
+
+[2] Adrian T. Gabriel, Timm Meyer, Guido Germano, “Molecular
+graphics of convex-body fluids”, Journal of Chemical Theory and
+Computation 4, 468-476, 2008, DOI 10.1021/ct700192z,
+http://qmga.sourceforce.net.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                      CONFIGURATION FILE FORMAT
