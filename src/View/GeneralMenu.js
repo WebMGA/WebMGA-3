@@ -307,7 +307,7 @@ class GeneralMenu extends React.Component {
                             <Icon icon="mortar-board"/> Liquid Crystals
                         </Button>
                         <Button key="man" color="cyan"
-                                href="http://students.cs.ucl.ac.uk/2019/group3/WebMGA/manual.txt" target="_blank"
+                                href="files/manual.txt" target="_blank"
                                 rel="noopener noreferrer">
                             <Icon icon="info-circle"/> User Manual
                         </Button>
