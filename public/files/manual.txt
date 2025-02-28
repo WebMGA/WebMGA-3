@@ -55,7 +55,7 @@ based on WebGL [2].”
 [1] Eduardo Battistini, Yue He, and Joe Down “WebMGA, a WebGL Molecular Graphics
 Application for the Interactive Rendering of Coarse-Grained Liquid
 Crystal Models”, BSc/MEng Thesis in Computer Science, UCL, 2021, 2023, 2024
-https://astromarx.github.io/WebMGA, https://hiiamyue.github.io/WebMGA-2/, https://joe-down.github.io/WebMGA-3/
+https://astromarx.github.io/WebMGA, https://hiiamyue.github.io/WebMGA-2/, https://webmga.github.io/WebMGA-3/
 
 [2] Adrian T. Gabriel, Timm Meyer, Guido Germano, "Molecular
 graphics of convex-body fluids", Journal of Chemical Theory and

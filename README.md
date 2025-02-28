@@ -1,1 +1,1 @@
-WebMGA 3.0 is deployed at https://joe-down.github.io/WebMGA-3/
+WebMGA 3.0 is deployed at https://webmga.github.io/WebMGA-3/

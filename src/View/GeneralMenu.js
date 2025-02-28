@@ -319,7 +319,7 @@ class GeneralMenu extends React.Component {
                                 target="_blank" rel="noopener noreferrer">
                             <Icon icon="book"/> Dissertation 2023
                         </Button>
-                        <Button color="cyan" href="https://github.com/joe-down/WebMGA-3" target="_blank"
+                        <Button color="cyan" href="https://github.com/WebMGA/WebMGA-3" target="_blank"
                                 rel="noopener noreferrer">
                             <Icon icon="github"/> Github
                         </Button>
