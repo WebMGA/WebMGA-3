@@ -276,7 +276,7 @@ class GeneralMenu extends React.Component {
                                        id="upload-btn"
                                        style={{display: 'none'}}
                                        className='input-file'
-                                       accept='.json,.webmga'
+                                       accept='.json,.webmga,.qmga,.cnf'
                                        onChange={e => this.functions[1](e.target.files[0])}/>
                                 <label htmlFor="upload-btn">
                                     <Nav.Item icon={<Icon icon="file-upload"/>}>Upload</Nav.Item>

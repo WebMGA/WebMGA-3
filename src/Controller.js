@@ -219,7 +219,7 @@ class Controller {
         let fileReader = new FileReader();
         fileReader.onloadend = () => {
             let data;
-            if (file.type === "application/json") {
+            if ((file.type === "application/json") || (file.name.split(".").pop().toLowerCase() === "webmga")) {
                 data = JSON.parse(fileReader.result);
             } else if (file.name.split(".").pop().toLowerCase() === "qmga") {
                 data = this.qmga_to_json(fileReader.result);
