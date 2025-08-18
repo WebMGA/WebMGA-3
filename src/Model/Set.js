@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {Color, Euler, LOD, MeshPhongMaterial, Quaternion, Vector3} from 'three';
-import {eigs} from 'mathjs';
+import {eigs, column} from 'mathjs';
 import * as SHAPE from './Shapes';
 import {Shape} from './Shapes';
 import Model from './Model';
@@ -421,7 +421,7 @@ export class Set {
         //this line of code is a bit dodgy
         let index = eigen.values.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
 
-        this.director = eigen.vectors[index];
+        this.director = column(eigen.vectors, index)
 
         let norm = Math.sqrt(this.director[0] ** 2 + this.director[1] ** 2 + this.director[2] ** 2);
 
@@ -440,9 +440,6 @@ export class Set {
         let n = colourMap.values.length - 1;
 
         let scalarProduct = Math.abs(element.orientation[0] * this.director[0] + element.orientation[1] * this.director[1] + element.orientation[2] * this.director[2]);
-        if (this.orientationType === 'v') {
-            scalarProduct = Math.abs(element.orientation[1] * this.director[0] + element.orientation[0] * this.director[1] + element.orientation[2] * this.director[2]);
-        }
         if (scalarProduct > 1) {
             scalarProduct = 1;
         }
