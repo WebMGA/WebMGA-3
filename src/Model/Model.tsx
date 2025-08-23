@@ -141,7 +141,10 @@ export class Model extends Scene {
         //Construct line parameters
         let world_axes_origin: Vector3 = camera.localToWorld(axes_origin);
         let axis_line_ends: Vector3[] = [new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1)];
-        let director_line_ends: Vector3[] = sets.map(set => set.director).map(director => new Vector3(director[0], director[1], -director[2]));
+        let director_line_ends: Vector3[] = sets
+            .map(set => set.director)
+            .filter(director => director!=null)
+            .map(director => new Vector3(director[0], director[1], director[2]));
         let line_ends: Vector3[] = axis_line_ends.concat(director_line_ends);
         //Build line materials
         let line_materials: LineBasicMaterial[] = line_ends.map(line_end => new LineBasicMaterial({color: this.colour_from_director(line_end, colour_axes)}));
@@ -167,7 +170,7 @@ export class Model extends Scene {
         if (enable_colour && sets.length > 0) {
             //TODO handle multiple directors and director should be stored as vec3 in first place
             let director: number[] = sets[0].director;
-            let director_vector: Vector3 = new Vector3(director[0], director[1], -director[2]);
+            let director_vector: Vector3 = new Vector3(director[0], director[1], director[2]);
             //Set hue based on angle between director and vector
             //TODO properly check rather than min
             let angle: number = Math.acos(Math.min(director_vector.dot(vector.normalize()), 1));
